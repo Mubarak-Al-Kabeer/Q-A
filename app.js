@@ -3,25 +3,29 @@
 ===================================================== */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
+  'https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec';
 
 
 /* =====================================================
-   GAME STATE
+   STATE
 ===================================================== */
 
 let currentUser = null;
-let sessionId = null;
 
 let game = {
+
   id: null,
-  team1: "",
-  team2: "",
+
+  team1: '',
+
+  team2: '',
+
   scores: [0, 0],
+
   turn: 0,
-  used: {},
-  selected: null,
-  questions: []
+
+  selected: null
+
 };
 
 
@@ -29,106 +33,85 @@ let game = {
    API
 ===================================================== */
 
-async function api(action, data = {}) {
+async function api(functionName, ...args) {
 
-  const response = await fetch(API_URL, {
-    method: "POST",
+  const response =
+    await fetch(API_URL, {
 
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
+      method: 'POST',
 
-    body: JSON.stringify({
-      action,
-      ...data
-    })
-  });
+      headers: {
+        'Content-Type':
+          'text/plain;charset=utf-8'
+      },
 
-  const result = await response.json();
+      body: JSON.stringify({
 
-  return result;
+        function:
+          functionName,
+
+        args:
+          args
+
+      })
+
+    });
+
+
+  return await response.json();
+
 }
 
 
 /* =====================================================
-   SCREENS
+   SCREEN
 ===================================================== */
 
 function showScreen(id) {
 
   document
-    .querySelectorAll(".screen")
+    .querySelectorAll('.screen')
     .forEach(screen => {
-      screen.classList.remove("active");
+
+      screen.classList.remove(
+        'active'
+      );
+
     });
+
 
   const screen =
     document.getElementById(id);
 
+
   if (screen) {
-    screen.classList.add("active");
-  }
-}
 
-
-function showLogin() {
-  showScreen("loginScreen");
-}
-
-
-function showRegister() {
-  showScreen("registerScreen");
-}
-
-
-function showForgot() {
-  showScreen("forgotScreen");
-}
-
-
-function showHome() {
-  showScreen("homeScreen");
-}
-
-
-function showTeams() {
-
-  if (!currentUser) {
-    showLogin();
-    return;
-  }
-
-  if (
-    currentUser.role !== "ADMIN" &&
-    Number(currentUser.gamesRemaining || 0) <= 0
-  ) {
-
-    alert(
-      "لا توجد ألعاب متبقية في حسابك."
+    screen.classList.add(
+      'active'
     );
 
-    return;
   }
 
-  showScreen("teamsScreen");
 }
 
 
-function showAdmin() {
+/* =====================================================
+   MESSAGE
+===================================================== */
 
-  if (
-    !currentUser ||
-    currentUser.role !== "ADMIN"
-  ) {
+function message(id, text) {
 
-    alert("ليس لديك صلاحية المسؤول.");
+  const element =
+    document.getElementById(id);
 
-    return;
+
+  if (element) {
+
+    element.textContent =
+      text;
+
   }
 
-  showScreen("adminScreen");
-
-  loadAdmin();
 }
 
 
@@ -140,99 +123,146 @@ async function register() {
 
   const nickname =
     document
-      .getElementById("registerNickname")
+      .getElementById(
+        'registerNickname'
+      )
       .value
       .trim();
+
 
   const phone =
     document
-      .getElementById("registerPhone")
+      .getElementById(
+        'registerPhone'
+      )
       .value
       .trim();
+
 
   const email =
     document
-      .getElementById("registerEmail")
+      .getElementById(
+        'registerEmail'
+      )
       .value
       .trim();
 
-  const password =
-    document
-      .getElementById("registerPassword")
-      .value;
 
-  const password2 =
+  const code =
     document
-      .getElementById("registerPassword2")
-      .value;
+      .getElementById(
+        'registerCode'
+      )
+      .value
+      .trim();
 
-  const message =
-    document.getElementById(
-      "registerMessage"
-    );
+
+  const confirm =
+    document
+      .getElementById(
+        'registerCodeConfirm'
+      )
+      .value
+      .trim();
 
 
   if (
     !nickname ||
     !phone ||
     !email ||
-    !password
+    !code
   ) {
 
-    message.textContent =
-      "جميع البيانات مطلوبة.";
+    message(
+      'registerMessage',
+      'أكمل جميع البيانات'
+    );
 
     return;
+
   }
 
 
-  if (password !== password2) {
+  if (code !== confirm) {
 
-    message.textContent =
-      "رمزا الدخول غير متطابقين.";
+    message(
+      'registerMessage',
+      'الرمزان غير متطابقين'
+    );
 
     return;
+
   }
 
 
-  message.textContent =
-    "جاري إنشاء الحساب...";
+  message(
+    'registerMessage',
+    'جاري إنشاء الحساب...'
+  );
 
 
   try {
 
     const result =
-      await api("register", {
-        nickname,
-        phone,
-        email,
-        password
-      });
+      await api(
+        'registerUser',
+        {
+          nickname:
+            nickname,
+
+          phone:
+            phone,
+
+          email:
+            email,
+
+          code:
+            code
+        }
+      );
 
 
     if (!result.success) {
 
-      message.textContent =
-        result.message || "تعذر إنشاء الحساب.";
+      message(
+        'registerMessage',
+        result.message
+      );
 
       return;
+
     }
 
 
-    document.getElementById(
-      "newAccountId"
-    ).textContent =
-      result.accountId;
+    document
+      .getElementById(
+        'pendingAccount'
+      )
+      .textContent =
+        result.account;
 
 
-    showScreen("waitingScreen");
+    message(
+      'registerMessage',
+      ''
+    );
 
+
+    showScreen(
+      'pendingScreen'
+    );
 
   } catch (error) {
 
-    message.textContent =
-      "حدث خطأ في الاتصال بالخادم.";
+    console.error(error);
+
+    message(
+      'registerMessage',
+      'حدث خطأ في الاتصال بالخادم'
+    );
+
   }
+
 }
 
 
@@ -242,221 +272,212 @@ async function register() {
 
 async function login() {
 
-  const accountId =
+  const account =
     document
-      .getElementById("loginAccount")
+      .getElementById(
+        'loginAccount'
+      )
       .value
       .trim();
 
-  const password =
+
+  const code =
     document
-      .getElementById("loginPassword")
-      .value;
+      .getElementById(
+        'loginCode'
+      )
+      .value
+      .trim();
 
-  const message =
-    document.getElementById(
-      "loginMessage"
+
+  if (!account || !code) {
+
+    message(
+      'loginMessage',
+      'أدخل رقم الحساب والرمز'
     );
-
-
-  if (!accountId || !password) {
-
-    message.textContent =
-      "أدخل رقم الحساب والرمز.";
 
     return;
+
   }
 
 
-  message.textContent =
-    "جاري تسجيل الدخول...";
-
-
-  try {
-
-    const result =
-      await api("login", {
-        accountId,
-        password
-      });
-
-
-    if (!result.success) {
-
-      message.textContent =
-        result.message || "تعذر تسجيل الدخول.";
-
-      return;
-    }
-
-
-    sessionId =
-      result.sessionId;
-
-    currentUser =
-      result.user;
-
-
-    localStorage.setItem(
-      "sessionId",
-      sessionId
-    );
-
-
-    updateHome();
-
-
-    showHome();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    message.textContent =
-      "تعذر الاتصال بالخادم.";
-  }
-}
-
-
-/* =====================================================
-   RESTORE SESSION
-===================================================== */
-
-async function restoreSession() {
-
-  const saved =
-    localStorage.getItem(
-      "sessionId"
-    );
-
-  if (!saved) {
-    return;
-  }
-
-  try {
-
-    const result =
-      await api("me", {
-        sessionId: saved
-      });
-
-
-    if (!result.success) {
-
-      localStorage.removeItem(
-        "sessionId"
-      );
-
-      return;
-    }
-
-
-    sessionId =
-      saved;
-
-    currentUser =
-      result.user;
-
-
-    updateHome();
-
-
-    showHome();
-
-
-  } catch (error) {
-
-    console.error(error);
-  }
-}
-
-
-/* =====================================================
-   UPDATE HOME
-===================================================== */
-
-function updateHome() {
-
-  if (!currentUser) {
-    return;
-  }
-
-
-  document.getElementById(
-    "userNickname"
-  ).textContent =
-    currentUser.nickname;
-
-
-  document.getElementById(
-    "userAccount"
-  ).textContent =
-    currentUser.accountId;
-
-
-  document.getElementById(
-    "gamesRemaining"
-  ).textContent =
-    currentUser.role === "ADMIN"
-      ? "∞"
-      : currentUser.gamesRemaining;
-
-
-  const adminButton =
-    document.getElementById(
-      "adminButton"
-    );
-
-
-  if (
-    currentUser.role === "ADMIN"
-  ) {
-
-    adminButton.classList.remove(
-      "hidden"
-    );
-
-  } else {
-
-    adminButton.classList.add(
-      "hidden"
-    );
-  }
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function logout() {
-
-  if (sessionId) {
-
-    try {
-
-      await api("logout", {
-        sessionId
-      });
-
-    } catch (error) {
-
-      console.error(error);
-    }
-  }
-
-
-  sessionId = null;
-
-  currentUser = null;
-
-  localStorage.removeItem(
-    "sessionId"
+  message(
+    'loginMessage',
+    'جاري تسجيل الدخول...'
   );
 
 
-  showLogin();
+  try {
+
+    const result =
+      await api(
+        'loginUser',
+        account,
+        code
+      );
+
+
+    if (!result.success) {
+
+      if (result.pending) {
+
+        document
+          .getElementById(
+            'pendingAccount'
+          )
+          .textContent =
+            result.account;
+
+
+        showScreen(
+          'pendingScreen'
+        );
+
+        return;
+
+      }
+
+
+      message(
+        'loginMessage',
+        result.message
+      );
+
+      return;
+
+    }
+
+
+    currentUser = {
+
+      account:
+        result.account,
+
+      code:
+        code,
+
+      nickname:
+        result.nickname,
+
+      role:
+        result.role,
+
+      gamesAllowed:
+        result.gamesAllowed,
+
+      gamesPlayed:
+        result.gamesPlayed
+
+    };
+
+
+    if (
+      result.role === 'ADMIN'
+    ) {
+
+      showScreen(
+        'adminScreen'
+      );
+
+      loadUsers();
+
+    } else {
+
+      showUserDashboard();
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    message(
+      'loginMessage',
+      'تعذر الاتصال بالخادم'
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   USER DASHBOARD
+===================================================== */
+
+function showUserDashboard() {
+
+  document
+    .getElementById(
+      'userNickname'
+    )
+    .textContent =
+      currentUser.nickname;
+
+
+  document
+    .getElementById(
+      'userAccount'
+    )
+    .textContent =
+      currentUser.account;
+
+
+  updateGameStats();
+
+
+  showScreen(
+    'userScreen'
+  );
+
+}
+
+
+function updateGameStats() {
+
+  const allowed =
+    Number(
+      currentUser.gamesAllowed
+    ) || 0;
+
+
+  const played =
+    Number(
+      currentUser.gamesPlayed
+    ) || 0;
+
+
+  const remaining =
+    Math.max(
+      allowed - played,
+      0
+    );
+
+
+  document
+    .getElementById(
+      'gamesAllowed'
+    )
+    .textContent =
+      allowed;
+
+
+  document
+    .getElementById(
+      'gamesPlayed'
+    )
+    .textContent =
+      played;
+
+
+  document
+    .getElementById(
+      'gamesRemaining'
+    )
+    .textContent =
+      remaining;
+
 }
 
 
@@ -468,164 +489,199 @@ async function startGame() {
 
   const team1 =
     document
-      .getElementById("team1")
+      .getElementById(
+        'team1'
+      )
       .value
       .trim();
+
 
   const team2 =
     document
-      .getElementById("team2")
+      .getElementById(
+        'team2'
+      )
       .value
       .trim();
-
-  const message =
-    document.getElementById(
-      "teamsMessage"
-    );
 
 
   if (!team1 || !team2) {
 
-    message.textContent =
-      "أدخل اسم الفريقين.";
+    message(
+      'gameMessage',
+      'أدخل اسم الفريقين'
+    );
 
     return;
+
   }
 
 
-  message.textContent =
-    "جاري بدء اللعبة...";
+  message(
+    'gameMessage',
+    'جاري بدء اللعبة...'
+  );
 
 
   try {
 
     const result =
-      await api("startGame", {
-        sessionId,
+      await api(
+        'createGame',
+
+        currentUser.account,
+
+        currentUser.code,
+
         team1,
+
         team2
-      });
+
+      );
 
 
     if (!result.success) {
 
-      message.textContent =
-        result.message;
+      message(
+        'gameMessage',
+        result.message
+      );
 
       return;
+
     }
 
 
-    game = {
+    game.id =
+      result.gameId;
 
-      id:
-        result.gameId,
+    game.team1 =
+      team1;
 
-      team1,
-      team2,
+    game.team2 =
+      team2;
 
-      scores:
-        [0, 0],
+    game.scores =
+      [0, 0];
 
-      turn:
-        0,
+    game.turn =
+      0;
 
-      used:
-        {},
-
-      selected:
-        null,
-
-      questions:
-        []
-    };
+    game.selected =
+      null;
 
 
-    if (
-      currentUser.role !== "ADMIN"
-    ) {
-
-      currentUser.gamesRemaining =
-        result.gamesRemaining;
-    }
-
-
-    updateHome();
+    document
+      .getElementById(
+        'team1Name'
+      )
+      .textContent =
+      team1;
 
 
-    await loadQuestions();
+    document
+      .getElementById(
+        'team2Name'
+      )
+      .textContent =
+      team2;
 
 
-    updateGameUI();
+    await loadBoard();
 
 
     showScreen(
-      "gameScreen"
+      'gameScreen'
     );
-
 
   } catch (error) {
 
     console.error(error);
 
-    message.textContent =
-      "حدث خطأ في الاتصال.";
-  }
-}
-
-
-/* =====================================================
-   LOAD QUESTIONS
-===================================================== */
-
-async function loadQuestions() {
-
-  const result =
-    await api("questions", {
-      sessionId
-    });
-
-
-  if (!result.success) {
-
-    alert(
-      result.message ||
-      "تعذر تحميل الأسئلة."
+    message(
+      'gameMessage',
+      'حدث خطأ في الاتصال'
     );
 
-    return;
   }
 
-
-  game.questions =
-    result.questions || [];
-
-
-  createBoard(
-    result.categories,
-    result.points,
-    game.questions
-  );
 }
 
 
 /* =====================================================
-   CREATE BOARD
+   LOAD BOARD
+===================================================== */
+
+async function loadBoard() {
+
+  try {
+
+    const result =
+      await api(
+        'getQuestions'
+      );
+
+
+    createBoard(
+      result
+    );
+
+    updateGameUI();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      'تعذر تحميل الأسئلة'
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   BOARD
 ===================================================== */
 
 function createBoard(
-  categories,
-  points,
   questions
 ) {
 
   const board =
     document.getElementById(
-      "board"
+      'board'
     );
 
 
-  board.innerHTML = "";
+  board.innerHTML = '';
+
+
+  const categories = [
+
+    'التشريح',
+
+    'الإحالة',
+
+    'الأدوات والمعدات',
+
+    'العلامات الحيوية',
+
+    'الأدوية',
+
+    'الطوارئ والإسعافات'
+
+  ];
+
+
+  const points = [
+    100,
+    200,
+    300,
+    400,
+    500
+  ];
 
 
   categories.forEach(
@@ -633,24 +689,23 @@ function createBoard(
 
       const column =
         document.createElement(
-          "div"
+          'div'
         );
 
       column.className =
-        "category";
+        'category';
 
 
       const title =
         document.createElement(
-          "div"
+          'div'
         );
 
       title.className =
-        "category-title";
+        'category-title';
 
       title.textContent =
         category;
-
 
       column.appendChild(
         title
@@ -662,32 +717,33 @@ function createBoard(
 
           const button =
             document.createElement(
-              "button"
+              'button'
             );
 
           button.className =
-            "question";
+            'question';
 
           button.textContent =
             point;
 
 
-          const available =
+          const exists =
             questions.some(
               q =>
-                q.category === category &&
+                q.category ===
+                  category &&
                 Number(q.points) ===
-                  Number(point)
+                  point
             );
 
 
-          if (!available) {
+          if (!exists) {
 
             button.disabled =
               true;
 
             button.classList.add(
-              "used"
+              'used'
             );
 
           } else {
@@ -699,6 +755,7 @@ function createBoard(
                   point,
                   button
                 );
+
           }
 
 
@@ -716,6 +773,7 @@ function createBoard(
 
     }
   );
+
 }
 
 
@@ -729,28 +787,22 @@ async function openQuestion(
   button
 ) {
 
-  if (button.disabled) {
-    return;
-  }
-
-
   button.disabled =
     true;
 
-
   button.classList.add(
-    "used"
+    'used'
   );
 
 
   try {
 
     const result =
-      await api("getQuestion", {
-        sessionId,
+      await api(
+        'getRandomQuestion',
         category,
         points
-      });
+      );
 
 
     if (!result.success) {
@@ -759,7 +811,7 @@ async function openQuestion(
         false;
 
       button.classList.remove(
-        "used"
+        'used'
       );
 
       alert(
@@ -767,770 +819,38 @@ async function openQuestion(
       );
 
       return;
+
     }
 
 
     game.selected = {
 
-      category,
+      category:
+        category,
 
-      points,
+      points:
+        points,
 
-      button,
+      button:
+        button,
 
       question:
         result.question
+
     };
 
 
-    document.getElementById(
-      "modalCategory"
-    ).textContent =
+    document
+      .getElementById(
+        'modalCategory'
+      )
+      .textContent =
       category;
 
 
-    document.getElementById(
-      "modalPoints"
-    ).textContent =
-      points + " نقطة";
-
-
-    document.getElementById(
-      "modalQuestion"
-    ).textContent =
-      result.question.question;
-
-
-    document.getElementById(
-      "answer"
-    ).textContent =
-      result.question.answer;
-
-
-    document.getElementById(
-      "answer"
-    ).style.display =
-      "none";
-
-
-    document.getElementById(
-      "actions"
-    ).style.display =
-      "none";
-
-
-    document.getElementById(
-      "showAnswer"
-    ).style.display =
-      "block";
-
-
-    document.getElementById(
-      "modal"
-    ).classList.add(
-      "active"
-    );
-
-
-  } catch (error) {
-
-    button.disabled =
-      false;
-
-    button.classList.remove(
-      "used"
-    );
-
-    alert(
-      "حدث خطأ أثناء تحميل السؤال."
-    );
-  }
-}
-
-
-/* =====================================================
-   SHOW ANSWER
-===================================================== */
-
-function showAnswer() {
-
-  document.getElementById(
-    "answer"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "actions"
-  ).style.display =
-    "grid";
-
-
-  document.getElementById(
-    "showAnswer"
-  ).style.display =
-    "none";
-}
-
-
-/* =====================================================
-   ANSWER
-===================================================== */
-
-async function answerQuestion(
-  correct
-) {
-
-  const selected =
-    game.selected;
-
-
-  if (!selected) {
-    return;
-  }
-
-
-  const answeringTeam =
-    game.turn === 0
-      ? game.team1
-      : game.team2;
-
-
-  if (correct) {
-
-    game.scores[
-      game.turn
-    ] +=
-      Number(
-        selected.points
-      );
-  }
-
-
-  try {
-
-    const result =
-      await api(
-        "submitAnswer",
-        {
-
-          sessionId,
-
-          gameId:
-            game.id,
-
-          team1:
-            game.team1,
-
-          team2:
-            game.team2,
-
-          category:
-            selected.category,
-
-          questionId:
-            selected.question.id,
-
-          question:
-            selected.question.question,
-
-          points:
-            selected.points,
-
-          team:
-            answeringTeam,
-
-          correct
-        }
-      );
-
-
-    if (!result.success) {
-
-      alert(
-        result.message ||
-        "تعذر تسجيل النتيجة."
-      );
-
-      return;
-    }
-
-
-    finishQuestion();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      "حدث خطأ أثناء تسجيل الإجابة."
-    );
-  }
-}
-
-
-/* =====================================================
-   SKIP
-===================================================== */
-
-async function skipQuestion() {
-
-  await answerQuestion(false);
-}
-
-
-/* =====================================================
-   FINISH QUESTION
-===================================================== */
-
-function finishQuestion() {
-
-  if (!game.selected) {
-    return;
-  }
-
-
-  game.used[
-    game.selected.question.id
-  ] = true;
-
-
-  game.turn =
-    game.turn === 0
-      ? 1
-      : 0;
-
-
-  closeModal();
-
-
-  updateGameUI();
-
-
-  checkEnd();
-}
-
-
-/* =====================================================
-   CLOSE MODAL
-===================================================== */
-
-function closeModal() {
-
-  document
-    .getElementById("modal")
-    .classList.remove(
-      "active"
-    );
-
-  game.selected =
-    null;
-}
-
-
-/* =====================================================
-   UPDATE GAME UI
-===================================================== */
-
-function updateGameUI() {
-
-  document.getElementById(
-    "team1Name"
-  ).textContent =
-    game.team1;
-
-
-  document.getElementById(
-    "team2Name"
-  ).textContent =
-    game.team2;
-
-
-  document.getElementById(
-    "score1"
-  ).textContent =
-    game.scores[0];
-
-
-  document.getElementById(
-    "score2"
-  ).textContent =
-    game.scores[1];
-
-
-  document.getElementById(
-    "turnName"
-  ).textContent =
-    game.turn === 0
-      ? game.team1
-      : game.team2;
-
-
-  document
-    .getElementById(
-      "team1Card"
-    )
-    .classList.toggle(
-      "active",
-      game.turn === 0
-    );
-
-
-  document
-    .getElementById(
-      "team2Card"
-    )
-    .classList.toggle(
-      "active",
-      game.turn === 1
-    );
-}
-
-
-/* =====================================================
-   END
-===================================================== */
-
-function checkEnd() {
-
-  const total =
-    6 * 5;
-
-
-  const used =
-    Object.keys(
-      game.used
-    ).length;
-
-
-  if (used >= total) {
-
-    endGame();
-  }
-}
-
-
-function endGame() {
-
-  let winner;
-
-
-  if (
-    game.scores[0] >
-    game.scores[1]
-  ) {
-
-    winner =
-      game.team1;
-
-  } else if (
-    game.scores[1] >
-    game.scores[0]
-  ) {
-
-    winner =
-      game.team2;
-
-  } else {
-
-    winner =
-      "تعادل";
-  }
-
-
-  document.getElementById(
-    "winner"
-  ).textContent =
-    winner;
-
-
-  document.getElementById(
-    "finalScores"
-  ).innerHTML = `
-
-    <p>
-      ${game.team1}:
-      <strong>
-        ${game.scores[0]}
-      </strong>
-    </p>
-
-    <p>
-      ${game.team2}:
-      <strong>
-        ${game.scores[1]}
-      </strong>
-    </p>
-
-  `;
-
-
-  showScreen(
-    "endScreen"
-  );
-}
-
-
-/* =====================================================
-   ADMIN
-===================================================== */
-
-async function loadAdmin() {
-
-  if (
-    !currentUser ||
-    currentUser.role !== "ADMIN"
-  ) {
-
-    return;
-  }
-
-
-  try {
-
-    const stats =
-      await api(
-        "stats",
-        {
-          sessionId
-        }
-      );
-
-
-    if (stats.success) {
-
-      document.getElementById(
-        "statTotal"
-      ).textContent =
-        stats.stats.total;
-
-      document.getElementById(
-        "statPending"
-      ).textContent =
-        stats.stats.pending;
-
-      document.getElementById(
-        "statApproved"
-      ).textContent =
-        stats.stats.approved;
-
-      document.getElementById(
-        "statSuspended"
-      ).textContent =
-        stats.stats.suspended;
-    }
-
-
-    const users =
-      await api(
-        "adminUsers",
-        {
-          sessionId
-        }
-      );
-
-
-    if (users.success) {
-
-      renderUsers(
-        users.users
-      );
-    }
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      "تعذر تحميل لوحة المسؤول."
-    );
-  }
-}
-
-
-/* =====================================================
-   RENDER USERS
-===================================================== */
-
-function renderUsers(users) {
-
-  const container =
-    document.getElementById(
-      "usersTable"
-    );
-
-
-  container.innerHTML = "";
-
-
-  if (!users.length) {
-
-    container.innerHTML =
-      "<p>لا توجد حسابات.</p>";
-
-    return;
-  }
-
-
-  users.forEach(
-    user => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-      row.className =
-        "user-row";
-
-
-      const statusText =
-        {
-
-          PENDING:
-            "⏳ بانتظار الموافقة",
-
-          APPROVED:
-            "✅ مقبول",
-
-          REJECTED:
-            "❌ مرفوض",
-
-          SUSPENDED:
-            "⛔ موقوف"
-
-        }[user.status] ||
-        user.status;
-
-
-      row.innerHTML = `
-
-        <div>
-          <strong>
-            ${escapeHtml(user.nickname)}
-          </strong>
-        </div>
-
-        <div>
-          رقم الحساب:
-          <strong>
-            ${escapeHtml(user.accountId)}
-          </strong>
-        </div>
-
-        <div>
-          الهاتف:
-          ${escapeHtml(user.phone)}
-        </div>
-
-        <div>
-          البريد:
-          ${escapeHtml(user.email)}
-        </div>
-
-        <div>
-          الحالة:
-          ${statusText}
-        </div>
-
-        <div>
-          الألعاب:
-          ${user.role === "ADMIN"
-            ? "∞"
-            : `${user.gamesUsed} / ${user.gamesAllowed}`}
-        </div>
-
-        ${
-          user.role !== "ADMIN"
-            ? `
-              <div class="user-actions">
-
-                ${
-                  user.status === "PENDING"
-                    ? `
-                      <button
-                        class="approve"
-                        onclick="approveUser('${user.accountId}')">
-                        قبول
-                      </button>
-
-                      <button
-                        class="reject"
-                        onclick="rejectUser('${user.accountId}')">
-                        رفض
-                      </button>
-                    `
-                    : ""
-                }
-
-                ${
-                  user.status === "APPROVED"
-                    ? `
-                      <button
-                        class="suspend"
-                        onclick="suspendUser('${user.accountId}')">
-                        إيقاف
-                      </button>
-                    `
-                    : ""
-                }
-
-                ${
-                  user.status === "SUSPENDED"
-                    ? `
-                      <button
-                        class="activate"
-                        onclick="activateUser('${user.accountId}')">
-                        تفعيل
-                      </button>
-                    `
-                    : ""
-                }
-
-                <button
-                  class="games"
-                  onclick="addGames('${user.accountId}')">
-                  + ألعاب
-                </button>
-
-                <button
-                  class="games"
-                  onclick="removeGames('${user.accountId}')">
-                  - ألعاب
-                </button>
-
-                <button
-                  class="activate"
-                  onclick="resetPassword('${user.accountId}')">
-                  تغيير الرمز
-                </button>
-
-                <button
-                  class="reject"
-                  onclick="deleteUser('${user.accountId}')">
-                  حذف
-                </button>
-
-              </div>
-            `
-            : ""
-        }
-
-      `;
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
-}
-
-
-/* =====================================================
-   ADMIN ACTIONS
-===================================================== */
-
-async function approveUser(accountId) {
-
-  await adminAction(
-    "approveUser",
-    accountId
-  );
-}
-
-
-async function rejectUser(accountId) {
-
-  await adminAction(
-    "rejectUser",
-    accountId
-  );
-}
-
-
-async function suspendUser(accountId) {
-
-  await adminAction(
-    "suspendUser",
-    accountId
-  );
-}
-
-
-async function activateUser(accountId) {
-
-  await adminAction(
-    "activateUser",
-    accountId
-  );
-}
-
-
-async function adminAction(
-  action,
-  accountId
-) {
-
-  const result =
-    await api(
-      action,
-      {
-        sessionId,
-        accountId
-      }
-    );
-
-
-  if (!result.success) {
-
-    alert(
-      result.message ||
-      "حدث خطأ."
-    );
-
-    return;
-  }
-
-
-  loadAdmin();
-}
-
-
-/* =====================================================
-   ADD GAMES
-===================================================== */
-
-async function addGames(accountId) {
-
-  const amount =
-    prompt(
-      "كم لعبة تريد إضافتها؟"
-    );
-
-
-  if (!amount) {
-    return;
-  }
-
-
-  const result =
-    await api(
-      "addGames",
-      {
-
-        sessionId,
-
-        accountId,
-
-        amount:
-          Number(amount)
-
-      }
-    );
-
-
-  if (!
+    document
+      .getElementById(
+        'modalPoints'
+      )
+      .textContent =
+      points
