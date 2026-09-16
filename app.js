@@ -1,194 +1,133 @@
-/* =====================================================
-   GOOGLE APPS SCRIPT API
-===================================================== */
-
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
 
 
-/* =====================================================
-   SESSION
-===================================================== */
-
-let session = {
-  account: null,
-  code: null,
-  nickname: null,
-  role: null,
-  gamesAllowed: 0,
-  gamesPlayed: 0
-};
+let currentUser = null;
 
 
-/* =====================================================
-   GOOGLE REQUEST
-===================================================== */
-
-function api(functionName, args = []) {
-
-  return new Promise((resolve, reject) => {
-
-    const callbackName =
-      "callback_" +
-      Date.now() +
-      "_" +
-      Math.floor(
-        Math.random() * 100000
-      );
-
-    window[callbackName] =
-      function(result) {
-
-        delete window[callbackName];
-
-        script.remove();
-
-        resolve(result);
-
-      };
-
-
-    const script =
-      document.createElement(
-        "script"
-      );
-
-
-    const params =
-      new URLSearchParams();
-
-
-    params.set(
-      "callback",
-      callbackName
-    );
-
-
-    params.set(
-      "function",
-      functionName
-    );
-
-
-    params.set(
-      "args",
-      JSON.stringify(args)
-    );
-
-
-    script.src =
-      API_URL +
-      "?" +
-      params.toString();
-
-
-    script.onerror =
-      function() {
-
-        delete window[callbackName];
-
-        script.remove();
-
-        reject(
-          new Error(
-            "تعذر الاتصال بالخادم"
-          )
-        );
-
-      };
-
-
-    document.body.appendChild(
-      script
-    );
-
-  });
-
-}
-
-
-/* =====================================================
-   SCREEN
-===================================================== */
+/* =========================
+   Screen
+========================= */
 
 function showScreen(id) {
 
   document
     .querySelectorAll(".screen")
     .forEach(screen => {
-
-      screen.classList.remove(
-        "active"
-      );
-
+      screen.classList.remove("active");
     });
 
-
-  const target =
+  const screen =
     document.getElementById(id);
 
+  if (screen) {
+    screen.classList.add("active");
+  }
+}
 
-  if (target) {
 
-    target.classList.add(
-      "active"
-    );
+/* =========================
+   Message
+========================= */
+
+function showMessage(
+  elementId,
+  message,
+  type = "error"
+) {
+
+  const element =
+    document.getElementById(elementId);
+
+  element.textContent = message;
+
+  element.className =
+    "message show " + type;
+}
+
+
+/* =========================
+   API
+========================= */
+
+async function api(action, data = {}) {
+
+  try {
+
+    const response =
+      await fetch(API_URL, {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "text/plain;charset=utf-8"
+        },
+
+        body: JSON.stringify({
+
+          action: action,
+
+          ...data
+
+        })
+
+      });
+
+
+    const result =
+      await response.json();
+
+
+    return result;
+
+  } catch (error) {
+
+    console.error(error);
+
+    return {
+
+      success: false,
+
+      message:
+        "تعذر الاتصال بالخادم"
+
+    };
 
   }
 
 }
 
 
-/* =====================================================
-   REGISTER
-===================================================== */
+/* =========================
+   Register
+========================= */
 
 async function register() {
 
   const nickname =
     document
-      .getElementById(
-        "registerNickname"
-      )
+      .getElementById("registerNickname")
       .value
       .trim();
-
 
   const phone =
     document
-      .getElementById(
-        "registerPhone"
-      )
+      .getElementById("registerPhone")
       .value
       .trim();
-
 
   const email =
     document
-      .getElementById(
-        "registerEmail"
-      )
+      .getElementById("registerEmail")
       .value
       .trim();
-
 
   const code =
     document
-      .getElementById(
-        "registerCode"
-      )
+      .getElementById("registerCode")
       .value
       .trim();
-
-
-  const message =
-    document.getElementById(
-      "registerMessage"
-    );
-
-
-  message.textContent =
-    "";
 
 
   if (
@@ -198,820 +137,376 @@ async function register() {
     !code
   ) {
 
-    message.textContent =
-      "أكمل جميع البيانات";
-
-    return;
-
-  }
-
-
-  try {
-
-    message.textContent =
-      "جاري إنشاء الحساب...";
-
-
-    const result =
-      await api(
-        "registerUser",
-        [{
-          nickname,
-          phone,
-          email,
-          code
-        }]
-      );
-
-
-    if (!result.success) {
-
-      message.textContent =
-        result.message;
-
-      return;
-
-    }
-
-
-    document.getElementById(
-      "pendingAccount"
-    ).textContent =
-      result.account;
-
-
-    showScreen(
-      "pendingScreen"
+    showMessage(
+      "registerMessage",
+      "يرجى تعبئة جميع البيانات"
     );
 
-
-  } catch (error) {
-
-    message.textContent =
-      error.message;
-
+    return;
   }
+
+
+  const result =
+    await api("register", {
+
+      nickname,
+      phone,
+      email,
+      code
+
+    });
+
+
+  if (!result.success) {
+
+    showMessage(
+      "registerMessage",
+      result.message
+    );
+
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "waitingAccount"
+    )
+    .textContent =
+      result.accountNumber;
+
+
+  showScreen("waitingScreen");
 
 }
 
 
-/* =====================================================
-   LOGIN
-===================================================== */
+/* =========================
+   Login
+========================= */
 
 async function login() {
 
-  const account =
+  const accountNumber =
     document
-      .getElementById(
-        "loginAccount"
-      )
+      .getElementById("loginAccount")
       .value
       .trim();
-
 
   const code =
     document
-      .getElementById(
-        "loginCode"
-      )
+      .getElementById("loginCode")
       .value
       .trim();
 
 
-  const message =
-    document.getElementById(
-      "loginMessage"
+  if (
+    !accountNumber ||
+    !code
+  ) {
+
+    showMessage(
+      "loginMessage",
+      "أدخل رقم الحساب والرمز"
     );
-
-
-  message.textContent =
-    "";
-
-
-  if (!account || !code) {
-
-    message.textContent =
-      "أدخل رقم الحساب والرمز";
 
     return;
-
   }
 
 
-  try {
+  const result =
+    await api("login", {
 
-    message.textContent =
-      "جاري تسجيل الدخول...";
+      accountNumber,
+      code
 
-
-    const result =
-      await api(
-        "loginUser",
-        [
-          account,
-          code
-        ]
-      );
+    });
 
 
-    if (!result.success) {
+  if (!result.success) {
 
-      if (result.pending) {
-
-        document.getElementById(
-          "pendingAccount"
-        ).textContent =
-          result.account;
-
-
-        showScreen(
-          "pendingScreen"
-        );
-
-        return;
-
-      }
-
-
-      message.textContent =
-        result.message;
-
-      return;
-
-    }
-
-
-    session = {
-
-      account:
-        result.account,
-
-      code:
-        code,
-
-      nickname:
-        result.nickname,
-
-      role:
-        result.role,
-
-      gamesAllowed:
-        Number(
-          result.gamesAllowed
-        ) || 0,
-
-      gamesPlayed:
-        Number(
-          result.gamesPlayed
-        ) || 0
-
-    };
-
-
-    localStorage.setItem(
-      "medicalQuizSession",
-      JSON.stringify(
-        session
-      )
+    showMessage(
+      "loginMessage",
+      result.message
     );
 
-
-    if (
-      result.role === "ADMIN"
-    ) {
-
-      showScreen(
-        "adminScreen"
-      );
-
-      loadUsers();
-
-    } else {
-
-      updateUserDashboard();
-
-      showScreen(
-        "userScreen"
-      );
-
-    }
-
-
-  } catch (error) {
-
-    message.textContent =
-      error.message;
-
+    return;
   }
 
-}
 
-
-/* =====================================================
-   USER DASHBOARD
-===================================================== */
-
-function updateUserDashboard() {
-
-  document.getElementById(
-    "userNickname"
-  ).textContent =
-    session.nickname;
-
-
-  document.getElementById(
-    "userAccount"
-  ).textContent =
-    session.account;
-
-
-  document.getElementById(
-    "gamesAllowed"
-  ).textContent =
-    session.gamesAllowed;
-
-
-  document.getElementById(
-    "gamesPlayed"
-  ).textContent =
-    session.gamesPlayed;
-
-
-  document.getElementById(
-    "gamesRemaining"
-  ).textContent =
-    Math.max(
-      0,
-      session.gamesAllowed -
-      session.gamesPlayed
-    );
-
-}
-
-
-/* =====================================================
-   OPEN GAME SETUP
-===================================================== */
-
-function openGameSetup() {
-
-  const remaining =
-    session.gamesAllowed -
-    session.gamesPlayed;
+  currentUser =
+    result.user;
 
 
   if (
-    session.role !== "ADMIN" &&
-    remaining <= 0
+    result.user.status ===
+    "PENDING"
   ) {
 
-    document.getElementById(
-      "userMessage"
-    ).textContent =
-      "لا توجد ألعاب متبقية في حسابك.";
+    document
+      .getElementById(
+        "waitingAccount"
+      )
+      .textContent =
+        result.user.accountNumber;
+
+    showScreen(
+      "waitingScreen"
+    );
 
     return;
-
   }
 
 
+  if (
+    result.user.status ===
+    "REJECTED"
+  ) {
+
+    showMessage(
+      "loginMessage",
+      "تم رفض الحساب من المسؤول"
+    );
+
+    return;
+  }
+
+
+  if (
+    result.user.status !==
+    "APPROVED"
+  ) {
+
+    showMessage(
+      "loginMessage",
+      "الحساب غير مفعل"
+    );
+
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "playerNickname"
+    )
+    .textContent =
+      result.user.nickname;
+
+
+  document
+    .getElementById(
+      "gamesRemaining"
+    )
+    .textContent =
+      result.user.gamesRemaining;
+
+
   showScreen(
-    "gameSetupScreen"
+    "gameScreen"
   );
 
 }
 
 
-/* =====================================================
-   START GAME
-===================================================== */
+/* =========================
+   Forgot Code
+========================= */
+
+async function forgotCode() {
+
+  const accountNumber =
+    document
+      .getElementById("forgotAccount")
+      .value
+      .trim();
+
+  const phone =
+    document
+      .getElementById("forgotPhone")
+      .value
+      .trim();
+
+  const email =
+    document
+      .getElementById("forgotEmail")
+      .value
+      .trim();
+
+
+  if (
+    !accountNumber ||
+    !phone ||
+    !email
+  ) {
+
+    showMessage(
+      "forgotMessage",
+      "أدخل جميع البيانات"
+    );
+
+    return;
+  }
+
+
+  const result =
+    await api("forgotCode", {
+
+      accountNumber,
+      phone,
+      email
+
+    });
+
+
+  if (!result.success) {
+
+    showMessage(
+      "forgotMessage",
+      result.message
+    );
+
+    return;
+  }
+
+
+  showMessage(
+    "forgotMessage",
+    "تم التحقق من البيانات. سيتم استكمال استرجاع الرمز.",
+    "success"
+  );
+
+}
+
+
+/* =========================
+   Start Game
+========================= */
 
 async function startGame() {
 
   const team1 =
     document
-      .getElementById(
-        "team1"
-      )
+      .getElementById("team1")
       .value
       .trim();
-
 
   const team2 =
     document
-      .getElementById(
-        "team2"
-      )
+      .getElementById("team2")
       .value
       .trim();
-
-
-  const message =
-    document.getElementById(
-      "gameMessage"
-    );
 
 
   if (!team1 || !team2) {
 
-    message.textContent =
-      "أدخل اسم الفريقين";
+    showMessage(
+      "gameMessage",
+      "أدخل اسم الفريقين"
+    );
 
     return;
-
   }
 
 
-  try {
+  if (!currentUser) {
 
-    message.textContent =
-      "جاري تجهيز اللعبة...";
-
-
-    const result =
-      await api(
-        "createGame",
-        [
-          session.account,
-          session.code,
-          team1,
-          team2
-        ]
-      );
-
-
-    if (!result.success) {
-
-      message.textContent =
-        result.message;
-
-      return;
-
-    }
-
-
-    /*
-      هنا لاحقاً نفتح لوحة
-      سين جيم الطبية الكاملة.
-    */
-
-    message.textContent =
-      "تم إنشاء اللعبة بنجاح. سنضيف لوحة اللعبة في الخطوة التالية.";
-
-  } catch (error) {
-
-    message.textContent =
-      error.message;
-
-  }
-
-}
-
-
-/* =====================================================
-   ADMIN - LOAD USERS
-===================================================== */
-
-async function loadUsers() {
-
-  const container =
-    document.getElementById(
-      "usersContainer"
+    showMessage(
+      "gameMessage",
+      "يجب تسجيل الدخول أولاً"
     );
 
-
-  container.innerHTML =
-    "<p>جاري تحميل الحسابات...</p>";
-
-
-  try {
-
-    const result =
-      await api(
-        "getUsers",
-        [
-          session.account,
-          session.code
-        ]
-      );
-
-
-    if (!result.success) {
-
-      container.innerHTML =
-        `<p>${result.message}</p>`;
-
-      return;
-
-    }
-
-
-    if (
-      !result.users ||
-      result.users.length === 0
-    ) {
-
-      container.innerHTML =
-        "<p>لا توجد حسابات حتى الآن.</p>";
-
-      return;
-
-    }
-
-
-    container.innerHTML =
-      "";
-
-
-    result.users.forEach(
-      user => {
-
-        const row =
-          document.createElement(
-            "div"
-          );
-
-
-        row.className =
-          "user-row";
-
-
-        row.innerHTML = `
-
-          <div>
-            <strong>
-              ${escapeHtml(
-                user.account
-              )}
-            </strong>
-          </div>
-
-          <div>
-            ${escapeHtml(
-              user.nickname
-            )}
-          </div>
-
-          <div>
-            ${escapeHtml(
-              user.email
-            )}
-          </div>
-
-          <div>
-            ألعاب:
-            <strong>
-              ${user.gamesAllowed}
-            </strong>
-          </div>
-
-          <div>
-            مستخدمة:
-            <strong>
-              ${user.gamesPlayed}
-            </strong>
-          </div>
-
-          <div>
-
-            <div class="status ${
-              getStatusClass(
-                user.status
-              )
-            }">
-
-              ${getStatusText(
-                user.status
-              )}
-
-            </div>
-
-            <div class="admin-actions">
-
-              <button
-                class="approve"
-                onclick="changeStatus(
-                  '${user.account}',
-                  'APPROVED'
-                )">
-                قبول
-              </button>
-
-              <button
-                class="reject"
-                onclick="changeStatus(
-                  '${user.account}',
-                  'REJECTED'
-                )">
-                رفض
-              </button>
-
-              <button
-                class="suspend"
-                onclick="changeStatus(
-                  '${user.account}',
-                  'SUSPENDED'
-                )">
-                إيقاف
-              </button>
-
-              <button
-                class="add-games"
-                onclick="addGames(
-                  '${user.account}'
-                )">
-                + ألعاب
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-
-        container.appendChild(
-          row
-        );
-
-      }
-    );
-
-
-  } catch (error) {
-
-    container.innerHTML =
-      `<p>${error.message}</p>`;
-
-  }
-
-}
-
-
-/* =====================================================
-   ADMIN - STATUS
-===================================================== */
-
-async function changeStatus(
-  account,
-  status
-) {
-
-  const confirmed =
-    confirm(
-      `هل تريد تغيير حالة الحساب ${account}؟`
-    );
-
-
-  if (!confirmed)
     return;
-
-
-  try {
-
-    const result =
-      await api(
-        "updateUserStatus",
-        [
-          session.account,
-          session.code,
-          account,
-          status
-        ]
-      );
-
-
-    if (!result.success) {
-
-      alert(
-        result.message
-      );
-
-      return;
-
-    }
-
-
-    loadUsers();
-
-
-  } catch (error) {
-
-    alert(
-      error.message
-    );
-
   }
-
-}
-
-
-/* =====================================================
-   ADMIN - ADD GAMES
-===================================================== */
-
-async function addGames(
-  account
-) {
-
-  const amount =
-    prompt(
-      "كم لعبة تريد إضافتها؟"
-    );
 
 
   if (
-    amount === null
-  )
-    return;
-
-
-  const number =
-    Number(amount);
-
-
-  if (
-    !number ||
-    number <= 0
+    Number(
+      currentUser.gamesRemaining
+    ) <= 0
   ) {
 
-    alert(
-      "أدخل رقم صحيح"
+    showMessage(
+      "gameMessage",
+      "لا توجد ألعاب متبقية في حسابك"
     );
 
     return;
-
   }
 
 
-  try {
+  const result =
+    await api("createGame", {
 
-    const result =
-      await api(
-        "addGames",
-        [
-          session.account,
-          session.code,
-          account,
-          number
-        ]
-      );
+      accountNumber:
+        currentUser.accountNumber,
+
+      team1,
+      team2
+
+    });
 
 
-    if (!result.success) {
+  if (!result.success) {
 
-      alert(
-        result.message
-      );
-
-      return;
-
-    }
-
-
-    alert(
-      `تمت إضافة ${number} لعبة`
+    showMessage(
+      "gameMessage",
+      result.message
     );
 
-
-    loadUsers();
-
-
-  } catch (error) {
-
-    alert(
-      error.message
-    );
-
+    return;
   }
 
-}
+
+  currentUser.gamesRemaining =
+    result.gamesRemaining;
 
 
-/* =====================================================
-   STATUS TEXT
-===================================================== */
+  document
+    .getElementById(
+      "gamesRemaining"
+    )
+    .textContent =
+      result.gamesRemaining;
 
-function getStatusText(
-  status
-) {
 
-  switch (status) {
+  showMessage(
+    "gameMessage",
+    "تم إنشاء اللعبة بنجاح",
+    "success"
+  );
 
-    case "PENDING":
-      return "بانتظار الموافقة";
 
-    case "APPROVED":
-      return "مقبول";
-
-    case "REJECTED":
-      return "مرفوض";
-
-    case "SUSPENDED":
-      return "موقوف";
-
-    default:
-      return status;
-
-  }
+  /*
+    لاحقاً هنا نفتح لوحة اللعبة
+    والأسئلة والفئات.
+  */
 
 }
 
 
-function getStatusClass(
-  status
-) {
-
-  return String(
-    status
-  ).toLowerCase();
-
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value || ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* =========================
+   Logout
+========================= */
 
 function logout() {
 
-  session = {
+  currentUser = null;
 
-    account: null,
-    code: null,
-    nickname: null,
-    role: null,
-    gamesAllowed: 0,
-    gamesPlayed: 0
+  document
+    .getElementById(
+      "loginAccount"
+    )
+    .value = "";
 
-  };
-
-
-  localStorage.removeItem(
-    "medicalQuizSession"
-  );
-
+  document
+    .getElementById(
+      "loginCode"
+    )
+    .value = "";
 
   showScreen(
     "loginScreen"
   );
 
 }
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-window.addEventListener(
-  "load",
-  function() {
-
-    /*
-      لا نعتمد على localStorage
-      للدخول التلقائي لأن الرمز يجب
-      إعادة التحقق منه مع الخادم.
-    */
-
-    showScreen(
-      "loginScreen"
-    );
-
-  }
-);
