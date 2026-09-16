@@ -4,78 +4,70 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
-
   font-family:
-    "Segoe UI",
-    Tahoma,
     Arial,
+    Tahoma,
     sans-serif;
-
-  color: white;
 
   background:
     linear-gradient(
       135deg,
-      #06141f,
-      #0b2433
+      #071e2f,
+      #0b3d56
     );
+
+  color: #fff;
+
+  min-height: 100vh;
 }
 
-#app {
-  width: 100%;
-  min-height: 100vh;
+button,
+input {
+  font-family: inherit;
+}
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 20px;
+button {
+  cursor: pointer;
 }
 
 .screen {
   display: none;
-
-  width: 100%;
-  max-width: 550px;
+  min-height: 100vh;
+  padding: 25px;
 }
 
 .screen.active {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .card {
-  background:
-    rgba(255,255,255,.07);
+  width: 100%;
+  max-width: 500px;
 
-  border:
-    1px solid
-    rgba(255,255,255,.12);
+  background: rgba(255,255,255,.10);
 
-  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.15);
 
-  padding: 35px;
+  border-radius: 22px;
+
+  padding: 30px;
 
   box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.3);
+    0 20px 60px rgba(0,0,0,.30);
 
-  backdrop-filter: blur(15px);
+  backdrop-filter: blur(12px);
 }
 
-h1 {
+.card h1,
+.card h2 {
   text-align: center;
-  margin-top: 0;
-}
-
-h2 {
-  margin-top: 0;
 }
 
 .subtitle {
   text-align: center;
-  color: #94a3b8;
-  margin-bottom: 30px;
+  opacity: .8;
 }
 
 input {
@@ -83,215 +75,517 @@ input {
 
   padding: 15px;
 
-  margin-bottom: 15px;
+  margin: 8px 0;
+
+  border: none;
 
   border-radius: 12px;
 
-  border:
-    1px solid
-    #334155;
+  background: #fff;
 
-  background:
-    #0f2432;
-
-  color: white;
+  color: #111;
 
   font-size: 16px;
-
-  outline: none;
-}
-
-input:focus {
-  border-color: #0284c7;
 }
 
 button {
-  width: 100%;
-
-  padding: 14px;
-
-  margin-top: 8px;
-
-  border: 0;
+  border: none;
 
   border-radius: 12px;
 
-  background: #0284c7;
+  padding: 14px 20px;
+
+  margin-top: 10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #00c6ff,
+      #0072ff
+    );
 
   color: white;
 
   font-size: 16px;
 
-  font-weight: 700;
-
-  cursor: pointer;
+  font-weight: bold;
 
   transition: .2s;
 }
 
 button:hover {
   transform: translateY(-2px);
+}
 
-  opacity: .9;
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
 }
 
 .secondary {
-  background: #334155;
+  background: rgba(255,255,255,.15);
 }
 
 .link-button {
   background: transparent;
-
-  color: #7dd3fc;
-
-  margin-top: 15px;
+  width: 100%;
 }
 
-.message {
-  margin-top: 18px;
 
-  padding: 12px;
+/* =========================================================
+   GAME BOARD
+   ========================================================= */
 
-  border-radius: 10px;
-
-  text-align: center;
-
+#gameBoardScreen {
   display: none;
+  padding: 15px;
+  align-items: flex-start;
 }
 
-.message.show {
+#gameBoardScreen.active {
   display: block;
 }
 
-.message.error {
-  background:
-    rgba(239,68,68,.15);
-
-  color: #fca5a5;
+.game-board {
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
 }
 
-.message.success {
-  background:
-    rgba(34,197,94,.15);
 
-  color: #86efac;
-}
+/* HEADER */
 
-.big-icon {
-  text-align: center;
-
-  font-size: 60px;
-
-  margin-bottom: 15px;
-}
-
-.account-box {
-  margin: 25px 0;
-
-  padding: 18px;
-
-  border-radius: 14px;
-
-  background:
-    rgba(2,132,199,.15);
-
-  text-align: center;
-
-  color: #bae6fd;
-}
-
-.account-box strong {
-  display: block;
-
-  font-size: 30px;
-
-  color: white;
-
-  margin-top: 8px;
-}
-
-.topbar {
-  position: fixed;
-
-  top: 0;
-  right: 0;
-  left: 0;
-
-  min-height: 75px;
-
-  padding:
-    10px 25px;
-
-  background:
-    #081b28;
-
+.game-header {
   display: flex;
 
   align-items: center;
 
   justify-content: space-between;
 
-  gap: 20px;
-
-  border-bottom:
-    1px solid
-    #1e3a4a;
+  margin-bottom: 20px;
 }
 
-.topbar h2 {
+.game-header h1 {
   margin: 0;
+
+  font-size: 28px;
 }
 
-.topbar span {
-  color: #94a3b8;
+
+/* TEAMS */
+
+.teams {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    180px
+    1fr;
+
+  gap: 15px;
+
+  align-items: stretch;
+
+  margin-bottom: 25px;
 }
 
-.games-info {
-  color: #cbd5e1;
+.team-card {
+  background:
+    linear-gradient(
+      135deg,
+      #123d56,
+      #09283a
+    );
+
+  border-radius: 20px;
+
+  padding: 20px;
+
+  text-align: center;
+
+  border: 3px solid transparent;
+
+  transition: .2s;
 }
 
-.games-info strong {
-  color: #22c55e;
+.team-card h2 {
+  margin: 0 0 10px;
+}
+
+.team-card .score {
+  font-size: 48px;
+
+  font-weight: bold;
+
+  color: #ffd54a;
+}
+
+.active-team {
+  border-color: #00d9ff;
+
+  box-shadow:
+    0 0 25px rgba(
+      0,
+      217,
+      255,
+      .35
+    );
+}
+
+.turn-box {
+  background:
+    rgba(255,255,255,.10);
+
+  border-radius: 20px;
+
+  padding: 20px;
+
+  text-align: center;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.turn-label {
+  opacity: .7;
+
+  font-size: 14px;
+
+  margin-bottom: 8px;
+}
+
+.turn-team {
+  color: #00e5ff;
+
+  font-size: 20px;
+
+  font-weight: bold;
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+.categories-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, 1fr);
+
+  gap: 10px;
+
+  width: 100%;
+}
+
+.category-column {
+  background:
+    rgba(255,255,255,.06);
+
+  border-radius: 15px;
+
+  padding: 8px;
+}
+
+.category-title {
+  min-height: 65px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  text-align: center;
+
+  font-weight: bold;
+
+  background:
+    linear-gradient(
+      135deg,
+      #006d9c,
+      #004e70
+    );
+
+  border-radius: 12px;
+
+  padding: 8px;
+
+  margin-bottom: 8px;
+}
+
+.points-button {
+  width: 100%;
+
+  height: 58px;
+
+  margin: 5px 0;
 
   font-size: 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffb300,
+      #ff7b00
+    );
+
+  color: #111;
 }
 
-.topbar button {
-  width: auto;
+.points-button.used {
+  background: #263746;
 
-  padding:
-    10px 18px;
+  color: #78909c;
 
-  margin: 0;
-
-  background: #334155;
+  opacity: .6;
 }
 
-#gameScreen {
-  max-width: 900px;
 
-  padding-top: 100px;
+/* =========================================================
+   QUESTION
+   ========================================================= */
+
+.question-area {
+  text-align: center;
+
+  margin: 20px 0;
 }
 
-.game-card {
+.question-area h2 {
+  margin-bottom: 5px;
+}
+
+
+/* MODAL */
+
+.question-modal {
+  position: fixed;
+
+  inset: 0;
+
+  background:
+    rgba(0,0,0,.80);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  z-index: 1000;
+}
+
+.question-modal.hidden {
+  display: none;
+}
+
+.question-card {
+  width: 100%;
+
+  max-width: 750px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #103a52,
+      #071e2f
+    );
+
+  border-radius: 25px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 20px 80px rgba(0,0,0,.6);
+
+  border:
+    1px solid
+    rgba(255,255,255,.15);
+}
+
+.question-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  color: #00e5ff;
+
+  margin-bottom: 25px;
+}
+
+.question-card h2 {
+  text-align: center;
+
+  line-height: 1.8;
+
+  font-size: 25px;
+
+  min-height: 100px;
+}
+
+.answer-box {
+  background:
+    rgba(0,0,0,.25);
+
+  padding: 20px;
+
+  border-radius: 15px;
+
+  margin: 20px 0;
+}
+
+.answer-box p {
+  line-height: 1.8;
+
+  margin-bottom: 0;
+}
+
+.answer-box.hidden {
+  display: none;
+}
+
+.question-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 10px;
+}
+
+.correct-button {
+  background:
+    linear-gradient(
+      135deg,
+      #00c853,
+      #009624
+    );
+}
+
+.wrong-button {
+  background:
+    linear-gradient(
+      135deg,
+      #ff5252,
+      #c62828
+    );
+}
+
+
+/* =========================================================
+   WAITING
+   ========================================================= */
+
+.big-icon {
+  text-align: center;
+
+  font-size: 70px;
+}
+
+.account-box {
+  text-align: center;
+
+  background:
+    rgba(255,255,255,.1);
+
+  border-radius: 15px;
+
+  padding: 20px;
+
+  margin: 20px 0;
+
+  font-size: 18px;
+}
+
+.account-box strong {
+  display: block;
+
+  color: #00e5ff;
+
+  font-size: 35px;
+
+  margin-top: 10px;
+}
+
+.small-text {
+  font-size: 13px;
+
+  opacity: .7;
+
   text-align: center;
 }
 
-@media(max-width: 700px) {
 
-  .topbar {
-    flex-wrap: wrap;
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
-    justify-content: center;
+@media (max-width: 900px) {
 
+  .categories-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .teams {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .turn-box {
+    grid-column:
+      1 / -1;
+
+    grid-row: 2;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .screen {
     padding: 10px;
   }
 
-  #gameScreen {
-    padding-top: 150px;
+  .categories-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
-  .card {
-    padding: 25px 18px;
+  .teams {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .team-card .score {
+    font-size: 35px;
+  }
+
+  .team-card h2 {
+    font-size: 16px;
+  }
+
+  .game-header h1 {
+    font-size: 20px;
+  }
+
+  .question-card {
+    padding: 20px;
+  }
+
+  .question-card h2 {
+    font-size: 20px;
+  }
+
+  .question-actions {
+    grid-template-columns: 1fr;
   }
 }
