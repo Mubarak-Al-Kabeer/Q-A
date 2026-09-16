@@ -6,7 +6,7 @@ let currentUser = null;
 
 
 /* =========================
-   Screen
+   SCREEN
 ========================= */
 
 function showScreen(id) {
@@ -27,7 +27,7 @@ function showScreen(id) {
 
 
 /* =========================
-   Message
+   MESSAGE
 ========================= */
 
 function showMessage(
@@ -39,6 +39,8 @@ function showMessage(
   const element =
     document.getElementById(elementId);
 
+  if (!element) return;
+
   element.textContent = message;
 
   element.className =
@@ -47,10 +49,30 @@ function showMessage(
 
 
 /* =========================
+   CLEAR MESSAGE
+========================= */
+
+function clearMessage(elementId) {
+
+  const element =
+    document.getElementById(elementId);
+
+  if (!element) return;
+
+  element.textContent = "";
+
+  element.className = "message";
+}
+
+
+/* =========================
    API
 ========================= */
 
-async function api(action, data = {}) {
+async function api(
+  action,
+  data = {}
+) {
 
   try {
 
@@ -83,14 +105,17 @@ async function api(action, data = {}) {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "API Error:",
+      error
+    );
 
     return {
 
       success: false,
 
       message:
-        "تعذر الاتصال بالخادم"
+        "تعذر الاتصال بالخادم. تأكد من اتصال الإنترنت."
 
     };
 
@@ -100,32 +125,48 @@ async function api(action, data = {}) {
 
 
 /* =========================
-   Register
+   REGISTER
 ========================= */
 
 async function register() {
 
+  clearMessage(
+    "registerMessage"
+  );
+
+
   const nickname =
     document
-      .getElementById("registerNickname")
+      .getElementById(
+        "registerNickname"
+      )
       .value
       .trim();
+
 
   const phone =
     document
-      .getElementById("registerPhone")
+      .getElementById(
+        "registerPhone"
+      )
       .value
       .trim();
+
 
   const email =
     document
-      .getElementById("registerEmail")
+      .getElementById(
+        "registerEmail"
+      )
       .value
       .trim();
 
+
   const code =
     document
-      .getElementById("registerCode")
+      .getElementById(
+        "registerCode"
+      )
       .value
       .trim();
 
@@ -146,22 +187,44 @@ async function register() {
   }
 
 
+  if (code.length < 4) {
+
+    showMessage(
+      "registerMessage",
+      "الرمز يجب أن يكون 4 أرقام أو أكثر"
+    );
+
+    return;
+  }
+
+
   const result =
-    await api("register", {
+    await api(
+      "register",
+      {
 
-      nickname,
-      phone,
-      email,
-      code
+        nickname:
+          nickname,
 
-    });
+        phone:
+          phone,
+
+        email:
+          email,
+
+        code:
+          code
+
+      }
+    );
 
 
   if (!result.success) {
 
     showMessage(
       "registerMessage",
-      result.message
+      result.message ||
+      "تعذر إنشاء الحساب"
     );
 
     return;
@@ -176,26 +239,38 @@ async function register() {
       result.accountNumber;
 
 
-  showScreen("waitingScreen");
+  showScreen(
+    "waitingScreen"
+  );
 
 }
 
 
 /* =========================
-   Login
+   LOGIN
 ========================= */
 
 async function login() {
 
+  clearMessage(
+    "loginMessage"
+  );
+
+
   const accountNumber =
     document
-      .getElementById("loginAccount")
+      .getElementById(
+        "loginAccount"
+      )
       .value
       .trim();
 
+
   const code =
     document
-      .getElementById("loginCode")
+      .getElementById(
+        "loginCode"
+      )
       .value
       .trim();
 
@@ -215,19 +290,26 @@ async function login() {
 
 
   const result =
-    await api("login", {
+    await api(
+      "login",
+      {
 
-      accountNumber,
-      code
+        accountNumber:
+          accountNumber,
 
-    });
+        code:
+          code
+
+      }
+    );
 
 
   if (!result.success) {
 
     showMessage(
       "loginMessage",
-      result.message
+      result.message ||
+      "بيانات الدخول غير صحيحة"
     );
 
     return;
@@ -237,6 +319,10 @@ async function login() {
   currentUser =
     result.user;
 
+
+  /* =====================
+     PENDING
+  ====================== */
 
   if (
     result.user.status ===
@@ -248,7 +334,8 @@ async function login() {
         "waitingAccount"
       )
       .textContent =
-        result.user.accountNumber;
+      result.user.accountNumber;
+
 
     showScreen(
       "waitingScreen"
@@ -257,6 +344,10 @@ async function login() {
     return;
   }
 
+
+  /* =====================
+     REJECTED
+  ====================== */
 
   if (
     result.user.status ===
@@ -272,6 +363,10 @@ async function login() {
   }
 
 
+  /* =====================
+     APPROVED
+  ====================== */
+
   if (
     result.user.status !==
     "APPROVED"
@@ -279,7 +374,7 @@ async function login() {
 
     showMessage(
       "loginMessage",
-      "الحساب غير مفعل"
+      "الحساب غير مفعل حالياً"
     );
 
     return;
@@ -299,7 +394,9 @@ async function login() {
       "gamesRemaining"
     )
     .textContent =
-      result.user.gamesRemaining;
+      Number(
+        result.user.gamesRemaining
+      );
 
 
   showScreen(
@@ -310,26 +407,39 @@ async function login() {
 
 
 /* =========================
-   Forgot Code
+   FORGOT CODE
 ========================= */
 
 async function forgotCode() {
 
+  clearMessage(
+    "forgotMessage"
+  );
+
+
   const accountNumber =
     document
-      .getElementById("forgotAccount")
+      .getElementById(
+        "forgotAccount"
+      )
       .value
       .trim();
+
 
   const phone =
     document
-      .getElementById("forgotPhone")
+      .getElementById(
+        "forgotPhone"
+      )
       .value
       .trim();
 
+
   const email =
     document
-      .getElementById("forgotEmail")
+      .getElementById(
+        "forgotEmail"
+      )
       .value
       .trim();
 
@@ -350,20 +460,29 @@ async function forgotCode() {
 
 
   const result =
-    await api("forgotCode", {
+    await api(
+      "forgotCode",
+      {
 
-      accountNumber,
-      phone,
-      email
+        accountNumber:
+          accountNumber,
 
-    });
+        phone:
+          phone,
+
+        email:
+          email
+
+      }
+    );
 
 
   if (!result.success) {
 
     showMessage(
       "forgotMessage",
-      result.message
+      result.message ||
+      "تعذر التحقق من البيانات"
     );
 
     return;
@@ -372,7 +491,8 @@ async function forgotCode() {
 
   showMessage(
     "forgotMessage",
-    "تم التحقق من البيانات. سيتم استكمال استرجاع الرمز.",
+    result.message ||
+    "تم التحقق من البيانات.",
     "success"
   );
 
@@ -380,25 +500,38 @@ async function forgotCode() {
 
 
 /* =========================
-   Start Game
+   START GAME
 ========================= */
 
 async function startGame() {
 
+  clearMessage(
+    "gameMessage"
+  );
+
+
   const team1 =
     document
-      .getElementById("team1")
+      .getElementById(
+        "team1"
+      )
       .value
       .trim();
+
 
   const team2 =
     document
-      .getElementById("team2")
+      .getElementById(
+        "team2"
+      )
       .value
       .trim();
 
 
-  if (!team1 || !team2) {
+  if (
+    !team1 ||
+    !team2
+  ) {
 
     showMessage(
       "gameMessage",
@@ -421,6 +554,20 @@ async function startGame() {
 
 
   if (
+    currentUser.status !==
+    "APPROVED"
+  ) {
+
+    showMessage(
+      "gameMessage",
+      "حسابك غير مفعل"
+    );
+
+    return;
+  }
+
+
+  if (
     Number(
       currentUser.gamesRemaining
     ) <= 0
@@ -436,22 +583,29 @@ async function startGame() {
 
 
   const result =
-    await api("createGame", {
+    await api(
+      "createGame",
+      {
 
-      accountNumber:
-        currentUser.accountNumber,
+        accountNumber:
+          currentUser.accountNumber,
 
-      team1,
-      team2
+        team1:
+          team1,
 
-    });
+        team2:
+          team2
+
+      }
+    );
 
 
   if (!result.success) {
 
     showMessage(
       "gameMessage",
-      result.message
+      result.message ||
+      "تعذر إنشاء اللعبة"
     );
 
     return;
@@ -459,7 +613,9 @@ async function startGame() {
 
 
   currentUser.gamesRemaining =
-    result.gamesRemaining;
+    Number(
+      result.gamesRemaining
+    );
 
 
   document
@@ -467,7 +623,7 @@ async function startGame() {
       "gamesRemaining"
     )
     .textContent =
-      result.gamesRemaining;
+      currentUser.gamesRemaining;
 
 
   showMessage(
@@ -478,35 +634,128 @@ async function startGame() {
 
 
   /*
-    لاحقاً هنا نفتح لوحة اللعبة
-    والأسئلة والفئات.
+    الخطوة القادمة:
+    فتح لوحة اللعبة والأسئلة.
   */
 
 }
 
 
 /* =========================
-   Logout
+   LOGOUT
 ========================= */
 
 function logout() {
 
-  currentUser = null;
+  currentUser =
+    null;
 
-  document
-    .getElementById(
-      "loginAccount"
-    )
-    .value = "";
 
-  document
-    .getElementById(
-      "loginCode"
-    )
-    .value = "";
+  const fields = [
+
+    "loginAccount",
+
+    "loginCode",
+
+    "team1",
+
+    "team2"
+
+  ];
+
+
+  fields.forEach(
+    id => {
+
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.value = "";
+      }
+
+    }
+  );
+
+
+  clearMessage(
+    "loginMessage"
+  );
+
+  clearMessage(
+    "gameMessage"
+  );
+
 
   showScreen(
     "loginScreen"
   );
 
 }
+
+
+/* =========================
+   ENTER KEY
+========================= */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key !==
+      "Enter"
+    ) {
+      return;
+    }
+
+
+    const activeScreen =
+      document.querySelector(
+        ".screen.active"
+      );
+
+
+    if (!activeScreen) {
+      return;
+    }
+
+
+    if (
+      activeScreen.id ===
+      "loginScreen"
+    ) {
+
+      login();
+
+    }
+
+    else if (
+      activeScreen.id ===
+      "registerScreen"
+    ) {
+
+      register();
+
+    }
+
+    else if (
+      activeScreen.id ===
+      "forgotScreen"
+    ) {
+
+      forgotCode();
+
+    }
+
+    else if (
+      activeScreen.id ===
+      "gameScreen"
+    ) {
+
+      startGame();
+
+    }
+
+  }
+);
