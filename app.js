@@ -3,62 +3,106 @@
 ===================================================== */
 
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec';
+  "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
 
 
 /* =====================================================
-   STATE
+   SESSION
 ===================================================== */
 
-let currentUser = null;
-
-let game = {
-
-  id: null,
-
-  team1: '',
-
-  team2: '',
-
-  scores: [0, 0],
-
-  turn: 0,
-
-  selected: null
-
+let session = {
+  account: null,
+  code: null,
+  nickname: null,
+  role: null,
+  gamesAllowed: 0,
+  gamesPlayed: 0
 };
 
 
 /* =====================================================
-   API
+   GOOGLE REQUEST
 ===================================================== */
 
-async function api(functionName, ...args) {
+function api(functionName, args = []) {
 
-  const response =
-    await fetch(API_URL, {
+  return new Promise((resolve, reject) => {
 
-      method: 'POST',
+    const callbackName =
+      "callback_" +
+      Date.now() +
+      "_" +
+      Math.floor(
+        Math.random() * 100000
+      );
 
-      headers: {
-        'Content-Type':
-          'text/plain;charset=utf-8'
-      },
+    window[callbackName] =
+      function(result) {
 
-      body: JSON.stringify({
+        delete window[callbackName];
 
-        function:
-          functionName,
+        script.remove();
 
-        args:
-          args
+        resolve(result);
 
-      })
-
-    });
+      };
 
 
-  return await response.json();
+    const script =
+      document.createElement(
+        "script"
+      );
+
+
+    const params =
+      new URLSearchParams();
+
+
+    params.set(
+      "callback",
+      callbackName
+    );
+
+
+    params.set(
+      "function",
+      functionName
+    );
+
+
+    params.set(
+      "args",
+      JSON.stringify(args)
+    );
+
+
+    script.src =
+      API_URL +
+      "?" +
+      params.toString();
+
+
+    script.onerror =
+      function() {
+
+        delete window[callbackName];
+
+        script.remove();
+
+        reject(
+          new Error(
+            "تعذر الاتصال بالخادم"
+          )
+        );
+
+      };
+
+
+    document.body.appendChild(
+      script
+    );
+
+  });
 
 }
 
@@ -70,45 +114,25 @@ async function api(functionName, ...args) {
 function showScreen(id) {
 
   document
-    .querySelectorAll('.screen')
+    .querySelectorAll(".screen")
     .forEach(screen => {
 
       screen.classList.remove(
-        'active'
+        "active"
       );
 
     });
 
 
-  const screen =
+  const target =
     document.getElementById(id);
 
 
-  if (screen) {
+  if (target) {
 
-    screen.classList.add(
-      'active'
+    target.classList.add(
+      "active"
     );
-
-  }
-
-}
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-function message(id, text) {
-
-  const element =
-    document.getElementById(id);
-
-
-  if (element) {
-
-    element.textContent =
-      text;
 
   }
 
@@ -124,7 +148,7 @@ async function register() {
   const nickname =
     document
       .getElementById(
-        'registerNickname'
+        "registerNickname"
       )
       .value
       .trim();
@@ -133,7 +157,7 @@ async function register() {
   const phone =
     document
       .getElementById(
-        'registerPhone'
+        "registerPhone"
       )
       .value
       .trim();
@@ -142,7 +166,7 @@ async function register() {
   const email =
     document
       .getElementById(
-        'registerEmail'
+        "registerEmail"
       )
       .value
       .trim();
@@ -151,19 +175,20 @@ async function register() {
   const code =
     document
       .getElementById(
-        'registerCode'
+        "registerCode"
       )
       .value
       .trim();
 
 
-  const confirm =
-    document
-      .getElementById(
-        'registerCodeConfirm'
-      )
-      .value
-      .trim();
+  const message =
+    document.getElementById(
+      "registerMessage"
+    );
+
+
+  message.textContent =
+    "";
 
 
   if (
@@ -173,93 +198,57 @@ async function register() {
     !code
   ) {
 
-    message(
-      'registerMessage',
-      'أكمل جميع البيانات'
-    );
+    message.textContent =
+      "أكمل جميع البيانات";
 
     return;
 
   }
-
-
-  if (code !== confirm) {
-
-    message(
-      'registerMessage',
-      'الرمزان غير متطابقين'
-    );
-
-    return;
-
-  }
-
-
-  message(
-    'registerMessage',
-    'جاري إنشاء الحساب...'
-  );
 
 
   try {
 
+    message.textContent =
+      "جاري إنشاء الحساب...";
+
+
     const result =
       await api(
-        'registerUser',
-        {
-          nickname:
-            nickname,
-
-          phone:
-            phone,
-
-          email:
-            email,
-
-          code:
-            code
-        }
+        "registerUser",
+        [{
+          nickname,
+          phone,
+          email,
+          code
+        }]
       );
 
 
     if (!result.success) {
 
-      message(
-        'registerMessage',
-        result.message
-      );
+      message.textContent =
+        result.message;
 
       return;
 
     }
 
 
-    document
-      .getElementById(
-        'pendingAccount'
-      )
-      .textContent =
-        result.account;
-
-
-    message(
-      'registerMessage',
-      ''
-    );
+    document.getElementById(
+      "pendingAccount"
+    ).textContent =
+      result.account;
 
 
     showScreen(
-      'pendingScreen'
+      "pendingScreen"
     );
+
 
   } catch (error) {
 
-    console.error(error);
-
-    message(
-      'registerMessage',
-      'حدث خطأ في الاتصال بالخادم'
-    );
+    message.textContent =
+      error.message;
 
   }
 
@@ -275,7 +264,7 @@ async function login() {
   const account =
     document
       .getElementById(
-        'loginAccount'
+        "loginAccount"
       )
       .value
       .trim();
@@ -284,37 +273,45 @@ async function login() {
   const code =
     document
       .getElementById(
-        'loginCode'
+        "loginCode"
       )
       .value
       .trim();
 
 
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  message.textContent =
+    "";
+
+
   if (!account || !code) {
 
-    message(
-      'loginMessage',
-      'أدخل رقم الحساب والرمز'
-    );
+    message.textContent =
+      "أدخل رقم الحساب والرمز";
 
     return;
 
   }
 
 
-  message(
-    'loginMessage',
-    'جاري تسجيل الدخول...'
-  );
-
-
   try {
+
+    message.textContent =
+      "جاري تسجيل الدخول...";
+
 
     const result =
       await api(
-        'loginUser',
-        account,
-        code
+        "loginUser",
+        [
+          account,
+          code
+        ]
       );
 
 
@@ -322,16 +319,14 @@ async function login() {
 
       if (result.pending) {
 
-        document
-          .getElementById(
-            'pendingAccount'
-          )
-          .textContent =
-            result.account;
+        document.getElementById(
+          "pendingAccount"
+        ).textContent =
+          result.account;
 
 
         showScreen(
-          'pendingScreen'
+          "pendingScreen"
         );
 
         return;
@@ -339,17 +334,15 @@ async function login() {
       }
 
 
-      message(
-        'loginMessage',
-        result.message
-      );
+      message.textContent =
+        result.message;
 
       return;
 
     }
 
 
-    currentUser = {
+    session = {
 
       account:
         result.account,
@@ -364,38 +357,51 @@ async function login() {
         result.role,
 
       gamesAllowed:
-        result.gamesAllowed,
+        Number(
+          result.gamesAllowed
+        ) || 0,
 
       gamesPlayed:
-        result.gamesPlayed
+        Number(
+          result.gamesPlayed
+        ) || 0
 
     };
 
 
+    localStorage.setItem(
+      "medicalQuizSession",
+      JSON.stringify(
+        session
+      )
+    );
+
+
     if (
-      result.role === 'ADMIN'
+      result.role === "ADMIN"
     ) {
 
       showScreen(
-        'adminScreen'
+        "adminScreen"
       );
 
       loadUsers();
 
     } else {
 
-      showUserDashboard();
+      updateUserDashboard();
+
+      showScreen(
+        "userScreen"
+      );
 
     }
 
+
   } catch (error) {
 
-    console.error(error);
-
-    message(
-      'loginMessage',
-      'تعذر الاتصال بالخادم'
-    );
+    message.textContent =
+      error.message;
 
   }
 
@@ -406,77 +412,73 @@ async function login() {
    USER DASHBOARD
 ===================================================== */
 
-function showUserDashboard() {
+function updateUserDashboard() {
 
-  document
-    .getElementById(
-      'userNickname'
-    )
-    .textContent =
-      currentUser.nickname;
+  document.getElementById(
+    "userNickname"
+  ).textContent =
+    session.nickname;
 
 
-  document
-    .getElementById(
-      'userAccount'
-    )
-    .textContent =
-      currentUser.account;
+  document.getElementById(
+    "userAccount"
+  ).textContent =
+    session.account;
 
 
-  updateGameStats();
+  document.getElementById(
+    "gamesAllowed"
+  ).textContent =
+    session.gamesAllowed;
 
 
-  showScreen(
-    'userScreen'
-  );
+  document.getElementById(
+    "gamesPlayed"
+  ).textContent =
+    session.gamesPlayed;
+
+
+  document.getElementById(
+    "gamesRemaining"
+  ).textContent =
+    Math.max(
+      0,
+      session.gamesAllowed -
+      session.gamesPlayed
+    );
 
 }
 
 
-function updateGameStats() {
+/* =====================================================
+   OPEN GAME SETUP
+===================================================== */
 
-  const allowed =
-    Number(
-      currentUser.gamesAllowed
-    ) || 0;
-
-
-  const played =
-    Number(
-      currentUser.gamesPlayed
-    ) || 0;
-
+function openGameSetup() {
 
   const remaining =
-    Math.max(
-      allowed - played,
-      0
-    );
+    session.gamesAllowed -
+    session.gamesPlayed;
 
 
-  document
-    .getElementById(
-      'gamesAllowed'
-    )
-    .textContent =
-      allowed;
+  if (
+    session.role !== "ADMIN" &&
+    remaining <= 0
+  ) {
+
+    document.getElementById(
+      "userMessage"
+    ).textContent =
+      "لا توجد ألعاب متبقية في حسابك.";
+
+    return;
+
+  }
 
 
-  document
-    .getElementById(
-      'gamesPlayed'
-    )
-    .textContent =
-      played;
-
-
-  document
-    .getElementById(
-      'gamesRemaining'
-    )
-    .textContent =
-      remaining;
+  showScreen(
+    "gameSetupScreen"
+  );
 
 }
 
@@ -490,7 +492,7 @@ async function startGame() {
   const team1 =
     document
       .getElementById(
-        'team1'
+        "team1"
       )
       .value
       .trim();
@@ -499,109 +501,68 @@ async function startGame() {
   const team2 =
     document
       .getElementById(
-        'team2'
+        "team2"
       )
       .value
       .trim();
 
 
+  const message =
+    document.getElementById(
+      "gameMessage"
+    );
+
+
   if (!team1 || !team2) {
 
-    message(
-      'gameMessage',
-      'أدخل اسم الفريقين'
-    );
+    message.textContent =
+      "أدخل اسم الفريقين";
 
     return;
 
   }
 
 
-  message(
-    'gameMessage',
-    'جاري بدء اللعبة...'
-  );
-
-
   try {
+
+    message.textContent =
+      "جاري تجهيز اللعبة...";
+
 
     const result =
       await api(
-        'createGame',
-
-        currentUser.account,
-
-        currentUser.code,
-
-        team1,
-
-        team2
-
+        "createGame",
+        [
+          session.account,
+          session.code,
+          team1,
+          team2
+        ]
       );
 
 
     if (!result.success) {
 
-      message(
-        'gameMessage',
-        result.message
-      );
+      message.textContent =
+        result.message;
 
       return;
 
     }
 
 
-    game.id =
-      result.gameId;
+    /*
+      هنا لاحقاً نفتح لوحة
+      سين جيم الطبية الكاملة.
+    */
 
-    game.team1 =
-      team1;
-
-    game.team2 =
-      team2;
-
-    game.scores =
-      [0, 0];
-
-    game.turn =
-      0;
-
-    game.selected =
-      null;
-
-
-    document
-      .getElementById(
-        'team1Name'
-      )
-      .textContent =
-      team1;
-
-
-    document
-      .getElementById(
-        'team2Name'
-      )
-      .textContent =
-      team2;
-
-
-    await loadBoard();
-
-
-    showScreen(
-      'gameScreen'
-    );
+    message.textContent =
+      "تم إنشاء اللعبة بنجاح. سنضيف لوحة اللعبة في الخطوة التالية.";
 
   } catch (error) {
 
-    console.error(error);
-
-    message(
-      'gameMessage',
-      'حدث خطأ في الاتصال'
-    );
+    message.textContent =
+      error.message;
 
   }
 
@@ -609,210 +570,219 @@ async function startGame() {
 
 
 /* =====================================================
-   LOAD BOARD
+   ADMIN - LOAD USERS
 ===================================================== */
 
-async function loadBoard() {
+async function loadUsers() {
 
-  try {
-
-    const result =
-      await api(
-        'getQuestions'
-      );
-
-
-    createBoard(
-      result
-    );
-
-    updateGameUI();
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      'تعذر تحميل الأسئلة'
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   BOARD
-===================================================== */
-
-function createBoard(
-  questions
-) {
-
-  const board =
+  const container =
     document.getElementById(
-      'board'
+      "usersContainer"
     );
 
 
-  board.innerHTML = '';
-
-
-  const categories = [
-
-    'التشريح',
-
-    'الإحالة',
-
-    'الأدوات والمعدات',
-
-    'العلامات الحيوية',
-
-    'الأدوية',
-
-    'الطوارئ والإسعافات'
-
-  ];
-
-
-  const points = [
-    100,
-    200,
-    300,
-    400,
-    500
-  ];
-
-
-  categories.forEach(
-    category => {
-
-      const column =
-        document.createElement(
-          'div'
-        );
-
-      column.className =
-        'category';
-
-
-      const title =
-        document.createElement(
-          'div'
-        );
-
-      title.className =
-        'category-title';
-
-      title.textContent =
-        category;
-
-      column.appendChild(
-        title
-      );
-
-
-      points.forEach(
-        point => {
-
-          const button =
-            document.createElement(
-              'button'
-            );
-
-          button.className =
-            'question';
-
-          button.textContent =
-            point;
-
-
-          const exists =
-            questions.some(
-              q =>
-                q.category ===
-                  category &&
-                Number(q.points) ===
-                  point
-            );
-
-
-          if (!exists) {
-
-            button.disabled =
-              true;
-
-            button.classList.add(
-              'used'
-            );
-
-          } else {
-
-            button.onclick =
-              () =>
-                openQuestion(
-                  category,
-                  point,
-                  button
-                );
-
-          }
-
-
-          column.appendChild(
-            button
-          );
-
-        }
-      );
-
-
-      board.appendChild(
-        column
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   OPEN QUESTION
-===================================================== */
-
-async function openQuestion(
-  category,
-  points,
-  button
-) {
-
-  button.disabled =
-    true;
-
-  button.classList.add(
-    'used'
-  );
+  container.innerHTML =
+    "<p>جاري تحميل الحسابات...</p>";
 
 
   try {
 
     const result =
       await api(
-        'getRandomQuestion',
-        category,
-        points
+        "getUsers",
+        [
+          session.account,
+          session.code
+        ]
       );
 
 
     if (!result.success) {
 
-      button.disabled =
-        false;
+      container.innerHTML =
+        `<p>${result.message}</p>`;
 
-      button.classList.remove(
-        'used'
+      return;
+
+    }
+
+
+    if (
+      !result.users ||
+      result.users.length === 0
+    ) {
+
+      container.innerHTML =
+        "<p>لا توجد حسابات حتى الآن.</p>";
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      "";
+
+
+    result.users.forEach(
+      user => {
+
+        const row =
+          document.createElement(
+            "div"
+          );
+
+
+        row.className =
+          "user-row";
+
+
+        row.innerHTML = `
+
+          <div>
+            <strong>
+              ${escapeHtml(
+                user.account
+              )}
+            </strong>
+          </div>
+
+          <div>
+            ${escapeHtml(
+              user.nickname
+            )}
+          </div>
+
+          <div>
+            ${escapeHtml(
+              user.email
+            )}
+          </div>
+
+          <div>
+            ألعاب:
+            <strong>
+              ${user.gamesAllowed}
+            </strong>
+          </div>
+
+          <div>
+            مستخدمة:
+            <strong>
+              ${user.gamesPlayed}
+            </strong>
+          </div>
+
+          <div>
+
+            <div class="status ${
+              getStatusClass(
+                user.status
+              )
+            }">
+
+              ${getStatusText(
+                user.status
+              )}
+
+            </div>
+
+            <div class="admin-actions">
+
+              <button
+                class="approve"
+                onclick="changeStatus(
+                  '${user.account}',
+                  'APPROVED'
+                )">
+                قبول
+              </button>
+
+              <button
+                class="reject"
+                onclick="changeStatus(
+                  '${user.account}',
+                  'REJECTED'
+                )">
+                رفض
+              </button>
+
+              <button
+                class="suspend"
+                onclick="changeStatus(
+                  '${user.account}',
+                  'SUSPENDED'
+                )">
+                إيقاف
+              </button>
+
+              <button
+                class="add-games"
+                onclick="addGames(
+                  '${user.account}'
+                )">
+                + ألعاب
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+
+        container.appendChild(
+          row
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    container.innerHTML =
+      `<p>${error.message}</p>`;
+
+  }
+
+}
+
+
+/* =====================================================
+   ADMIN - STATUS
+===================================================== */
+
+async function changeStatus(
+  account,
+  status
+) {
+
+  const confirmed =
+    confirm(
+      `هل تريد تغيير حالة الحساب ${account}؟`
+    );
+
+
+  if (!confirmed)
+    return;
+
+
+  try {
+
+    const result =
+      await api(
+        "updateUserStatus",
+        [
+          session.account,
+          session.code,
+          account,
+          status
+        ]
       );
+
+
+    if (!result.success) {
 
       alert(
         result.message
@@ -823,34 +793,225 @@ async function openQuestion(
     }
 
 
-    game.selected = {
-
-      category:
-        category,
-
-      points:
-        points,
-
-      button:
-        button,
-
-      question:
-        result.question
-
-    };
+    loadUsers();
 
 
-    document
-      .getElementById(
-        'modalCategory'
-      )
-      .textContent =
-      category;
+  } catch (error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
 
 
-    document
-      .getElementById(
-        'modalPoints'
-      )
-      .textContent =
-      points
+/* =====================================================
+   ADMIN - ADD GAMES
+===================================================== */
+
+async function addGames(
+  account
+) {
+
+  const amount =
+    prompt(
+      "كم لعبة تريد إضافتها؟"
+    );
+
+
+  if (
+    amount === null
+  )
+    return;
+
+
+  const number =
+    Number(amount);
+
+
+  if (
+    !number ||
+    number <= 0
+  ) {
+
+    alert(
+      "أدخل رقم صحيح"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await api(
+        "addGames",
+        [
+          session.account,
+          session.code,
+          account,
+          number
+        ]
+      );
+
+
+    if (!result.success) {
+
+      alert(
+        result.message
+      );
+
+      return;
+
+    }
+
+
+    alert(
+      `تمت إضافة ${number} لعبة`
+    );
+
+
+    loadUsers();
+
+
+  } catch (error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   STATUS TEXT
+===================================================== */
+
+function getStatusText(
+  status
+) {
+
+  switch (status) {
+
+    case "PENDING":
+      return "بانتظار الموافقة";
+
+    case "APPROVED":
+      return "مقبول";
+
+    case "REJECTED":
+      return "مرفوض";
+
+    case "SUSPENDED":
+      return "موقوف";
+
+    default:
+      return status;
+
+  }
+
+}
+
+
+function getStatusClass(
+  status
+) {
+
+  return String(
+    status
+  ).toLowerCase();
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout() {
+
+  session = {
+
+    account: null,
+    code: null,
+    nickname: null,
+    role: null,
+    gamesAllowed: 0,
+    gamesPlayed: 0
+
+  };
+
+
+  localStorage.removeItem(
+    "medicalQuizSession"
+  );
+
+
+  showScreen(
+    "loginScreen"
+  );
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    /*
+      لا نعتمد على localStorage
+      للدخول التلقائي لأن الرمز يجب
+      إعادة التحقق منه مع الخادم.
+    */
+
+    showScreen(
+      "loginScreen"
+    );
+
+  }
+);
