@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>سين جيم الطبي</title>
 
   <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
   <div id="app">
 
-    <!-- LOGIN -->
-    <section id="loginScreen" class="screen active">
+
+    <!-- =========================
+         LOGIN
+    ========================== -->
+
+    <section
+      id="loginScreen"
+      class="screen active"
+    >
+
       <div class="card">
 
         <h1>🚑 سين جيم الطبي</h1>
@@ -23,21 +39,29 @@
           تسجيل الدخول
         </p>
 
+
         <input
           id="loginAccount"
           type="text"
           placeholder="رقم الحساب"
+          autocomplete="username"
         >
+
 
         <input
           id="loginCode"
           type="password"
           placeholder="الرمز"
+          autocomplete="current-password"
         >
 
-        <button onclick="login()">
+
+        <button
+          onclick="login()"
+        >
           دخول
         </button>
+
 
         <button
           class="secondary"
@@ -46,6 +70,7 @@
           إنشاء حساب جديد
         </button>
 
+
         <button
           class="link-button"
           onclick="showScreen('forgotScreen')"
@@ -53,45 +78,74 @@
           نسيت الرمز؟
         </button>
 
-        <div id="loginMessage" class="message"></div>
+
+        <div
+          id="loginMessage"
+          class="message"
+        ></div>
 
       </div>
+
     </section>
 
 
-    <!-- REGISTER -->
-    <section id="registerScreen" class="screen">
+
+    <!-- =========================
+         REGISTER
+    ========================== -->
+
+    <section
+      id="registerScreen"
+      class="screen"
+    >
+
       <div class="card">
 
         <h1>إنشاء حساب</h1>
+
+        <p class="subtitle">
+          أدخل بياناتك لإنشاء حساب جديد
+        </p>
+
 
         <input
           id="registerNickname"
           type="text"
           placeholder="النيك نيم"
+          autocomplete="nickname"
         >
+
 
         <input
           id="registerPhone"
           type="tel"
           placeholder="رقم التلفون"
+          autocomplete="tel"
         >
+
 
         <input
           id="registerEmail"
           type="email"
           placeholder="الإيميل"
+          autocomplete="email"
         >
+
 
         <input
           id="registerCode"
           type="password"
           placeholder="الرمز"
+          autocomplete="new-password"
         >
 
-        <button onclick="register()">
+
+        <button
+          onclick="register()"
+        >
           إنشاء الحساب
         </button>
+
 
         <button
           class="secondary"
@@ -100,65 +154,145 @@
           رجوع لتسجيل الدخول
         </button>
 
-        <div id="registerMessage" class="message"></div>
+
+        <div
+          id="registerMessage"
+          class="message"
+        ></div>
 
       </div>
+
     </section>
 
 
-    <!-- WAITING -->
-    <section id="waitingScreen" class="screen">
+
+    <!-- =========================
+         WAITING
+    ========================== -->
+
+    <section
+      id="waitingScreen"
+      class="screen"
+    >
+
       <div class="card">
 
-        <div class="big-icon">⏳</div>
+        <div class="big-icon">
+          ⏳
+        </div>
 
-        <h1>في انتظار قبول الحساب</h1>
+
+        <h1>
+          في انتظار قبول الحساب
+        </h1>
+
 
         <p>
           تم إنشاء حسابك بنجاح.
         </p>
 
+
         <p>
-          لا يمكنك دخول اللعبة حتى تتم الموافقة على حسابك من المسؤول.
+          لا يمكنك دخول اللعبة حتى تتم الموافقة
+          على حسابك من المسؤول.
         </p>
 
+
         <div class="account-box">
+
           رقم حسابك:
-          <strong id="waitingAccount"></strong>
+
+          <strong
+            id="waitingAccount"
+          >
+          </strong>
+
         </div>
 
-        <button onclick="logout()">
+
+        <p class="subtitle">
+          احتفظ برقم الحساب لاستخدامه عند تسجيل الدخول.
+        </p>
+
+
+        <button
+          onclick="logout()"
+        >
           خروج
         </button>
 
       </div>
+
     </section>
 
 
-    <!-- GAME -->
-    <section id="gameScreen" class="screen">
+
+    <!-- =========================
+         GAME
+    ========================== -->
+
+    <section
+      id="gameScreen"
+      class="screen"
+    >
+
+
+      <!-- TOP BAR -->
 
       <header class="topbar">
 
         <div>
-          <h2>🚑 سين جيم الطبي</h2>
-          <span id="playerNickname"></span>
+
+          <h2>
+            🚑 سين جيم الطبي
+          </h2>
+
+          <span
+            id="playerNickname"
+          >
+          </span>
+
         </div>
+
 
         <div class="games-info">
+
           الألعاب المتبقية:
-          <strong id="gamesRemaining">0</strong>
+
+          <strong
+            id="gamesRemaining"
+          >
+            0
+          </strong>
+
         </div>
 
-        <button onclick="logout()">
+
+        <button
+          onclick="logout()"
+        >
           خروج
         </button>
 
       </header>
 
-      <div class="card game-card">
 
-        <h2>تجهيز اللعبة</h2>
+
+      <!-- GAME SETUP -->
+
+      <div
+        class="card game-card"
+      >
+
+        <h2>
+          تجهيز اللعبة
+        </h2>
+
+
+        <p class="subtitle">
+          أدخل أسماء الفريقين لبدء اللعبة
+        </p>
+
 
         <input
           id="team1"
@@ -166,32 +300,52 @@
           placeholder="اسم الفريق الأول"
         >
 
+
         <input
           id="team2"
           type="text"
           placeholder="اسم الفريق الثاني"
         >
 
-        <button onclick="startGame()">
+
+        <button
+          onclick="startGame()"
+        >
           ابدأ اللعبة
         </button>
 
-        <div id="gameMessage" class="message"></div>
+
+        <div
+          id="gameMessage"
+          class="message"
+        ></div>
 
       </div>
 
     </section>
 
 
-    <!-- FORGOT -->
-    <section id="forgotScreen" class="screen">
+
+    <!-- =========================
+         FORGOT CODE
+    ========================== -->
+
+    <section
+      id="forgotScreen"
+      class="screen"
+    >
+
       <div class="card">
 
-        <h1>استرجاع الرمز</h1>
+        <h1>
+          استرجاع الرمز
+        </h1>
+
 
         <p class="subtitle">
-          أدخل بيانات حسابك
+          أدخل بيانات حسابك للتحقق منه
         </p>
+
 
         <input
           id="forgotAccount"
@@ -199,11 +353,13 @@
           placeholder="رقم الحساب"
         >
 
+
         <input
           id="forgotPhone"
           type="tel"
           placeholder="رقم التلفون"
         >
+
 
         <input
           id="forgotEmail"
@@ -211,25 +367,48 @@
           placeholder="الإيميل"
         >
 
-        <button onclick="forgotCode()">
+
+        <button
+          onclick="forgotCode()"
+        >
           استرجاع الرمز
         </button>
+
 
         <button
           class="secondary"
           onclick="showScreen('loginScreen')"
         >
-          رجوع
+          رجوع لتسجيل الدخول
         </button>
 
-        <div id="forgotMessage" class="message"></div>
+
+        <div
+          id="forgotMessage"
+          class="message"
+        ></div>
 
       </div>
+
     </section>
+
 
   </div>
 
-  <script src="script.js"></script>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <!-- مهم:
+       الملف المستخدم الآن هو app.js
+       وليس script.js
+  -->
+
+  <script src="app.js"></script>
+
 
 </body>
+
 </html>
