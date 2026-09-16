@@ -1,467 +1,280 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family:
-    Arial,
-    Tahoma,
-    sans-serif;
-
-  background:
-    linear-gradient(
-      135deg,
-      #071e2f,
-      #0b3d56
-    );
-
-  color: #fff;
-
-  min-height: 100vh;
-}
-
-button,
-input {
-  font-family: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.screen {
-  display: none;
-  min-height: 100vh;
-  padding: 25px;
-}
-
-.screen.active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card {
-  width: 100%;
-  max-width: 500px;
-
-  background: rgba(255,255,255,.10);
-
-  border: 1px solid rgba(255,255,255,.15);
-
-  border-radius: 22px;
-
-  padding: 30px;
-
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.30);
-
-  backdrop-filter: blur(12px);
-}
-
-.card h1,
-.card h2 {
-  text-align: center;
-}
-
-.subtitle {
-  text-align: center;
-  opacity: .8;
-}
-
-input {
-  width: 100%;
-
-  padding: 15px;
-
-  margin: 8px 0;
-
-  border: none;
-
-  border-radius: 12px;
-
-  background: #fff;
-
-  color: #111;
-
-  font-size: 16px;
-}
-
-button {
-  border: none;
-
-  border-radius: 12px;
-
-  padding: 14px 20px;
-
-  margin-top: 10px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #00c6ff,
-      #0072ff
-    );
-
-  color: white;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  transition: .2s;
-}
-
-button:hover {
-  transform: translateY(-2px);
-}
-
-button:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-}
-
-.secondary {
-  background: rgba(255,255,255,.15);
-}
-
-.link-button {
-  background: transparent;
-  width: 100%;
-}
-
-
 /* =========================================================
-   GAME BOARD
-   ========================================================= */
+   ADMIN MENU
+========================================================= */
 
-#gameBoardScreen {
-  display: none;
-  padding: 15px;
-  align-items: flex-start;
-}
-
-#gameBoardScreen.active {
-  display: block;
-}
-
-.game-board {
+.admin-menu {
   width: 100%;
-  max-width: 1400px;
-  margin: auto;
+  max-width: 900px;
+  margin: 30px auto;
+  text-align: center;
 }
 
-
-/* HEADER */
-
-.game-header {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-bottom: 20px;
+.admin-menu h2 {
+  font-size: 30px;
+  margin-bottom: 8px;
 }
 
-.game-header h1 {
-  margin: 0;
-
-  font-size: 28px;
-}
-
-
-/* TEAMS */
-
-.teams {
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    180px
-    1fr;
-
-  gap: 15px;
-
-  align-items: stretch;
-
+.admin-menu p {
+  opacity: .7;
   margin-bottom: 25px;
 }
 
-.team-card {
-  background:
-    linear-gradient(
-      135deg,
-      #123d56,
-      #09283a
-    );
 
-  border-radius: 20px;
-
-  padding: 20px;
-
-  text-align: center;
-
-  border: 3px solid transparent;
-
-  transition: .2s;
-}
-
-.team-card h2 {
-  margin: 0 0 10px;
-}
-
-.team-card .score {
-  font-size: 48px;
-
-  font-weight: bold;
-
-  color: #ffd54a;
-}
-
-.active-team {
-  border-color: #00d9ff;
-
-  box-shadow:
-    0 0 25px rgba(
-      0,
-      217,
-      255,
-      .35
-    );
-}
-
-.turn-box {
-  background:
-    rgba(255,255,255,.10);
-
-  border-radius: 20px;
-
-  padding: 20px;
-
-  text-align: center;
-
-  display: flex;
-
-  flex-direction: column;
-
-  justify-content: center;
-}
-
-.turn-label {
-  opacity: .7;
-
-  font-size: 14px;
-
-  margin-bottom: 8px;
-}
-
-.turn-team {
-  color: #00e5ff;
-
-  font-size: 20px;
-
-  font-weight: bold;
-}
-
-
-/* =========================================================
-   CATEGORIES
-   ========================================================= */
-
-.categories-grid {
+.admin-options {
   display: grid;
-
-  grid-template-columns:
-    repeat(6, 1fr);
-
-  gap: 10px;
-
-  width: 100%;
-}
-
-.category-column {
-  background:
-    rgba(255,255,255,.06);
-
-  border-radius: 15px;
-
-  padding: 8px;
-}
-
-.category-title {
-  min-height: 65px;
-
-  display: flex;
-
-  justify-content: center;
-
-  align-items: center;
-
-  text-align: center;
-
-  font-weight: bold;
-
-  background:
-    linear-gradient(
-      135deg,
-      #006d9c,
-      #004e70
-    );
-
-  border-radius: 12px;
-
-  padding: 8px;
-
-  margin-bottom: 8px;
-}
-
-.points-button {
-  width: 100%;
-
-  height: 58px;
-
-  margin: 5px 0;
-
-  font-size: 22px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffb300,
-      #ff7b00
-    );
-
-  color: #111;
-}
-
-.points-button.used {
-  background: #263746;
-
-  color: #78909c;
-
-  opacity: .6;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
 }
 
 
-/* =========================================================
-   QUESTION
-   ========================================================= */
-
-.question-area {
-  text-align: center;
-
-  margin: 20px 0;
-}
-
-.question-area h2 {
-  margin-bottom: 5px;
-}
-
-
-/* MODAL */
-
-.question-modal {
-  position: fixed;
-
-  inset: 0;
-
-  background:
-    rgba(0,0,0,.80);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 20px;
-
-  z-index: 1000;
-}
-
-.question-modal.hidden {
-  display: none;
-}
-
-.question-card {
-  width: 100%;
-
-  max-width: 750px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #103a52,
-      #071e2f
-    );
+.admin-option {
+  min-height: 240px;
 
   border-radius: 25px;
 
-  padding: 30px;
+  padding: 30px 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid rgba(255,255,255,.12);
+
+  transition: .25s;
 
   box-shadow:
-    0 20px 80px rgba(0,0,0,.6);
-
-  border:
-    1px solid
-    rgba(255,255,255,.15);
+    0 15px 40px rgba(0,0,0,.25);
 }
 
-.question-top {
+
+.admin-option:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.4);
+}
+
+
+.admin-option-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+
+.admin-option-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+.admin-option-description {
+  font-size: 14px;
+  opacity: .75;
+}
+
+
+.control-option {
+  background:
+    linear-gradient(
+      135deg,
+      #673ab7,
+      #311b92
+    );
+}
+
+
+.game-option {
+  background:
+    linear-gradient(
+      135deg,
+      #00838f,
+      #006064
+    );
+}
+
+
+/* =========================================================
+   ADMIN PANEL
+========================================================= */
+
+.admin-panel {
+  width: 100%;
+  max-width: 1200px;
+  margin: 25px auto;
+}
+
+
+.admin-panel-header {
   display: flex;
 
+  align-items: center;
+
   justify-content: space-between;
-
-  gap: 15px;
-
-  color: #00e5ff;
 
   margin-bottom: 25px;
 }
 
-.question-card h2 {
-  text-align: center;
 
-  line-height: 1.8;
-
-  font-size: 25px;
-
-  min-height: 100px;
+.admin-panel-header h2 {
+  margin: 0;
 }
 
-.answer-box {
-  background:
-    rgba(0,0,0,.25);
 
-  padding: 20px;
-
-  border-radius: 15px;
-
-  margin: 20px 0;
+.admin-panel-header p {
+  opacity: .7;
 }
 
-.answer-box p {
-  line-height: 1.8;
 
-  margin-bottom: 0;
-}
-
-.answer-box.hidden {
-  display: none;
-}
-
-.question-actions {
+.admin-stats {
   display: grid;
 
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 10px;
+  gap: 15px;
+
+  margin-bottom: 25px;
 }
 
-.correct-button {
+
+.admin-stat {
+  background:
+    rgba(255,255,255,.09);
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+
+.admin-stat span {
+  display: block;
+
+  opacity: .7;
+
+  margin-bottom: 8px;
+}
+
+
+.admin-stat strong {
+  font-size: 35px;
+
+  color: #00e5ff;
+}
+
+
+.accounts-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+.account-row {
+  display: grid;
+
+  grid-template-columns:
+    80px
+    1fr
+    120px
+    150px
+    auto;
+
+  gap: 15px;
+
+  align-items: center;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    1px solid
+    rgba(255,255,255,.10);
+
+  border-radius: 16px;
+
+  padding: 15px;
+}
+
+
+.account-number {
+  color: #00e5ff;
+
+  font-size: 20px;
+
+  font-weight: bold;
+
+  text-align: center;
+}
+
+
+.account-name {
+  font-weight: bold;
+}
+
+
+.account-status {
+  text-align: center;
+
+  padding: 7px 12px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+}
+
+
+.status-approved {
+  background: #14532d;
+
+  color: #86efac;
+}
+
+
+.status-pending {
+  background: #713f12;
+
+  color: #fde68a;
+}
+
+
+.status-rejected {
+  background: #7f1d1d;
+
+  color: #fca5a5;
+}
+
+
+.account-actions {
+  display: flex;
+
+  gap: 6px;
+
+  justify-content: flex-end;
+}
+
+
+.account-actions button {
+  margin: 0;
+
+  padding: 9px 12px;
+
+  font-size: 13px;
+}
+
+
+.approve-button {
   background:
     linear-gradient(
       135deg,
@@ -470,7 +283,8 @@ button:disabled {
     );
 }
 
-.wrong-button {
+
+.reject-button {
   background:
     linear-gradient(
       135deg,
@@ -480,112 +294,51 @@ button:disabled {
 }
 
 
-/* =========================================================
-   WAITING
-   ========================================================= */
-
-.big-icon {
+.loading {
   text-align: center;
 
-  font-size: 70px;
-}
-
-.account-box {
-  text-align: center;
-
-  background:
-    rgba(255,255,255,.1);
-
-  border-radius: 15px;
-
-  padding: 20px;
-
-  margin: 20px 0;
-
-  font-size: 18px;
-}
-
-.account-box strong {
-  display: block;
-
-  color: #00e5ff;
-
-  font-size: 35px;
-
-  margin-top: 10px;
-}
-
-.small-text {
-  font-size: 13px;
+  padding: 40px;
 
   opacity: .7;
-
-  text-align: center;
 }
 
 
 /* =========================================================
-   MOBILE
-   ========================================================= */
+   MOBILE ADMIN
+========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 700px) {
 
-  .categories-grid {
-    grid-template-columns:
-      repeat(3, 1fr);
-  }
-
-  .teams {
-    grid-template-columns:
-      1fr 1fr;
-  }
-
-  .turn-box {
-    grid-column:
-      1 / -1;
-
-    grid-row: 2;
-  }
-}
-
-
-@media (max-width: 600px) {
-
-  .screen {
-    padding: 10px;
-  }
-
-  .categories-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-  .teams {
-    grid-template-columns:
-      1fr 1fr;
-  }
-
-  .team-card .score {
-    font-size: 35px;
-  }
-
-  .team-card h2 {
-    font-size: 16px;
-  }
-
-  .game-header h1 {
-    font-size: 20px;
-  }
-
-  .question-card {
-    padding: 20px;
-  }
-
-  .question-card h2 {
-    font-size: 20px;
-  }
-
-  .question-actions {
+  .admin-options {
     grid-template-columns: 1fr;
   }
+
+  .admin-option {
+    min-height: 190px;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel-header {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 10px;
+  }
+
+  .account-row {
+    grid-template-columns: 1fr;
+
+    text-align: center;
+  }
+
+  .account-actions {
+    justify-content: center;
+
+    flex-wrap: wrap;
+  }
+
 }
