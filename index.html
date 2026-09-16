@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>سين جيم الطبي</title>
 
   <link rel="stylesheet" href="style.css">
@@ -13,18 +12,22 @@
 
 <div class="app">
 
-  <!-- ================= LOGIN ================= -->
+  <header class="header">
+    <div class="logo">
+      🚑 سين جيم <span>الطبي</span>
+    </div>
+  </header>
 
+
+  <!-- LOGIN -->
   <section id="loginScreen" class="screen active">
 
-    <div class="auth-card">
-
-      <div class="logo">🚑 سين جيم <span>الطبي</span></div>
+    <div class="card">
 
       <h1>تسجيل الدخول</h1>
 
       <p class="subtitle">
-        أدخل بيانات حسابك للدخول إلى اللعبة
+        ادخل إلى حسابك للمتابعة
       </p>
 
       <input
@@ -39,11 +42,15 @@
         placeholder="الرمز"
       >
 
-      <button class="primary" onclick="login()">
-        تسجيل الدخول
+      <button
+        class="primary"
+        onclick="login()">
+        دخول
       </button>
 
-      <button class="secondary" onclick="showScreen('registerScreen')">
+      <button
+        class="link-button"
+        onclick="showScreen('registerScreen')">
         إنشاء حساب جديد
       </button>
 
@@ -54,18 +61,15 @@
   </section>
 
 
-  <!-- ================= REGISTER ================= -->
-
+  <!-- REGISTER -->
   <section id="registerScreen" class="screen">
 
-    <div class="auth-card">
-
-      <div class="logo">🚑 سين جيم <span>الطبي</span></div>
+    <div class="card">
 
       <h1>إنشاء حساب</h1>
 
       <p class="subtitle">
-        بعد التسجيل سيحتاج الحساب إلى موافقة المسؤول
+        أنشئ حسابك ثم انتظر موافقة المسؤول
       </p>
 
       <input
@@ -92,18 +96,16 @@
         placeholder="الرمز"
       >
 
-      <input
-        id="registerCodeConfirm"
-        type="password"
-        placeholder="تأكيد الرمز"
-      >
-
-      <button class="primary" onclick="register()">
+      <button
+        class="primary"
+        onclick="register()">
         إنشاء الحساب
       </button>
 
-      <button class="secondary" onclick="showScreen('loginScreen')">
-        العودة لتسجيل الدخول
+      <button
+        class="link-button"
+        onclick="showScreen('loginScreen')">
+        لدي حساب بالفعل
       </button>
 
       <div id="registerMessage" class="message"></div>
@@ -113,35 +115,37 @@
   </section>
 
 
-  <!-- ================= PENDING ================= -->
-
+  <!-- PENDING -->
   <section id="pendingScreen" class="screen">
 
-    <div class="status-card">
+    <div class="card center">
 
-      <div class="status-icon">⏳</div>
+      <div class="big-icon">
+        ⏳
+      </div>
 
-      <h1>بانتظار الموافقة</h1>
+      <h1>
+        بانتظار الموافقة
+      </h1>
 
       <p>
         تم إنشاء حسابك بنجاح.
       </p>
 
       <p>
-        حسابك حاليًا بانتظار موافقة المسؤول.
+        رقم حسابك:
       </p>
 
-      <div class="account-box">
-
-        رقم حسابك
-
-        <strong id="pendingAccount">
-          -
-        </strong>
-
+      <div id="pendingAccount" class="account-number">
       </div>
 
-      <button class="secondary" onclick="showScreen('loginScreen')">
+      <p class="muted">
+        لا يمكنك الدخول إلى اللعبة حتى تتم موافقة المسؤول.
+      </p>
+
+      <button
+        class="gray"
+        onclick="showScreen('loginScreen')">
         العودة لتسجيل الدخول
       </button>
 
@@ -150,113 +154,69 @@
   </section>
 
 
-  <!-- ================= USER ================= -->
-
+  <!-- USER HOME -->
   <section id="userScreen" class="screen">
-
-    <header class="topbar">
-
-      <div class="logo">
-        🚑 سين جيم <span>الطبي</span>
-      </div>
-
-      <button class="logout" onclick="logout()">
-        تسجيل خروج
-      </button>
-
-    </header>
-
 
     <div class="dashboard">
 
-      <div class="welcome-card">
+      <div class="welcome">
 
         <div>
-
-          <small>مرحبًا</small>
-
-          <h1 id="userNickname">
-            -
-          </h1>
-
+          <span class="muted">مرحباً</span>
+          <h1 id="userNickname"></h1>
         </div>
 
-        <div class="account-number">
-
-          رقم الحساب
-
-          <strong id="userAccount">
-            -
-          </strong>
-
-        </div>
+        <button
+          class="gray small"
+          onclick="logout()">
+          تسجيل خروج
+        </button>
 
       </div>
 
 
-      <div class="stats-grid">
+      <div class="info-grid">
 
-        <div class="stat-card">
+        <div class="info-card">
+          <span>رقم الحساب</span>
+          <strong id="userAccount"></strong>
+        </div>
 
+        <div class="info-card">
           <span>الألعاب المسموحة</span>
-
-          <strong id="gamesAllowed">
-            0
-          </strong>
-
+          <strong id="gamesAllowed"></strong>
         </div>
 
-        <div class="stat-card">
-
+        <div class="info-card">
           <span>الألعاب المستخدمة</span>
-
-          <strong id="gamesPlayed">
-            0
-          </strong>
-
+          <strong id="gamesPlayed"></strong>
         </div>
 
-        <div class="stat-card">
-
+        <div class="info-card">
           <span>الألعاب المتبقية</span>
-
-          <strong id="gamesRemaining">
-            0
-          </strong>
-
+          <strong id="gamesRemaining"></strong>
         </div>
 
       </div>
 
 
-      <div class="play-card">
+      <div class="card">
 
-        <h2>سين جيم الطبي</h2>
+        <h2>
+          🎮 سين جيم الطبي
+        </h2>
 
-        <p>
-          ابدأ لعبة جديدة بين فريقين.
+        <p class="muted">
+          ابدأ لعبة جديدة عندما تكون جاهزاً.
         </p>
 
-        <input
-          id="team1"
-          type="text"
-          placeholder="اسم الفريق الأول"
-        >
-
-        <input
-          id="team2"
-          type="text"
-          placeholder="اسم الفريق الثاني"
-        >
-
         <button
-          class="play-button"
-          onclick="startGame()"
-        >
-          🎮 بدء اللعبة
+          class="primary"
+          onclick="openGameSetup()">
+          بدء لعبة
         </button>
 
-        <div id="gameMessage" class="message"></div>
+        <div id="userMessage" class="message"></div>
 
       </div>
 
@@ -265,208 +225,91 @@
   </section>
 
 
-  <!-- ================= ADMIN ================= -->
+  <!-- GAME SETUP -->
+  <section id="gameSetupScreen" class="screen">
 
+    <div class="card">
+
+      <h1>تجهيز اللعبة</h1>
+
+      <input
+        id="team1"
+        type="text"
+        placeholder="اسم الفريق الأول"
+      >
+
+      <input
+        id="team2"
+        type="text"
+        placeholder="اسم الفريق الثاني"
+      >
+
+      <button
+        class="primary"
+        onclick="startGame()">
+        ابدأ اللعبة
+      </button>
+
+      <button
+        class="gray"
+        onclick="showScreen('userScreen')">
+        رجوع
+      </button>
+
+      <div id="gameMessage" class="message"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ADMIN -->
   <section id="adminScreen" class="screen">
 
-    <header class="topbar">
+    <div class="dashboard">
 
-      <div class="logo">
-        🚑 لوحة <span>المسؤول</span>
-      </div>
-
-      <button class="logout" onclick="logout()">
-        تسجيل خروج
-      </button>
-
-    </header>
-
-
-    <div class="admin-container">
-
-      <div class="admin-header">
+      <div class="welcome">
 
         <div>
-
-          <small>لوحة التحكم</small>
+          <span class="muted">
+            لوحة الإدارة
+          </span>
 
           <h1>
-            إدارة الحسابات
+            👑 المسؤول
           </h1>
-
         </div>
 
         <button
-          class="primary small-button"
-          onclick="loadUsers()"
-        >
-          🔄 تحديث
+          class="gray small"
+          onclick="logout()">
+          تسجيل خروج
         </button>
 
       </div>
 
 
-      <div id="adminMessage" class="message"></div>
+      <div class="card">
 
+        <h2>
+          الحسابات
+        </h2>
 
-      <div class="table-wrapper">
+        <div
+          id="adminMessage"
+          class="message">
+        </div>
 
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>رقم الحساب</th>
-              <th>النيك نيم</th>
-              <th>الهاتف</th>
-              <th>الإيميل</th>
-              <th>الحالة</th>
-              <th>الألعاب</th>
-              <th>إدارة</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody id="usersTable">
-
-          </tbody>
-
-        </table>
+        <div
+          id="usersContainer"
+          class="users-container">
+        </div>
 
       </div>
 
     </div>
 
   </section>
-
-
-  <!-- ================= GAME ================= -->
-
-  <section id="gameScreen" class="screen">
-
-    <header class="topbar">
-
-      <div class="logo">
-        🚑 سين جيم <span>الطبي</span>
-      </div>
-
-      <button class="logout" onclick="backToDashboard()">
-        خروج من اللعبة
-      </button>
-
-    </header>
-
-
-    <div class="game-container">
-
-      <div class="scoreboard">
-
-        <div class="team-card">
-
-          <span id="team1Name">
-            الفريق الأول
-          </span>
-
-          <strong id="score1">
-            0
-          </strong>
-
-        </div>
-
-        <div class="vs">
-          VS
-        </div>
-
-        <div class="team-card">
-
-          <span id="team2Name">
-            الفريق الثاني
-          </span>
-
-          <strong id="score2">
-            0
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="turn-box">
-
-        دور:
-        <strong id="turnName">
-          الفريق الأول
-        </strong>
-
-      </div>
-
-
-      <div id="board" class="board"></div>
-
-    </div>
-
-  </section>
-
-</div>
-
-
-<!-- ================= QUESTION MODAL ================= -->
-
-<div id="questionModal" class="modal">
-
-  <div class="modal-box">
-
-    <div id="modalCategory" class="modal-category"></div>
-
-    <div id="modalPoints" class="modal-points"></div>
-
-    <div id="modalQuestion" class="question-text"></div>
-
-    <button
-      id="showAnswerButton"
-      class="primary"
-      onclick="showAnswer()"
-    >
-      إظهار الإجابة
-    </button>
-
-    <div
-      id="answer"
-      class="answer"
-    ></div>
-
-    <div
-      id="answerActions"
-      class="actions"
-    >
-
-      <button
-        class="correct"
-        onclick="answerQuestion(true)"
-      >
-        ✓ إجابة صحيحة
-      </button>
-
-      <button
-        class="wrong"
-        onclick="answerQuestion(false)"
-      >
-        ✗ إجابة خاطئة
-      </button>
-
-      <button
-        class="skip"
-        onclick="skipQuestion()"
-      >
-        تجاوز
-      </button>
-
-    </div>
-
-  </div>
 
 </div>
 
