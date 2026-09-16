@@ -1,12 +1,29 @@
+/* =========================================================
+   سين جيم الطبي
+   APP.JS
+   ========================================================= */
+
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
 
 
 let currentUser = null;
 
+let currentGame = null;
+
+let currentQuestion = null;
+
+let currentTurn = 1;
+
+let score1 = 0;
+
+let score2 = 0;
+
+let usedBoardCells = {};
+
 
 /* =========================================================
-   API REQUEST
+   API
    ========================================================= */
 
 async function apiRequest(data) {
@@ -25,8 +42,13 @@ async function apiRequest(data) {
 
     });
 
+
     const result =
       await response.json();
+
+
+    console.log("API:", data.action, result);
+
 
     return result;
 
@@ -49,6 +71,34 @@ async function apiRequest(data) {
 
 
 /* =========================================================
+   SHOW SCREEN
+   ========================================================= */
+
+function showScreen(screenId) {
+
+  document
+    .querySelectorAll(".screen")
+    .forEach(screen => {
+
+      screen.classList.remove("active");
+
+    });
+
+
+  const screen =
+    document.getElementById(screenId);
+
+
+  if (screen) {
+
+    screen.classList.add("active");
+
+  }
+
+}
+
+
+/* =========================================================
    LOGIN
    ========================================================= */
 
@@ -60,20 +110,18 @@ async function login() {
       .value
       .trim();
 
+
   const code =
     document
       .getElementById("loginCode")
       .value
       .trim();
 
+
   const message =
     document.getElementById(
       "loginMessage"
     );
-
-
-  message.textContent =
-    "جاري تسجيل الدخول...";
 
 
   if (!accountNumber || !code) {
@@ -84,6 +132,10 @@ async function login() {
     return;
 
   }
+
+
+  message.textContent =
+    "جاري تسجيل الدخول...";
 
 
   const result =
@@ -98,9 +150,6 @@ async function login() {
         code
 
     });
-
-
-  console.log("LOGIN RESULT:", result);
 
 
   if (!result.success) {
@@ -124,13 +173,8 @@ async function login() {
   );
 
 
-  /*
-   * المسؤول يدخل مباشرة
-   */
-
   if (
-    String(currentUser.accountNumber) === "3854" &&
-    String(currentUser.role).toUpperCase() === "ADMIN"
+    String(currentUser.accountNumber) === "3854"
   ) {
 
     showScreen("gameScreen");
@@ -141,10 +185,6 @@ async function login() {
 
   }
 
-
-  /*
-   * المستخدم العادي
-   */
 
   if (
     String(currentUser.status).toUpperCase() !==
@@ -171,44 +211,54 @@ async function login() {
 
 
 /* =========================================================
-   START GAME
+   REGISTER
    ========================================================= */
 
-async function startGame() {
+async function register() {
 
-  if (!currentUser) {
-
-    alert("يجب تسجيل الدخول أولاً");
-
-    showScreen("loginScreen");
-
-    return;
-
-  }
-
-
-  const team1 =
+  const nickname =
     document
-      .getElementById("team1")
+      .getElementById("registerNickname")
       .value
       .trim();
 
-  const team2 =
+
+  const phone =
     document
-      .getElementById("team2")
+      .getElementById("registerPhone")
       .value
       .trim();
+
+
+  const email =
+    document
+      .getElementById("registerEmail")
+      .value
+      .trim();
+
+
+  const code =
+    document
+      .getElementById("registerCode")
+      .value
+      .trim();
+
 
   const message =
     document.getElementById(
-      "gameMessage"
+      "registerMessage"
     );
 
 
-  if (!team1 || !team2) {
+  if (
+    !nickname ||
+    !phone ||
+    !email ||
+    !code
+  ) {
 
     message.textContent =
-      "أدخل اسم الفريقين";
+      "يرجى تعبئة جميع البيانات";
 
     return;
 
@@ -216,85 +266,121 @@ async function startGame() {
 
 
   message.textContent =
-    "جاري تجهيز اللعبة...";
+    "جاري إنشاء الحساب...";
 
-
-  /*
-   * مهم جدًا:
-   * نرسل رقم الحساب الموجود في currentUser
-   */
 
   const result =
     await apiRequest({
 
-      action: "createGame",
+      action: "register",
 
-      accountNumber:
-        String(currentUser.accountNumber),
+      nickname:
+        nickname,
 
-      team1:
-        team1,
+      phone:
+        phone,
 
-      team2:
-        team2
+      email:
+        email,
+
+      code:
+        code
 
     });
-
-
-  console.log("CREATE GAME RESULT:", result);
 
 
   if (!result.success) {
 
     message.textContent =
       result.message ||
-      "تعذر بدء اللعبة";
+      "تعذر إنشاء الحساب";
 
     return;
 
   }
 
 
-  /*
-   * حفظ بيانات اللعبة
-   */
+  message.textContent =
+    "تم إنشاء الحساب بنجاح";
 
-  localStorage.setItem(
-    "currentGame",
-    JSON.stringify(result)
+
+  document.getElementById(
+    "waitingAccount"
+  ).textContent =
+    result.accountNumber;
+
+
+  setTimeout(
+    () => {
+
+      showScreen(
+        "waitingScreen"
+      );
+
+    },
+    500
   );
 
-
-  currentUser.gamesRemaining =
-    result.gamesRemaining;
+}
 
 
-  localStorage.setItem(
-    "currentUser",
-    JSON.stringify(currentUser)
-  );
+/* =========================================================
+   FORGOT
+   ========================================================= */
+
+async function forgotCode() {
+
+  const accountNumber =
+    document
+      .getElementById("forgotAccount")
+      .value
+      .trim();
 
 
-  updateGameUI();
+  const phone =
+    document
+      .getElementById("forgotPhone")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("forgotEmail")
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "forgotMessage"
+    );
 
 
   message.textContent =
-    "تم إنشاء اللعبة بنجاح";
+    "جاري التحقق...";
 
 
-  /*
-   * هنا يمكنك الانتقال إلى شاشة اللعبة
-   * إذا كانت موجودة عندك.
-   */
+  const result =
+    await apiRequest({
 
-  if (
-    typeof showGameBoard ===
-    "function"
-  ) {
+      action: "forgotCode",
 
-    showGameBoard(result);
+      accountNumber:
+        accountNumber,
 
-  }
+      phone:
+        phone,
+
+      email:
+        email
+
+    });
+
+
+  message.textContent =
+    result.message ||
+    "";
 
 }
 
@@ -315,6 +401,7 @@ function updateGameUI() {
       "playerNickname"
     );
 
+
   const games =
     document.getElementById(
       "gamesRemaining"
@@ -330,10 +417,6 @@ function updateGameUI() {
 
 
   if (games) {
-
-    /*
-     * المسؤول = غير محدود
-     */
 
     if (
       String(currentUser.accountNumber) ===
@@ -358,35 +441,765 @@ function updateGameUI() {
 
 
 /* =========================================================
-   SHOW SCREEN
+   START GAME
    ========================================================= */
 
-function showScreen(screenId) {
+async function startGame() {
 
-  document
-    .querySelectorAll(".screen")
-    .forEach(screen => {
+  if (!currentUser) {
 
-      screen.classList.remove(
-        "active"
-      );
+    alert(
+      "يجب تسجيل الدخول أولاً"
+    );
+
+    showScreen(
+      "loginScreen"
+    );
+
+    return;
+
+  }
+
+
+  const team1 =
+    document
+      .getElementById("team1")
+      .value
+      .trim();
+
+
+  const team2 =
+    document
+      .getElementById("team2")
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "gameMessage"
+    );
+
+
+  if (!team1 || !team2) {
+
+    message.textContent =
+      "أدخل اسم الفريقين";
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "جاري تجهيز اللعبة...";
+
+
+  const result =
+    await apiRequest({
+
+      action: "createGame",
+
+      accountNumber:
+        String(
+          currentUser.accountNumber
+        ),
+
+      team1:
+        team1,
+
+      team2:
+        team2
 
     });
 
 
-  const screen =
-    document.getElementById(
-      screenId
-    );
+  if (!result.success) {
+
+    message.textContent =
+      result.message ||
+      "تعذر بدء اللعبة";
+
+    return;
+
+  }
 
 
-  if (screen) {
+  currentGame =
+    result;
 
-    screen.classList.add(
-      "active"
+
+  localStorage.setItem(
+    "currentGame",
+    JSON.stringify(currentGame)
+  );
+
+
+  if (
+    String(currentUser.accountNumber) !==
+    "3854"
+  ) {
+
+    currentUser.gamesRemaining =
+      Number(
+        result.gamesRemaining || 0
+      );
+
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(currentUser)
     );
 
   }
+
+
+  score1 = 0;
+
+  score2 = 0;
+
+  currentTurn = 1;
+
+  usedBoardCells = {};
+
+  currentQuestion = null;
+
+
+  /*
+   * هنا الانتقال الحقيقي
+   * إلى لوحة اللعبة
+   */
+
+  showGameBoard(result);
+
+}
+
+
+/* =========================================================
+   SHOW GAME BOARD
+   ========================================================= */
+
+function showGameBoard(game) {
+
+  currentGame =
+    game;
+
+
+  const team1 =
+    document.getElementById(
+      "boardTeam1"
+    );
+
+
+  const team2 =
+    document.getElementById(
+      "boardTeam2"
+    );
+
+
+  const nickname =
+    document.getElementById(
+      "boardPlayerNickname"
+    );
+
+
+  if (team1) {
+
+    team1.textContent =
+      game.team1;
+
+  }
+
+
+  if (team2) {
+
+    team2.textContent =
+      game.team2;
+
+  }
+
+
+  if (nickname && currentUser) {
+
+    nickname.textContent =
+      currentUser.nickname || "";
+
+  }
+
+
+  updateScores();
+
+  createCategoryBoard();
+
+  hideQuestion();
+
+  showScreen(
+    "boardScreen"
+  );
+
+}
+
+
+/* =========================================================
+   CREATE CATEGORY BOARD
+   ========================================================= */
+
+function createCategoryBoard() {
+
+  const board =
+    document.getElementById(
+      "categoryBoard"
+    );
+
+
+  if (!board) {
+    return;
+  }
+
+
+  board.innerHTML = "";
+
+
+  const categories = [
+
+    "التشريح",
+
+    "الإحالة",
+
+    "الأدوات والمعدات",
+
+    "العلامات الحيوية",
+
+    "الأدوية",
+
+    "الطوارئ والإسعافات"
+
+  ];
+
+
+  const points = [
+
+    100,
+
+    200,
+
+    300,
+
+    400,
+
+    500
+
+  ];
+
+
+  categories.forEach(
+    category => {
+
+      const column =
+        document.createElement(
+          "div"
+        );
+
+
+      column.className =
+        "category-column";
+
+
+      const title =
+        document.createElement(
+          "div"
+        );
+
+
+      title.className =
+        "category-title";
+
+
+      title.textContent =
+        category;
+
+
+      column.appendChild(
+        title
+      );
+
+
+      points.forEach(
+        point => {
+
+          const button =
+            document.createElement(
+              "button"
+            );
+
+
+          button.className =
+            "points-button";
+
+
+          button.textContent =
+            point;
+
+
+          const key =
+            category +
+            "_" +
+            point;
+
+
+          button.dataset.key =
+            key;
+
+
+          button.onclick =
+            function () {
+
+              selectQuestion(
+                category,
+                point,
+                button
+              );
+
+            };
+
+
+          column.appendChild(
+            button
+          );
+
+        }
+      );
+
+
+      board.appendChild(
+        column
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SELECT QUESTION
+   ========================================================= */
+
+async function selectQuestion(
+  category,
+  points,
+  button
+) {
+
+  const key =
+    category +
+    "_" +
+    points;
+
+
+  if (
+    usedBoardCells[key]
+  ) {
+
+    return;
+
+  }
+
+
+  const message =
+    document.getElementById(
+      "boardMessage"
+    );
+
+
+  message.textContent =
+    "جاري تحميل السؤال...";
+
+
+  const result =
+    await apiRequest({
+
+      action:
+        "getRandomQuestion",
+
+      category:
+        category,
+
+      points:
+        points
+
+    });
+
+
+  if (!result.success) {
+
+    message.textContent =
+      result.message ||
+      "لا يوجد سؤال";
+
+    return;
+
+  }
+
+
+  currentQuestion =
+    result.question;
+
+
+  currentQuestion.boardKey =
+    key;
+
+
+  currentQuestion.button =
+    button;
+
+
+  showQuestion(
+    currentQuestion
+  );
+
+
+  message.textContent =
+    "";
+
+}
+
+
+/* =========================================================
+   SHOW QUESTION
+   ========================================================= */
+
+function showQuestion(
+  question
+) {
+
+  const panel =
+    document.getElementById(
+      "questionPanel"
+    );
+
+
+  const text =
+    document.getElementById(
+      "questionText"
+    );
+
+
+  const points =
+    document.getElementById(
+      "questionPoints"
+    );
+
+
+  const answerBox =
+    document.getElementById(
+      "answerBox"
+    );
+
+
+  const answerText =
+    document.getElementById(
+      "answerText"
+    );
+
+
+  if (text) {
+
+    text.textContent =
+      question.question;
+
+  }
+
+
+  if (points) {
+
+    points.textContent =
+      question.points;
+
+  }
+
+
+  if (answerText) {
+
+    answerText.textContent =
+      question.answer || "";
+
+  }
+
+
+  if (answerBox) {
+
+    answerBox.style.display =
+      "none";
+
+  }
+
+
+  if (panel) {
+
+    panel.style.display =
+      "block";
+
+    panel.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+  }
+
+}
+
+
+/* =========================================================
+   SHOW ANSWER
+   ========================================================= */
+
+function showAnswer() {
+
+  const box =
+    document.getElementById(
+      "answerBox"
+    );
+
+
+  if (box) {
+
+    box.style.display =
+      "block";
+
+  }
+
+}
+
+
+/* =========================================================
+   ANSWER QUESTION
+   ========================================================= */
+
+async function answerQuestion(
+  correct
+) {
+
+  if (!currentQuestion) {
+
+    return;
+
+  }
+
+
+  const team =
+    currentTurn === 1
+      ? currentGame.team1
+      : currentGame.team2;
+
+
+  /*
+   * تسجيل الإجابة
+   */
+
+  await apiRequest({
+
+    action:
+      "submitAnswer",
+
+    gameId:
+      currentGame.gameId,
+
+    accountNumber:
+      currentGame.accountNumber,
+
+    team1:
+      currentGame.team1,
+
+    team2:
+      currentGame.team2,
+
+    category:
+      currentQuestion.category,
+
+    questionId:
+      currentQuestion.id,
+
+    question:
+      currentQuestion.question,
+
+    points:
+      currentQuestion.points,
+
+    team:
+      team,
+
+    correct:
+      correct
+
+  });
+
+
+  /*
+   * إضافة النقاط
+   */
+
+  if (correct) {
+
+    if (currentTurn === 1) {
+
+      score1 +=
+        Number(
+          currentQuestion.points
+        );
+
+    } else {
+
+      score2 +=
+        Number(
+          currentQuestion.points
+        );
+
+    }
+
+  }
+
+
+  /*
+   * تعطيل الخانة
+   */
+
+  const key =
+    currentQuestion.boardKey;
+
+
+  usedBoardCells[key] =
+    true;
+
+
+  if (
+    currentQuestion.button
+  ) {
+
+    currentQuestion.button.disabled =
+      true;
+
+    currentQuestion.button.classList.add(
+      "used"
+    );
+
+    currentQuestion.button.textContent =
+      "✓";
+
+  }
+
+
+  updateScores();
+
+
+  hideQuestion();
+
+
+  /*
+   * تبديل الدور
+   */
+
+  if (currentTurn === 1) {
+
+    currentTurn = 2;
+
+  } else {
+
+    currentTurn = 1;
+
+  }
+
+
+  updateTurn();
+
+
+  currentQuestion =
+    null;
+
+}
+
+
+/* =========================================================
+   HIDE QUESTION
+   ========================================================= */
+
+function hideQuestion() {
+
+  const panel =
+    document.getElementById(
+      "questionPanel"
+    );
+
+
+  if (panel) {
+
+    panel.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   UPDATE SCORES
+   ========================================================= */
+
+function updateScores() {
+
+  const s1 =
+    document.getElementById(
+      "score1"
+    );
+
+
+  const s2 =
+    document.getElementById(
+      "score2"
+    );
+
+
+  if (s1) {
+
+    s1.textContent =
+      score1;
+
+  }
+
+
+  if (s2) {
+
+    s2.textContent =
+      score2;
+
+  }
+
+
+  updateTurn();
+
+}
+
+
+/* =========================================================
+   UPDATE TURN
+   ========================================================= */
+
+function updateTurn() {
+
+  const turn =
+    document.getElementById(
+      "currentTurn"
+    );
+
+
+  if (!turn || !currentGame) {
+    return;
+  }
+
+
+  turn.textContent =
+    currentTurn === 1
+      ? currentGame.team1
+      : currentGame.team2;
 
 }
 
@@ -399,9 +1212,23 @@ function logout() {
 
   currentUser = null;
 
+  currentGame = null;
+
+  currentQuestion = null;
+
+  score1 = 0;
+
+  score2 = 0;
+
+  currentTurn = 1;
+
+  usedBoardCells = {};
+
+
   localStorage.removeItem(
     "currentUser"
   );
+
 
   localStorage.removeItem(
     "currentGame"
@@ -418,6 +1245,7 @@ function logout() {
       "loginAccount"
     );
 
+
   const code =
     document.getElementById(
       "loginCode"
@@ -425,11 +1253,16 @@ function logout() {
 
 
   if (account) {
+
     account.value = "";
+
   }
 
+
   if (code) {
+
     code.value = "";
+
   }
 
 }
@@ -450,7 +1283,9 @@ function restoreLogin() {
 
 
     if (!saved) {
+
       return;
+
     }
 
 
@@ -469,7 +1304,7 @@ function restoreLogin() {
 
 
     /*
-     * المسؤول يدخل مباشرة
+     * المسؤول
      */
 
     if (
@@ -489,7 +1324,7 @@ function restoreLogin() {
 
 
     /*
-     * المستخدم العادي
+     * المستخدم المقبول
      */
 
     if (
@@ -505,10 +1340,19 @@ function restoreLogin() {
 
     } else {
 
-      document.getElementById(
-        "waitingAccount"
-      ).textContent =
-        currentUser.accountNumber;
+      const waiting =
+        document.getElementById(
+          "waitingAccount"
+        );
+
+
+      if (waiting) {
+
+        waiting.textContent =
+          currentUser.accountNumber;
+
+      }
+
 
       showScreen(
         "waitingScreen"
