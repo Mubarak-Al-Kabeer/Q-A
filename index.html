@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>سين جيم الطبي</title>
 
   <link rel="stylesheet" href="style.css">
@@ -10,311 +11,225 @@
 
 <body>
 
-<div class="app">
+  <div id="app">
 
-  <header class="header">
-    <div class="logo">
-      🚑 سين جيم <span>الطبي</span>
-    </div>
-  </header>
-
-
-  <!-- LOGIN -->
-  <section id="loginScreen" class="screen active">
-
-    <div class="card">
-
-      <h1>تسجيل الدخول</h1>
-
-      <p class="subtitle">
-        ادخل إلى حسابك للمتابعة
-      </p>
-
-      <input
-        id="loginAccount"
-        type="text"
-        placeholder="رقم الحساب"
-      >
-
-      <input
-        id="loginCode"
-        type="password"
-        placeholder="الرمز"
-      >
-
-      <button
-        class="primary"
-        onclick="login()">
-        دخول
-      </button>
-
-      <button
-        class="link-button"
-        onclick="showScreen('registerScreen')">
-        إنشاء حساب جديد
-      </button>
-
-      <div id="loginMessage" class="message"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- REGISTER -->
-  <section id="registerScreen" class="screen">
-
-    <div class="card">
-
-      <h1>إنشاء حساب</h1>
-
-      <p class="subtitle">
-        أنشئ حسابك ثم انتظر موافقة المسؤول
-      </p>
-
-      <input
-        id="registerNickname"
-        type="text"
-        placeholder="النيك نيم"
-      >
-
-      <input
-        id="registerPhone"
-        type="tel"
-        placeholder="رقم الهاتف"
-      >
-
-      <input
-        id="registerEmail"
-        type="email"
-        placeholder="البريد الإلكتروني"
-      >
-
-      <input
-        id="registerCode"
-        type="password"
-        placeholder="الرمز"
-      >
-
-      <button
-        class="primary"
-        onclick="register()">
-        إنشاء الحساب
-      </button>
-
-      <button
-        class="link-button"
-        onclick="showScreen('loginScreen')">
-        لدي حساب بالفعل
-      </button>
-
-      <div id="registerMessage" class="message"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- PENDING -->
-  <section id="pendingScreen" class="screen">
-
-    <div class="card center">
-
-      <div class="big-icon">
-        ⏳
-      </div>
-
-      <h1>
-        بانتظار الموافقة
-      </h1>
-
-      <p>
-        تم إنشاء حسابك بنجاح.
-      </p>
-
-      <p>
-        رقم حسابك:
-      </p>
-
-      <div id="pendingAccount" class="account-number">
-      </div>
-
-      <p class="muted">
-        لا يمكنك الدخول إلى اللعبة حتى تتم موافقة المسؤول.
-      </p>
-
-      <button
-        class="gray"
-        onclick="showScreen('loginScreen')">
-        العودة لتسجيل الدخول
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- USER HOME -->
-  <section id="userScreen" class="screen">
-
-    <div class="dashboard">
-
-      <div class="welcome">
-
-        <div>
-          <span class="muted">مرحباً</span>
-          <h1 id="userNickname"></h1>
-        </div>
-
-        <button
-          class="gray small"
-          onclick="logout()">
-          تسجيل خروج
-        </button>
-
-      </div>
-
-
-      <div class="info-grid">
-
-        <div class="info-card">
-          <span>رقم الحساب</span>
-          <strong id="userAccount"></strong>
-        </div>
-
-        <div class="info-card">
-          <span>الألعاب المسموحة</span>
-          <strong id="gamesAllowed"></strong>
-        </div>
-
-        <div class="info-card">
-          <span>الألعاب المستخدمة</span>
-          <strong id="gamesPlayed"></strong>
-        </div>
-
-        <div class="info-card">
-          <span>الألعاب المتبقية</span>
-          <strong id="gamesRemaining"></strong>
-        </div>
-
-      </div>
-
-
+    <!-- LOGIN -->
+    <section id="loginScreen" class="screen active">
       <div class="card">
 
-        <h2>
-          🎮 سين جيم الطبي
-        </h2>
+        <h1>🚑 سين جيم الطبي</h1>
 
-        <p class="muted">
-          ابدأ لعبة جديدة عندما تكون جاهزاً.
+        <p class="subtitle">
+          تسجيل الدخول
         </p>
 
-        <button
-          class="primary"
-          onclick="openGameSetup()">
-          بدء لعبة
+        <input
+          id="loginAccount"
+          type="text"
+          placeholder="رقم الحساب"
+        >
+
+        <input
+          id="loginCode"
+          type="password"
+          placeholder="الرمز"
+        >
+
+        <button onclick="login()">
+          دخول
         </button>
 
-        <div id="userMessage" class="message"></div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- GAME SETUP -->
-  <section id="gameSetupScreen" class="screen">
-
-    <div class="card">
-
-      <h1>تجهيز اللعبة</h1>
-
-      <input
-        id="team1"
-        type="text"
-        placeholder="اسم الفريق الأول"
-      >
-
-      <input
-        id="team2"
-        type="text"
-        placeholder="اسم الفريق الثاني"
-      >
-
-      <button
-        class="primary"
-        onclick="startGame()">
-        ابدأ اللعبة
-      </button>
-
-      <button
-        class="gray"
-        onclick="showScreen('userScreen')">
-        رجوع
-      </button>
-
-      <div id="gameMessage" class="message"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ADMIN -->
-  <section id="adminScreen" class="screen">
-
-    <div class="dashboard">
-
-      <div class="welcome">
-
-        <div>
-          <span class="muted">
-            لوحة الإدارة
-          </span>
-
-          <h1>
-            👑 المسؤول
-          </h1>
-        </div>
-
         <button
-          class="gray small"
-          onclick="logout()">
-          تسجيل خروج
+          class="secondary"
+          onclick="showScreen('registerScreen')"
+        >
+          إنشاء حساب جديد
         </button>
 
+        <button
+          class="link-button"
+          onclick="showScreen('forgotScreen')"
+        >
+          نسيت الرمز؟
+        </button>
+
+        <div id="loginMessage" class="message"></div>
+
       </div>
+    </section>
 
 
+    <!-- REGISTER -->
+    <section id="registerScreen" class="screen">
       <div class="card">
 
-        <h2>
-          الحسابات
-        </h2>
+        <h1>إنشاء حساب</h1>
 
-        <div
-          id="adminMessage"
-          class="message">
+        <input
+          id="registerNickname"
+          type="text"
+          placeholder="النيك نيم"
+        >
+
+        <input
+          id="registerPhone"
+          type="tel"
+          placeholder="رقم التلفون"
+        >
+
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="الإيميل"
+        >
+
+        <input
+          id="registerCode"
+          type="password"
+          placeholder="الرمز"
+        >
+
+        <button onclick="register()">
+          إنشاء الحساب
+        </button>
+
+        <button
+          class="secondary"
+          onclick="showScreen('loginScreen')"
+        >
+          رجوع لتسجيل الدخول
+        </button>
+
+        <div id="registerMessage" class="message"></div>
+
+      </div>
+    </section>
+
+
+    <!-- WAITING -->
+    <section id="waitingScreen" class="screen">
+      <div class="card">
+
+        <div class="big-icon">⏳</div>
+
+        <h1>في انتظار قبول الحساب</h1>
+
+        <p>
+          تم إنشاء حسابك بنجاح.
+        </p>
+
+        <p>
+          لا يمكنك دخول اللعبة حتى تتم الموافقة على حسابك من المسؤول.
+        </p>
+
+        <div class="account-box">
+          رقم حسابك:
+          <strong id="waitingAccount"></strong>
         </div>
 
-        <div
-          id="usersContainer"
-          class="users-container">
+        <button onclick="logout()">
+          خروج
+        </button>
+
+      </div>
+    </section>
+
+
+    <!-- GAME -->
+    <section id="gameScreen" class="screen">
+
+      <header class="topbar">
+
+        <div>
+          <h2>🚑 سين جيم الطبي</h2>
+          <span id="playerNickname"></span>
         </div>
+
+        <div class="games-info">
+          الألعاب المتبقية:
+          <strong id="gamesRemaining">0</strong>
+        </div>
+
+        <button onclick="logout()">
+          خروج
+        </button>
+
+      </header>
+
+      <div class="card game-card">
+
+        <h2>تجهيز اللعبة</h2>
+
+        <input
+          id="team1"
+          type="text"
+          placeholder="اسم الفريق الأول"
+        >
+
+        <input
+          id="team2"
+          type="text"
+          placeholder="اسم الفريق الثاني"
+        >
+
+        <button onclick="startGame()">
+          ابدأ اللعبة
+        </button>
+
+        <div id="gameMessage" class="message"></div>
 
       </div>
 
-    </div>
-
-  </section>
-
-</div>
+    </section>
 
 
-<script src="app.js"></script>
+    <!-- FORGOT -->
+    <section id="forgotScreen" class="screen">
+      <div class="card">
+
+        <h1>استرجاع الرمز</h1>
+
+        <p class="subtitle">
+          أدخل بيانات حسابك
+        </p>
+
+        <input
+          id="forgotAccount"
+          type="text"
+          placeholder="رقم الحساب"
+        >
+
+        <input
+          id="forgotPhone"
+          type="tel"
+          placeholder="رقم التلفون"
+        >
+
+        <input
+          id="forgotEmail"
+          type="email"
+          placeholder="الإيميل"
+        >
+
+        <button onclick="forgotCode()">
+          استرجاع الرمز
+        </button>
+
+        <button
+          class="secondary"
+          onclick="showScreen('loginScreen')"
+        >
+          رجوع
+        </button>
+
+        <div id="forgotMessage" class="message"></div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
 
 </body>
 </html>
