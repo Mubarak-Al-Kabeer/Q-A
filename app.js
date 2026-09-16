@@ -3,50 +3,38 @@ const API_URL =
 
 let currentUser = null;
 let currentGame = null;
-
-let team1Score = 0;
-let team2Score = 0;
-let currentTeam = 1;
-
-let currentQuestion = null;
-let answerShown = false;
+let gameState = {
+  team1Score: 0,
+  team2Score: 0,
+  turn: 1,
+  usedQuestions: []
+};
 
 
 /* =========================================================
-   API REQUEST
+   API
    ========================================================= */
 
 async function apiRequest(data) {
-
   try {
-
     const response = await fetch(API_URL, {
-
       method: "POST",
-
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
-
       body: JSON.stringify(data)
-
     });
 
-    const result = await response.json();
-
-    return result;
+    return await response.json();
 
   } catch (error) {
-
-    console.error("API ERROR:", error);
+    console.error(error);
 
     return {
       success: false,
       message: "تعذر الاتصال بالخادم"
     };
-
   }
-
 }
 
 
@@ -65,93 +53,59 @@ async function login() {
   const message =
     document.getElementById("loginMessage");
 
+  if (!accountNumber || !code) {
+    message.textContent = "أدخل رقم الحساب والرمز";
+    return;
+  }
 
   message.textContent = "جاري تسجيل الدخول...";
 
-
-  if (!accountNumber || !code) {
-
-    message.textContent =
-      "أدخل رقم الحساب والرمز";
-
-    return;
-
-  }
-
-
   const result = await apiRequest({
-
     action: "login",
-
-    accountNumber: accountNumber,
-
-    code: code
-
+    accountNumber,
+    code
   });
 
-
-  console.log("LOGIN RESULT:", result);
-
+  console.log("LOGIN:", result);
 
   if (!result.success) {
-
     message.textContent =
       result.message || "فشل تسجيل الدخول";
-
     return;
-
   }
 
-
   currentUser = result.user;
-
 
   localStorage.setItem(
     "currentUser",
     JSON.stringify(currentUser)
   );
 
-
   if (
-    String(currentUser.accountNumber) === "3854" &&
+    String(currentUser.accountNumber) === "3854" ||
     String(currentUser.role).toUpperCase() === "ADMIN"
   ) {
-
     showScreen("gameScreen");
-
     updateGameUI();
-
     return;
-
   }
-
 
   if (
     String(currentUser.status).toUpperCase() !==
     "APPROVED"
   ) {
 
-    const waitingAccount =
-      document.getElementById("waitingAccount");
-
-    if (waitingAccount) {
-
-      waitingAccount.textContent =
-        currentUser.accountNumber;
-
-    }
+    document.getElementById(
+      "waitingAccount"
+    ).textContent =
+      currentUser.accountNumber;
 
     showScreen("waitingScreen");
-
     return;
-
   }
 
-
   showScreen("gameScreen");
-
   updateGameUI();
-
 }
 
 
@@ -162,116 +116,50 @@ async function login() {
 async function register() {
 
   const nickname =
-    document
-      .getElementById("registerNickname")
-      .value
-      .trim();
+    document.getElementById("registerNickname").value.trim();
 
   const phone =
-    document
-      .getElementById("registerPhone")
-      .value
-      .trim();
+    document.getElementById("registerPhone").value.trim();
 
   const email =
-    document
-      .getElementById("registerEmail")
-      .value
-      .trim();
+    document.getElementById("registerEmail").value.trim();
 
   const code =
-    document
-      .getElementById("registerCode")
-      .value
-      .trim();
+    document.getElementById("registerCode").value.trim();
 
   const message =
     document.getElementById("registerMessage");
 
+  message.textContent = "جاري إنشاء الحساب...";
 
-  message.textContent =
-    "جاري إنشاء الحساب...";
-
-
-  if (!nickname || !phone || !email || !code) {
-
-    message.textContent =
-      "يرجى تعبئة جميع البيانات";
-
-    return;
-
-  }
-
-
-  const result =
-    await apiRequest({
-
-      action: "register",
-
-      nickname: nickname,
-
-      phone: phone,
-
-      email: email,
-
-      code: code
-
-    });
-
-
-  console.log("REGISTER RESULT:", result);
-
+  const result = await apiRequest({
+    action: "register",
+    nickname,
+    phone,
+    email,
+    code
+  });
 
   if (!result.success) {
-
     message.textContent =
-      result.message || "فشل إنشاء الحساب";
-
+      result.message || "تعذر إنشاء الحساب";
     return;
-
   }
 
+  message.innerHTML =
+    "تم إنشاء الحساب بنجاح.<br>" +
+    "رقم حسابك: <strong>" +
+    result.accountNumber +
+    "</strong>";
 
   document.getElementById(
     "waitingAccount"
   ).textContent =
     result.accountNumber;
 
-
-  currentUser = {
-
-    accountNumber:
-      result.accountNumber,
-
-    nickname:
-      nickname,
-
-    phone:
-      phone,
-
-    email:
-      email,
-
-    status:
-      "PENDING",
-
-    role:
-      "USER",
-
-    gamesRemaining:
-      0
-
-  };
-
-
-  localStorage.setItem(
-    "currentUser",
-    JSON.stringify(currentUser)
-  );
-
-
-  showScreen("waitingScreen");
-
+  setTimeout(() => {
+    showScreen("waitingScreen");
+  }, 1200);
 }
 
 
@@ -282,68 +170,29 @@ async function register() {
 async function forgotCode() {
 
   const accountNumber =
-    document
-      .getElementById("forgotAccount")
-      .value
-      .trim();
+    document.getElementById("forgotAccount").value.trim();
 
   const phone =
-    document
-      .getElementById("forgotPhone")
-      .value
-      .trim();
+    document.getElementById("forgotPhone").value.trim();
 
   const email =
-    document
-      .getElementById("forgotEmail")
-      .value
-      .trim();
+    document.getElementById("forgotEmail").value.trim();
 
   const message =
     document.getElementById("forgotMessage");
 
+  message.textContent = "جاري التحقق...";
 
-  message.textContent =
-    "جاري التحقق...";
-
-
-  if (!accountNumber || !phone || !email) {
-
-    message.textContent =
-      "أدخل جميع البيانات";
-
-    return;
-
-  }
-
-
-  const result =
-    await apiRequest({
-
-      action: "forgotCode",
-
-      accountNumber:
-        accountNumber,
-
-      phone:
-        phone,
-
-      email:
-        email
-
-    });
-
-
-  console.log(
-    "FORGOT CODE RESULT:",
-    result
-  );
-
+  const result = await apiRequest({
+    action: "forgotCode",
+    accountNumber,
+    phone,
+    email
+  });
 
   message.textContent =
     result.message ||
-    "تمت العملية";
-
+    "تم التحقق";
 }
 
 
@@ -354,196 +203,630 @@ async function forgotCode() {
 async function startGame() {
 
   if (!currentUser) {
-
-    alert("يجب تسجيل الدخول أولاً");
-
     showScreen("loginScreen");
-
     return;
-
   }
 
-
   const team1 =
-    document
-      .getElementById("team1")
-      .value
-      .trim();
+    document.getElementById("team1").value.trim();
 
   const team2 =
-    document
-      .getElementById("team2")
-      .value
-      .trim();
+    document.getElementById("team2").value.trim();
 
   const message =
     document.getElementById("gameMessage");
 
-
   if (!team1 || !team2) {
-
     message.textContent =
       "أدخل اسم الفريقين";
-
     return;
-
   }
-
 
   message.textContent =
     "جاري تجهيز اللعبة...";
 
+  const result = await apiRequest({
+    action: "createGame",
+    accountNumber:
+      String(currentUser.accountNumber),
+    team1,
+    team2
+  });
 
-  const result =
-    await apiRequest({
-
-      action: "createGame",
-
-      accountNumber:
-        String(currentUser.accountNumber),
-
-      team1:
-        team1,
-
-      team2:
-        team2
-
-    });
-
-
-  console.log(
-    "CREATE GAME RESULT:",
-    result
-  );
-
+  console.log("CREATE GAME:", result);
 
   if (!result.success) {
-
     message.textContent =
       result.message ||
       "تعذر بدء اللعبة";
-
     return;
-
   }
-
 
   currentGame = result;
 
+  gameState = {
+    team1Score: 0,
+    team2Score: 0,
+    turn: 1,
+    usedQuestions: []
+  };
 
   localStorage.setItem(
     "currentGame",
-    JSON.stringify(result)
+    JSON.stringify(currentGame)
   );
 
-
-  if (
-    String(currentUser.accountNumber) !== "3854"
-  ) {
-
-    currentUser.gamesRemaining =
-      Number(result.gamesRemaining || 0);
-
-  }
-
+  currentUser.gamesRemaining =
+    result.gamesRemaining;
 
   localStorage.setItem(
     "currentUser",
     JSON.stringify(currentUser)
   );
 
-
-  team1Score = 0;
-  team2Score = 0;
-  currentTeam = 1;
-  currentQuestion = null;
-  answerShown = false;
-
-
   updateGameUI();
 
-
-  message.textContent =
-    "";
-
-
-  /*
-   * هنا الانتقال الفعلي إلى لوحة اللعبة
-   */
-
   showGameBoard(result);
-
 }
 
 
 /* =========================================================
-   SHOW GAME BOARD
+   GAME BOARD
    ========================================================= */
 
 function showGameBoard(game) {
 
-  if (!game) {
+  currentGame = game;
+
+  const oldBoard =
+    document.getElementById("gameBoardScreen");
+
+  if (oldBoard) {
+    oldBoard.remove();
+  }
+
+  const screen =
+    document.createElement("section");
+
+  screen.id = "gameBoardScreen";
+  screen.className = "screen active";
+
+  screen.innerHTML = `
+
+    <div class="game-board">
+
+      <div class="game-header">
+
+        <h1>🚑 سين جيم الطبي</h1>
+
+        <button
+          class="secondary"
+          onclick="backToSetup()"
+        >
+          رجوع
+        </button>
+
+      </div>
+
+
+      <div class="teams">
+
+        <div
+          class="team-card team-one"
+          id="team1Card"
+        >
+
+          <h2>${escapeHtml(game.team1)}</h2>
+
+          <div
+            class="score"
+            id="team1Score"
+          >
+            0
+          </div>
+
+        </div>
+
+
+        <div class="turn-box">
+
+          <div class="turn-label">
+            الدور
+          </div>
+
+          <div
+            id="turnText"
+            class="turn-team"
+          >
+            ${escapeHtml(game.team1)}
+          </div>
+
+        </div>
+
+
+        <div
+          class="team-card team-two"
+          id="team2Card"
+        >
+
+          <h2>${escapeHtml(game.team2)}</h2>
+
+          <div
+            class="score"
+            id="team2Score"
+          >
+            0
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="questionArea"
+        class="question-area"
+      >
+
+        <h2>اختر الفئة</h2>
+
+        <p>
+          اختر قيمة السؤال للبدء
+        </p>
+
+      </div>
+
+
+      <div
+        id="categoriesGrid"
+        class="categories-grid"
+      ></div>
+
+
+      <div
+        id="questionModal"
+        class="question-modal hidden"
+      ></div>
+
+    </div>
+  `;
+
+  document.body.appendChild(screen);
+
+  document
+    .querySelectorAll(".screen")
+    .forEach(s => {
+      if (s.id !== "gameBoardScreen") {
+        s.classList.remove("active");
+      }
+    });
+
+  renderCategories();
+  updateBoard();
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+const CATEGORIES = [
+  "التشريح",
+  "الإحالة",
+  "الأدوات والمعدات",
+  "العلامات الحيوية",
+  "الأدوية",
+  "الطوارئ والإسعافات"
+];
+
+const POINTS = [
+  100,
+  200,
+  300,
+  400,
+  500
+];
+
+
+function renderCategories() {
+
+  const container =
+    document.getElementById(
+      "categoriesGrid"
+    );
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  CATEGORIES.forEach(category => {
+
+    const column =
+      document.createElement("div");
+
+    column.className =
+      "category-column";
+
+    const title =
+      document.createElement("div");
+
+    title.className =
+      "category-title";
+
+    title.textContent =
+      category;
+
+    column.appendChild(title);
+
+
+    POINTS.forEach(points => {
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "points-button";
+
+      button.textContent =
+        points;
+
+      button.dataset.category =
+        category;
+
+      button.dataset.points =
+        points;
+
+      button.onclick = () =>
+        chooseQuestion(
+          category,
+          points,
+          button
+        );
+
+      column.appendChild(button);
+
+    });
+
+    container.appendChild(column);
+  });
+}
+
+
+/* =========================================================
+   CHOOSE QUESTION
+   ========================================================= */
+
+async function chooseQuestion(
+  category,
+  points,
+  button
+) {
+
+  if (button.disabled) {
     return;
   }
 
+  button.disabled = true;
+  button.classList.add("used");
 
-  currentGame = game;
+  const result = await apiRequest({
+    action: "getRandomQuestion",
+    category,
+    points
+  });
+
+  console.log("QUESTION:", result);
+
+  if (!result.success) {
+
+    button.disabled = false;
+    button.classList.remove("used");
+
+    alert(
+      result.message ||
+      "لا يوجد سؤال"
+    );
+
+    return;
+  }
+
+  const question =
+    result.question;
+
+  gameState.usedQuestions.push(
+    question.id
+  );
+
+  showQuestion(
+    question,
+    category,
+    points,
+    button
+  );
+}
 
 
-  /*
-   * تحديث أسماء الفرق
-   */
+/* =========================================================
+   SHOW QUESTION
+   ========================================================= */
 
-  const team1Name =
-    document.getElementById("team1Name");
+function showQuestion(
+  question,
+  category,
+  points,
+  button
+) {
 
-  const team2Name =
-    document.getElementById("team2Name");
+  const modal =
+    document.getElementById(
+      "questionModal"
+    );
+
+  modal.classList.remove("hidden");
+
+  modal.innerHTML = `
+
+    <div class="question-card">
+
+      <div class="question-top">
+
+        <span>
+          ${escapeHtml(category)}
+        </span>
+
+        <strong>
+          ${points} نقطة
+        </strong>
+
+      </div>
 
 
-  if (team1Name) {
+      <h2>
+        ${escapeHtml(question.question)}
+      </h2>
 
-    team1Name.textContent =
-      game.team1 || "الفريق الأول";
 
+      <div
+        id="answerBox"
+        class="answer-box hidden"
+      >
+        <strong>الإجابة:</strong>
+        <p>
+          ${escapeHtml(question.answer)}
+        </p>
+      </div>
+
+
+      <div class="question-actions">
+
+        <button
+          onclick="showAnswer()"
+        >
+          إظهار الإجابة
+        </button>
+
+        <button
+          class="correct-button"
+          onclick="answerQuestion(true, '${escapeJs(question.id)}', '${escapeJs(question.question)}', '${escapeJs(category)}', ${points})"
+        >
+          ✓ صحيحة
+        </button>
+
+        <button
+          class="wrong-button"
+          onclick="answerQuestion(false, '${escapeJs(question.id)}', '${escapeJs(question.question)}', '${escapeJs(category)}', ${points})"
+        >
+          ✗ خاطئة
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   SHOW ANSWER
+   ========================================================= */
+
+function showAnswer() {
+
+  const box =
+    document.getElementById(
+      "answerBox"
+    );
+
+  if (box) {
+    box.classList.remove("hidden");
+  }
+}
+
+
+/* =========================================================
+   ANSWER
+   ========================================================= */
+
+async function answerQuestion(
+  correct,
+  questionId,
+  questionText,
+  category,
+  points
+) {
+
+  const team =
+    gameState.turn === 1
+      ? currentGame.team1
+      : currentGame.team2;
+
+  if (correct) {
+
+    if (gameState.turn === 1) {
+      gameState.team1Score += points;
+    } else {
+      gameState.team2Score += points;
+    }
   }
 
 
-  if (team2Name) {
+  await apiRequest({
 
-    team2Name.textContent =
-      game.team2 || "الفريق الثاني";
+    action: "submitAnswer",
 
+    gameId:
+      currentGame.gameId,
+
+    accountNumber:
+      currentGame.accountNumber,
+
+    team1:
+      currentGame.team1,
+
+    team2:
+      currentGame.team2,
+
+    category:
+      category,
+
+    questionId:
+      questionId,
+
+    question:
+      questionText,
+
+    points:
+      points,
+
+    team:
+      team,
+
+    correct:
+      correct
+  });
+
+
+  closeQuestion();
+
+  switchTurn();
+
+  updateBoard();
+}
+
+
+/* =========================================================
+   SWITCH TURN
+   ========================================================= */
+
+function switchTurn() {
+
+  gameState.turn =
+    gameState.turn === 1
+      ? 2
+      : 1;
+}
+
+
+/* =========================================================
+   UPDATE BOARD
+   ========================================================= */
+
+function updateBoard() {
+
+  const score1 =
+    document.getElementById(
+      "team1Score"
+    );
+
+  const score2 =
+    document.getElementById(
+      "team2Score"
+    );
+
+  const turn =
+    document.getElementById(
+      "turnText"
+    );
+
+  if (score1) {
+    score1.textContent =
+      gameState.team1Score;
+  }
+
+  if (score2) {
+    score2.textContent =
+      gameState.team2Score;
+  }
+
+  if (turn) {
+
+    turn.textContent =
+      gameState.turn === 1
+        ? currentGame.team1
+        : currentGame.team2;
   }
 
 
-  /*
-   * تحديث النقاط
-   */
+  const card1 =
+    document.getElementById(
+      "team1Card"
+    );
 
-  updateScores();
+  const card2 =
+    document.getElementById(
+      "team2Card"
+    );
+
+  if (card1) {
+    card1.classList.toggle(
+      "active-team",
+      gameState.turn === 1
+    );
+  }
+
+  if (card2) {
+    card2.classList.toggle(
+      "active-team",
+      gameState.turn === 2
+    );
+  }
+}
 
 
-  /*
-   * تحديد الدور
-   */
+/* =========================================================
+   CLOSE QUESTION
+   ========================================================= */
 
-  updateTurn();
+function closeQuestion() {
+
+  const modal =
+    document.getElementById(
+      "questionModal"
+    );
+
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.innerHTML = "";
+  }
+}
 
 
-  /*
-   * تصفير السؤال
-   */
+/* =========================================================
+   BACK TO SETUP
+   ========================================================= */
 
-  clearQuestion();
+function backToSetup() {
 
+  const board =
+    document.getElementById(
+      "gameBoardScreen"
+    );
 
-  /*
-   * إظهار لوحة اللعبة
-   */
+  if (board) {
+    board.remove();
+  }
 
-  showScreen("boardScreen");
-
+  showScreen("gameScreen");
 }
 
 
@@ -557,28 +840,27 @@ function updateGameUI() {
     return;
   }
 
-
   const nickname =
-    document.getElementById("playerNickname");
+    document.getElementById(
+      "playerNickname"
+    );
 
   const games =
-    document.getElementById("gamesRemaining");
-
+    document.getElementById(
+      "gamesRemaining"
+    );
 
   if (nickname) {
-
     nickname.textContent =
       currentUser.nickname || "";
-
   }
-
 
   if (games) {
 
     if (
-      String(currentUser.accountNumber) === "3854"
+      String(currentUser.accountNumber) ===
+      "3854"
     ) {
-
       games.textContent = "∞";
 
     } else {
@@ -587,482 +869,8 @@ function updateGameUI() {
         Number(
           currentUser.gamesRemaining || 0
         );
-
     }
-
   }
-
-}
-
-
-/* =========================================================
-   UPDATE SCORES
-   ========================================================= */
-
-function updateScores() {
-
-  const score1 =
-    document.getElementById("team1Score");
-
-  const score2 =
-    document.getElementById("team2Score");
-
-
-  if (score1) {
-
-    score1.textContent =
-      team1Score;
-
-  }
-
-
-  if (score2) {
-
-    score2.textContent =
-      team2Score;
-
-  }
-
-}
-
-
-/* =========================================================
-   UPDATE TURN
-   ========================================================= */
-
-function updateTurn() {
-
-  const turn =
-    document.getElementById("currentTurn");
-
-
-  if (!turn) {
-    return;
-  }
-
-
-  if (currentTeam === 1) {
-
-    turn.textContent =
-      "الدور: الفريق الأول";
-
-  } else {
-
-    turn.textContent =
-      "الدور: الفريق الثاني";
-
-  }
-
-}
-
-
-/* =========================================================
-   GET RANDOM QUESTION
-   ========================================================= */
-
-async function getQuestion(category, points) {
-
-  const result =
-    await apiRequest({
-
-      action:
-        "getRandomQuestion",
-
-      category:
-        category,
-
-      points:
-        points
-
-    });
-
-
-  console.log(
-    "QUESTION RESULT:",
-    result
-  );
-
-
-  if (!result.success) {
-
-    alert(
-      result.message ||
-      "لا يوجد سؤال"
-    );
-
-    return;
-
-  }
-
-
-  currentQuestion =
-    result.question;
-
-  answerShown = false;
-
-
-  displayQuestion(
-    currentQuestion
-  );
-
-}
-
-
-/* =========================================================
-   DISPLAY QUESTION
-   ========================================================= */
-
-function displayQuestion(question) {
-
-  if (!question) {
-    return;
-  }
-
-
-  const questionText =
-    document.getElementById("questionText");
-
-  const answerText =
-    document.getElementById("answerText");
-
-
-  if (questionText) {
-
-    questionText.textContent =
-      question.question || "";
-
-  }
-
-
-  if (answerText) {
-
-    answerText.textContent =
-      question.answer || "";
-
-    answerText.style.display =
-      "none";
-
-  }
-
-
-  const answerButton =
-    document.getElementById(
-      "showAnswerButton"
-    );
-
-
-  if (answerButton) {
-
-    answerButton.style.display =
-      "inline-block";
-
-  }
-
-
-  const correctButton =
-    document.getElementById(
-      "correctButton"
-    );
-
-  const wrongButton =
-    document.getElementById(
-      "wrongButton"
-    );
-
-
-  if (correctButton) {
-
-    correctButton.style.display =
-      "none";
-
-  }
-
-
-  if (wrongButton) {
-
-    wrongButton.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   SHOW ANSWER
-   ========================================================= */
-
-function showAnswer() {
-
-  if (!currentQuestion) {
-    return;
-  }
-
-
-  const answerText =
-    document.getElementById(
-      "answerText"
-    );
-
-
-  if (answerText) {
-
-    answerText.style.display =
-      "block";
-
-  }
-
-
-  answerShown = true;
-
-
-  const answerButton =
-    document.getElementById(
-      "showAnswerButton"
-    );
-
-  const correctButton =
-    document.getElementById(
-      "correctButton"
-    );
-
-  const wrongButton =
-    document.getElementById(
-      "wrongButton"
-    );
-
-
-  if (answerButton) {
-
-    answerButton.style.display =
-      "none";
-
-  }
-
-
-  if (correctButton) {
-
-    correctButton.style.display =
-      "inline-block";
-
-  }
-
-
-  if (wrongButton) {
-
-    wrongButton.style.display =
-      "inline-block";
-
-  }
-
-}
-
-
-/* =========================================================
-   ANSWER RESULT
-   ========================================================= */
-
-async function answerResult(correct) {
-
-  if (!currentQuestion || !currentGame) {
-
-    return;
-
-  }
-
-
-  /*
-   * تسجيل الإجابة في Google Sheets
-   */
-
-  await apiRequest({
-
-    action:
-      "submitAnswer",
-
-    gameId:
-      currentGame.gameId || "",
-
-    accountNumber:
-      currentGame.accountNumber || "",
-
-    team1:
-      currentGame.team1 || "",
-
-    team2:
-      currentGame.team2 || "",
-
-    category:
-      currentQuestion.category || "",
-
-    questionId:
-      currentQuestion.id || "",
-
-    question:
-      currentQuestion.question || "",
-
-    points:
-      Number(currentQuestion.points || 0),
-
-    team:
-      currentTeam === 1
-        ? currentGame.team1
-        : currentGame.team2,
-
-    correct:
-      correct
-
-  });
-
-
-  /*
-   * إضافة النقاط إذا كانت الإجابة صحيحة
-   */
-
-  if (correct) {
-
-    const points =
-      Number(
-        currentQuestion.points || 0
-      );
-
-
-    if (currentTeam === 1) {
-
-      team1Score += points;
-
-    } else {
-
-      team2Score += points;
-
-    }
-
-  }
-
-
-  updateScores();
-
-
-  /*
-   * الانتقال للفريق الثاني بعد الإجابة
-   */
-
-  if (currentTeam === 1) {
-
-    currentTeam = 2;
-
-  } else {
-
-    currentTeam = 1;
-
-  }
-
-
-  updateTurn();
-
-
-  /*
-   * إغلاق السؤال
-   */
-
-  clearQuestion();
-
-}
-
-
-/* =========================================================
-   CLEAR QUESTION
-   ========================================================= */
-
-function clearQuestion() {
-
-  currentQuestion = null;
-  answerShown = false;
-
-
-  const questionText =
-    document.getElementById(
-      "questionText"
-    );
-
-  const answerText =
-    document.getElementById(
-      "answerText"
-    );
-
-
-  if (questionText) {
-
-    questionText.textContent =
-      "اختر سؤالاً من الجدول";
-
-  }
-
-
-  if (answerText) {
-
-    answerText.textContent =
-      "";
-
-    answerText.style.display =
-      "none";
-
-  }
-
-
-  const answerButton =
-    document.getElementById(
-      "showAnswerButton"
-    );
-
-  const correctButton =
-    document.getElementById(
-      "correctButton"
-    );
-
-  const wrongButton =
-    document.getElementById(
-      "wrongButton"
-    );
-
-
-  if (answerButton) {
-
-    answerButton.style.display =
-      "none";
-
-  }
-
-
-  if (correctButton) {
-
-    correctButton.style.display =
-      "none";
-
-  }
-
-
-  if (wrongButton) {
-
-    wrongButton.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   CATEGORY QUESTION BUTTON
-   ========================================================= */
-
-function chooseQuestion(category, points) {
-
-  getQuestion(
-    category,
-    points
-  );
-
 }
 
 
@@ -1075,24 +883,17 @@ function showScreen(screenId) {
   document
     .querySelectorAll(".screen")
     .forEach(screen => {
-
       screen.classList.remove("active");
-
     });
-
 
   const screen =
     document.getElementById(
       screenId
     );
 
-
   if (screen) {
-
     screen.classList.add("active");
-
   }
-
 }
 
 
@@ -1113,11 +914,16 @@ function logout() {
     "currentGame"
   );
 
+  const board =
+    document.getElementById(
+      "gameBoardScreen"
+    );
 
-  showScreen(
-    "loginScreen"
-  );
+  if (board) {
+    board.remove();
+  }
 
+  showScreen("loginScreen");
 
   const account =
     document.getElementById(
@@ -1129,7 +935,6 @@ function logout() {
       "loginCode"
     );
 
-
   if (account) {
     account.value = "";
   }
@@ -1137,7 +942,6 @@ function logout() {
   if (code) {
     code.value = "";
   }
-
 }
 
 
@@ -1149,128 +953,97 @@ function restoreLogin() {
 
   try {
 
-    const savedUser =
+    const saved =
       localStorage.getItem(
         "currentUser"
       );
 
-
-    if (!savedUser) {
+    if (!saved) {
       return;
     }
 
-
     currentUser =
-      JSON.parse(savedUser);
-
+      JSON.parse(saved);
 
     if (
       !currentUser ||
       !currentUser.accountNumber
     ) {
-
       return;
-
     }
 
-
-    /*
-     * استرجاع اللعبة الحالية إن وجدت
-     */
-
-    const savedGame =
-      localStorage.getItem(
-        "currentGame"
-      );
-
-
-    if (savedGame) {
-
-      try {
-
-        currentGame =
-          JSON.parse(savedGame);
-
-      } catch (e) {
-
-        currentGame = null;
-
-      }
-
-    }
-
-
-    /*
-     * ADMIN
-     */
 
     if (
       String(currentUser.accountNumber) ===
-      "3854"
+      "3854" ||
+      String(currentUser.role).toUpperCase() ===
+      "ADMIN"
     ) {
 
-      showScreen(
-        "gameScreen"
-      );
-
+      showScreen("gameScreen");
       updateGameUI();
-
       return;
-
     }
 
-
-    /*
-     * المستخدم العادي
-     */
 
     if (
       String(currentUser.status).toUpperCase() ===
       "APPROVED"
     ) {
 
-      showScreen(
-        "gameScreen"
-      );
-
+      showScreen("gameScreen");
       updateGameUI();
 
     } else {
 
-      const waitingAccount =
+      const waiting =
         document.getElementById(
           "waitingAccount"
         );
 
-
-      if (waitingAccount) {
-
-        waitingAccount.textContent =
+      if (waiting) {
+        waiting.textContent =
           currentUser.accountNumber;
-
       }
-
 
       showScreen(
         "waitingScreen"
       );
-
     }
 
   } catch (error) {
 
-    console.error(
-      "RESTORE ERROR:",
-      error
-    );
-
+    console.error(error);
 
     localStorage.removeItem(
       "currentUser"
     );
-
   }
+}
 
+
+/* =========================================================
+   ESCAPE
+   ========================================================= */
+
+function escapeHtml(value) {
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+function escapeJs(value) {
+
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
 }
 
 
