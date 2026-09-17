@@ -7,22 +7,15 @@ const API_URL =
 
 const ADMIN_ACCOUNT = "3854";
 
-
 let currentUser = null;
 let currentGame = null;
 let currentQuestion = null;
 
-
 let gameState = {
-
   team1Score: 0,
-
   team2Score: 0,
-
   turn: 1,
-
   usedQuestions: []
-
 };
 
 
@@ -31,34 +24,20 @@ let gameState = {
 ========================================================= */
 
 const CATEGORIES = [
-
   "التشريح",
-
   "الإحالة",
-
   "الأدوات والمعدات",
-
   "العلامات الحيوية",
-
   "الأدوية",
-
   "الطوارئ والإسعافات"
-
 ];
 
-
 const POINTS = [
-
   100,
-
   200,
-
   300,
-
   400,
-
   500
-
 ];
 
 
@@ -70,87 +49,69 @@ async function apiRequest(data) {
 
   try {
 
-    console.log("API REQUEST:", data);
-
+    console.log("=================================");
+    console.log("API REQUEST");
+    console.log(data);
+    console.log("=================================");
 
     const response = await fetch(API_URL, {
-
       method: "POST",
 
       headers: {
-
-        "Content-Type":
-          "text/plain;charset=utf-8"
-
+        "Content-Type": "text/plain;charset=utf-8"
       },
 
       body: JSON.stringify(data)
-
     });
 
-
-    console.log(
-      "HTTP STATUS:",
-      response.status
-    );
-
+    console.log("HTTP STATUS:", response.status);
 
     if (!response.ok) {
 
       throw new Error(
-        "HTTP " +
-        response.status
+        "HTTP " + response.status
       );
-
     }
-
 
     const text =
       await response.text();
 
-
-    console.log(
-      "API RAW RESPONSE:",
-      text
-    );
-
+    console.log("API RAW RESPONSE:");
+    console.log(text);
 
     if (!text) {
 
       return {
-
         success: false,
-
-        message:
-          "الخادم أرسل استجابة فارغة"
-
+        message: "السيرفر أرسل استجابة فارغة"
       };
-
     }
 
+    let result;
 
     try {
 
-      return JSON.parse(text);
+      result =
+        JSON.parse(text);
 
     } catch (error) {
 
       console.error(
-        "JSON ERROR:",
+        "JSON PARSE ERROR:",
         error
       );
 
-
       return {
-
         success: false,
-
         message:
-          "الخادم أرسل استجابة غير صحيحة"
-
+          "السيرفر أرسل بيانات غير صحيحة"
       };
-
     }
+
+    console.log("API PARSED RESULT:");
+    console.log(result);
+
+    return result;
 
   } catch (error) {
 
@@ -159,18 +120,13 @@ async function apiRequest(data) {
       error
     );
 
-
     return {
-
       success: false,
-
       message:
-        "تعذر الاتصال بالخادم"
-
+        "تعذر الاتصال بالسيرفر: " +
+        error.message
     };
-
   }
-
 }
 
 
@@ -181,49 +137,204 @@ async function apiRequest(data) {
 function escapeHtml(value) {
 
   return String(value ?? "")
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
 function escapeJs(value) {
 
   return String(value ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+}
 
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
 
-    .replace(
-      /'/g,
-      "\\'"
-    );
+/* =========================================================
+   NORMALIZE USER
+========================================================= */
 
+function normalizeUser(result, accountNumber) {
+
+  /*
+   * بعض نسخ السيرفر ترجع:
+   *
+   * {
+   *   success: true,
+   *   user: {...}
+   * }
+   *
+   * وبعضها قد ترجع:
+   *
+   * {
+   *   success: true,
+   *   data: {...}
+   * }
+   *
+   * لذلك ندعم الاثنين.
+   */
+
+  let user =
+    result?.user ||
+    result?.data ||
+    result?.account ||
+    null;
+
+
+  if (!user && result && typeof result === "object") {
+
+    /*
+     * إذا كانت بيانات المستخدم موجودة مباشرة
+     */
+
+    if (
+      result.accountNumber ||
+      result.account_number ||
+      result.nickname ||
+      result.name ||
+      result.status ||
+      result.role
+    ) {
+
+      user = result;
+    }
+  }
+
+
+  if (!user) {
+
+    return null;
+  }
+
+
+  /*
+   * توحيد أسماء الحقول
+   */
+
+  const normalized = {
+
+    ...user,
+
+    accountNumber:
+      user.accountNumber ??
+      user.account_number ??
+      accountNumber,
+
+    nickname:
+      user.nickname ??
+      user.name ??
+      user.nickName ??
+      "",
+
+    phone:
+      user.phone ??
+      user.mobile ??
+      "",
+
+    email:
+      user.email ??
+      "",
+
+    code:
+      user.code ??
+      "",
+
+    status:
+      user.status ??
+      user.Status ??
+      user.state ??
+      "",
+
+    role:
+      user.role ??
+      user.Role ??
+      ""
+  };
+
+
+  return normalized;
+}
+
+
+/* =========================================================
+   GET USER STATUS
+========================================================= */
+
+function getUserStatus(user) {
+
+  if (!user) {
+    return "";
+  }
+
+
+  return String(
+    user.status ??
+    user.Status ??
+    user.state ??
+    ""
+  )
+    .trim()
+    .toUpperCase();
+}
+
+
+/* =========================================================
+   IS APPROVED
+========================================================= */
+
+function isApprovedUser(user) {
+
+  const status =
+    getUserStatus(user);
+
+
+  return (
+    status === "APPROVED" ||
+    status === "ACCEPTED" ||
+    status === "ACTIVE" ||
+    status === "مقبول" ||
+    status === "معتمد" ||
+    status === "تمت الموافقة"
+  );
+}
+
+
+/* =========================================================
+   IS ADMIN
+========================================================= */
+
+function isAdmin() {
+
+  if (!currentUser) {
+    return false;
+  }
+
+
+  const account =
+    String(
+      currentUser.accountNumber ??
+      ""
+    ).trim();
+
+
+  const role =
+    String(
+      currentUser.role ??
+      ""
+    ).trim()
+    .toUpperCase();
+
+
+  return (
+    account === ADMIN_ACCOUNT ||
+    role === "ADMIN" ||
+    role === "ADMINISTRATOR" ||
+    role === "مسؤول" ||
+    role === "مدير"
+  );
 }
 
 
@@ -240,7 +351,6 @@ function showScreen(screenId) {
       screen.classList.remove(
         "active"
       );
-
     });
 
 
@@ -258,7 +368,6 @@ function showScreen(screenId) {
     );
 
     return;
-
   }
 
 
@@ -271,38 +380,6 @@ function showScreen(screenId) {
     0,
     0
   );
-
-}
-
-
-/* =========================================================
-   ADMIN CHECK
-========================================================= */
-
-function isAdmin() {
-
-  if (!currentUser) {
-
-    return false;
-
-  }
-
-
-  return (
-
-    String(
-      currentUser.accountNumber ?? ""
-    ) === ADMIN_ACCOUNT
-
-    ||
-
-    String(
-      currentUser.role ?? ""
-    ).toUpperCase() ===
-    "ADMIN"
-
-  );
-
 }
 
 
@@ -317,12 +394,10 @@ async function login() {
       "loginAccount"
     );
 
-
   const codeInput =
     document.getElementById(
       "loginCode"
     );
-
 
   const message =
     document.getElementById(
@@ -341,16 +416,17 @@ async function login() {
     );
 
     return;
-
   }
 
 
   const accountNumber =
-    accountInput.value.trim();
+    accountInput.value
+      .trim();
 
 
   const code =
-    codeInput.value.trim();
+    codeInput.value
+      .trim();
 
 
   if (
@@ -362,7 +438,6 @@ async function login() {
       "أدخل رقم الحساب والرمز";
 
     return;
-
   }
 
 
@@ -370,11 +445,14 @@ async function login() {
     "جاري تسجيل الدخول...";
 
 
+  /*
+   * إرسال الطلب للسيرفر الجديد
+   */
+
   const result =
     await apiRequest({
 
-      action:
-        "login",
+      action: "login",
 
       accountNumber:
         accountNumber,
@@ -391,52 +469,80 @@ async function login() {
   );
 
 
+  /*
+   * السيرفر رفض الدخول
+   */
+
   if (
     !result ||
-    !result.success
+    result.success !== true
   ) {
 
     message.textContent =
       result?.message ||
-      "فشل تسجيل الدخول";
+      result?.error ||
+      "رقم الحساب أو الرمز غير صحيح";
 
     return;
-
   }
 
 
-  if (!result.user) {
+  /*
+   * استخراج بيانات المستخدم
+   */
 
-    message.textContent =
-      "تم تسجيل الدخول لكن بيانات الحساب غير موجودة";
+  const user =
+    normalizeUser(
+      result,
+      accountNumber
+    );
+
+
+  /*
+   * إذا السيرفر قال نجاح لكن لم يرسل بيانات المستخدم
+   */
+
+  if (!user) {
 
     console.error(
-      "LOGIN USER MISSING:",
+      "LOGIN SUCCESS BUT USER IS MISSING:",
       result
     );
 
-    return;
+    message.textContent =
+      "تم التحقق من الحساب لكن السيرفر لم يرسل بيانات المستخدم.";
 
+    return;
   }
 
 
+  /*
+   * حفظ المستخدم
+   */
+
   currentUser =
-    result.user;
+    user;
 
 
   localStorage.setItem(
-
     "currentUser",
-
     JSON.stringify(
       currentUser
     )
-
   );
 
 
-  message.textContent =
-    "";
+  console.log(
+    "CURRENT USER:",
+    currentUser
+  );
+
+
+  /*
+   * تنظيف الرسالة
+   */
+
+  message.textContent = "";
 
 
   /* =====================================================
@@ -445,19 +551,19 @@ async function login() {
 
   if (isAdmin()) {
 
+    console.log(
+      "ADMIN LOGIN SUCCESS"
+    );
+
     showScreen(
       "gameScreen"
     );
 
-
     updateGameUI();
-
 
     showAdminMenu();
 
-
     return;
-
   }
 
 
@@ -466,9 +572,9 @@ async function login() {
   ====================================================== */
 
   const status =
-    String(
-      currentUser.status ?? ""
-    ).trim().toUpperCase();
+    getUserStatus(
+      currentUser
+    );
 
 
   console.log(
@@ -477,46 +583,53 @@ async function login() {
   );
 
 
+  /*
+   * الحساب المقبول
+   */
+
   if (
-    status !== "APPROVED"
+    isApprovedUser(
+      currentUser
+    )
   ) {
 
-    const waiting =
-      document.getElementById(
-        "waitingAccount"
-      );
-
-
-    if (waiting) {
-
-      waiting.textContent =
-        currentUser.accountNumber ||
-        accountNumber ||
-        "-";
-
-    }
-
+    console.log(
+      "APPROVED USER LOGIN SUCCESS"
+    );
 
     showScreen(
-      "waitingScreen"
+      "gameScreen"
+    );
+
+    updateGameUI();
+
+    showGameSetup();
+
+    return;
+  }
+
+
+  /*
+   * الحساب غير مقبول بعد
+   */
+
+  const waiting =
+    document.getElementById(
+      "waitingAccount"
     );
 
 
-    return;
+  if (waiting) {
 
+    waiting.textContent =
+      currentUser.accountNumber ||
+      accountNumber;
   }
 
 
   showScreen(
-    "gameScreen"
+    "waitingScreen"
   );
-
-
-  updateGameUI();
-
-
-  showGameSetup();
-
 }
 
 
@@ -534,7 +647,6 @@ async function register() {
       ?.value
       .trim();
 
-
   const phone =
     document
       .getElementById(
@@ -542,7 +654,6 @@ async function register() {
       )
       ?.value
       .trim();
-
 
   const email =
     document
@@ -552,7 +663,6 @@ async function register() {
       ?.value
       .trim();
 
-
   const code =
     document
       .getElementById(
@@ -560,7 +670,6 @@ async function register() {
       )
       ?.value
       .trim();
-
 
   const message =
     document.getElementById(
@@ -579,12 +688,9 @@ async function register() {
 
       message.textContent =
         "أكمل جميع البيانات";
-
     }
 
-
     return;
-
   }
 
 
@@ -592,27 +698,21 @@ async function register() {
 
     message.textContent =
       "جاري إنشاء الحساب...";
-
   }
 
 
   const result =
     await apiRequest({
 
-      action:
-        "register",
+      action: "register",
 
-      nickname:
-        nickname,
+      nickname,
 
-      phone:
-        phone,
+      phone,
 
-      email:
-        email,
+      email,
 
-      code:
-        code
+      code
 
     });
 
@@ -625,7 +725,7 @@ async function register() {
 
   if (
     !result ||
-    !result.success
+    result.success !== true
   ) {
 
     if (message) {
@@ -633,29 +733,23 @@ async function register() {
       message.textContent =
         result?.message ||
         "تعذر إنشاء الحساب";
-
     }
 
-
     return;
-
   }
 
 
   if (message) {
 
     message.innerHTML =
-
       "تم إنشاء الحساب بنجاح.<br>" +
-
       "رقم حسابك: <strong>" +
-
       escapeHtml(
-        result.accountNumber
+        result.accountNumber ||
+        result.account_number ||
+        "-"
       ) +
-
       "</strong>";
-
   }
 
 
@@ -669,22 +763,18 @@ async function register() {
 
     waiting.textContent =
       result.accountNumber ||
+      result.account_number ||
       "-";
-
   }
 
 
-  setTimeout(
-    () => {
+  setTimeout(() => {
 
-      showScreen(
-        "waitingScreen"
-      );
+    showScreen(
+      "waitingScreen"
+    );
 
-    },
-    1200
-  );
-
+  }, 1200);
 }
 
 
@@ -702,7 +792,6 @@ async function forgotCode() {
       ?.value
       .trim();
 
-
   const phone =
     document
       .getElementById(
@@ -711,7 +800,6 @@ async function forgotCode() {
       ?.value
       .trim();
 
-
   const email =
     document
       .getElementById(
@@ -719,7 +807,6 @@ async function forgotCode() {
       )
       ?.value
       .trim();
-
 
   const message =
     document.getElementById(
@@ -737,12 +824,9 @@ async function forgotCode() {
 
       message.textContent =
         "أدخل جميع البيانات";
-
     }
 
-
     return;
-
   }
 
 
@@ -750,48 +834,33 @@ async function forgotCode() {
 
     message.textContent =
       "جاري التحقق...";
-
   }
 
 
   const result =
     await apiRequest({
 
-      action:
-        "forgotCode",
+      action: "forgotCode",
 
-      accountNumber:
-        accountNumber,
+      accountNumber,
 
-      phone:
-        phone,
+      phone,
 
-      email:
-        email
+      email
 
     });
-
-
-  console.log(
-    "FORGOT RESULT:",
-    result
-  );
 
 
   if (message) {
 
     message.textContent =
-
       result?.message ||
-
       (
         result?.success
           ? "تم التحقق بنجاح"
           : "تعذر استرجاع الرمز"
       );
-
   }
-
 }
 
 
@@ -802,20 +871,14 @@ async function forgotCode() {
 function updateGameUI() {
 
   if (!currentUser) {
-
     return;
-
   }
 
 
   const nickname =
-
     currentUser.nickname ||
-
     currentUser.name ||
-
     currentUser.accountNumber ||
-
     "";
 
 
@@ -829,7 +892,6 @@ function updateGameUI() {
 
     playerNickname.textContent =
       nickname;
-
   }
 
 
@@ -843,7 +905,6 @@ function updateGameUI() {
 
     boardNickname.textContent =
       nickname;
-
   }
 
 
@@ -856,15 +917,10 @@ function updateGameUI() {
   if (gamesRemaining) {
 
     gamesRemaining.textContent =
-
       currentUser.gamesRemaining ??
-
       currentUser.remainingGames ??
-
       0;
-
   }
-
 }
 
 
@@ -875,9 +931,7 @@ function updateGameUI() {
 function showAdminMenu() {
 
   if (!isAdmin()) {
-
     return;
-
   }
 
 
@@ -886,12 +940,10 @@ function showAdminMenu() {
       "adminMenu"
     );
 
-
   const setup =
     document.getElementById(
       "gameSetupArea"
     );
-
 
   const panel =
     document.getElementById(
@@ -903,7 +955,6 @@ function showAdminMenu() {
 
     menu.style.display =
       "block";
-
   }
 
 
@@ -911,7 +962,6 @@ function showAdminMenu() {
 
     setup.style.display =
       "none";
-
   }
 
 
@@ -919,9 +969,7 @@ function showAdminMenu() {
 
     panel.style.display =
       "none";
-
   }
-
 }
 
 
@@ -936,18 +984,15 @@ function showGameSetup() {
       "adminMenu"
     );
 
-
   const setup =
     document.getElementById(
       "gameSetupArea"
     );
 
-
   const panel =
     document.getElementById(
       "adminPanel"
     );
-
 
   const backButton =
     document.getElementById(
@@ -959,7 +1004,6 @@ function showGameSetup() {
 
     menu.style.display =
       "none";
-
   }
 
 
@@ -967,7 +1011,6 @@ function showGameSetup() {
 
     panel.style.display =
       "none";
-
   }
 
 
@@ -975,20 +1018,16 @@ function showGameSetup() {
 
     setup.style.display =
       "block";
-
   }
 
 
   if (backButton) {
 
     backButton.style.display =
-
       isAdmin()
         ? "block"
         : "none";
-
   }
-
 }
 
 
@@ -1005,7 +1044,6 @@ async function showAdminPanel() {
     );
 
     return;
-
   }
 
 
@@ -1014,12 +1052,10 @@ async function showAdminPanel() {
       "adminMenu"
     );
 
-
   const setup =
     document.getElementById(
       "gameSetupArea"
     );
-
 
   const panel =
     document.getElementById(
@@ -1031,7 +1067,6 @@ async function showAdminPanel() {
 
     menu.style.display =
       "none";
-
   }
 
 
@@ -1039,7 +1074,6 @@ async function showAdminPanel() {
 
     setup.style.display =
       "none";
-
   }
 
 
@@ -1047,12 +1081,10 @@ async function showAdminPanel() {
 
     panel.style.display =
       "block";
-
   }
 
 
   await loadAccounts();
-
 }
 
 
@@ -1063,9 +1095,7 @@ async function showAdminPanel() {
 async function loadAccounts() {
 
   if (!isAdmin()) {
-
     return;
-
   }
 
 
@@ -1076,9 +1106,7 @@ async function loadAccounts() {
 
 
   if (!container) {
-
     return;
-
   }
 
 
@@ -1089,11 +1117,9 @@ async function loadAccounts() {
   const result =
     await apiRequest({
 
-      action:
-        "getAccounts",
+      action: "getAccounts",
 
       accountNumber:
-
         String(
           currentUser.accountNumber
         )
@@ -1109,11 +1135,10 @@ async function loadAccounts() {
 
   if (
     !result ||
-    !result.success
+    result.success !== true
   ) {
 
     container.innerHTML =
-
       `<div class="loading">
         ${escapeHtml(
           result?.message ||
@@ -1122,19 +1147,19 @@ async function loadAccounts() {
       </div>`;
 
     return;
-
   }
 
 
   const accounts =
-
     Array.isArray(
       result.accounts
     )
-
       ? result.accounts
-
-      : [];
+      : Array.isArray(
+          result.data
+        )
+        ? result.data
+        : [];
 
 
   updateAccountStats(
@@ -1148,199 +1173,166 @@ async function loadAccounts() {
       '<div class="loading">لا توجد حسابات</div>';
 
     return;
-
   }
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
-  accounts.forEach(
-    account => {
+  accounts.forEach(account => {
 
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "account-row";
-
-
-      const status =
-
-        String(
-          account.status || ""
-        )
-        .trim()
-        .toUpperCase();
-
-
-      let statusText =
-        "غير معروف";
-
-
-      let statusClass =
-        "";
-
-
-      if (
-        status ===
-        "APPROVED"
-      ) {
-
-        statusText =
-          "مقبول";
-
-        statusClass =
-          "status-approved";
-
-      }
-
-      else if (
-        status ===
-        "PENDING"
-      ) {
-
-        statusText =
-          "بانتظار";
-
-        statusClass =
-          "status-pending";
-
-      }
-
-      else if (
-        status ===
-        "REJECTED"
-      ) {
-
-        statusText =
-          "مرفوض";
-
-        statusClass =
-          "status-rejected";
-
-      }
-
-
-      row.innerHTML = `
-
-        <div class="account-number">
-
-          ${escapeHtml(
-            account.accountNumber
-          )}
-
-        </div>
-
-
-        <div class="account-name">
-
-          <div>
-
-            ${escapeHtml(
-              account.nickname || "-"
-            )}
-
-          </div>
-
-          <small>
-
-            ${escapeHtml(
-              account.email || ""
-            )}
-
-          </small>
-
-        </div>
-
-
-        <div>
-
-          ${escapeHtml(
-            account.phone || "-"
-          )}
-
-        </div>
-
-
-        <div
-          class="account-status ${statusClass}"
-        >
-
-          ${statusText}
-
-        </div>
-
-
-        <div class="account-actions">
-
-          ${
-            status !==
-            "APPROVED"
-
-              ? `
-
-                <button
-                  class="approve-button"
-                  onclick="changeAccountStatus(
-                    '${escapeJs(
-                      account.accountNumber
-                    )}',
-                    'APPROVED'
-                  )"
-                >
-
-                  ✓ قبول
-
-                </button>
-
-              `
-
-              : ""
-          }
-
-
-          ${
-            status !==
-            "REJECTED"
-
-              ? `
-
-                <button
-                  class="reject-button"
-                  onclick="changeAccountStatus(
-                    '${escapeJs(
-                      account.accountNumber
-                    )}',
-                    'REJECTED'
-                  )"
-                >
-
-                  ✗ رفض
-
-                </button>
-
-              `
-
-              : ""
-          }
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        row
+    const row =
+      document.createElement(
+        "div"
       );
 
-    }
-  );
 
+    row.className =
+      "account-row";
+
+
+    const status =
+      String(
+        account.status || ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    let statusText =
+      "غير معروف";
+
+    let statusClass =
+      "";
+
+
+    if (
+      status === "APPROVED" ||
+      status === "ACCEPTED" ||
+      status === "ACTIVE"
+    ) {
+
+      statusText =
+        "مقبول";
+
+      statusClass =
+        "status-approved";
+
+    } else if (
+      status === "PENDING"
+    ) {
+
+      statusText =
+        "بانتظار";
+
+      statusClass =
+        "status-pending";
+
+    } else if (
+      status === "REJECTED"
+    ) {
+
+      statusText =
+        "مرفوض";
+
+      statusClass =
+        "status-rejected";
+    }
+
+
+    row.innerHTML = `
+
+      <div class="account-number">
+        ${escapeHtml(
+          account.accountNumber ||
+          account.account_number ||
+          "-"
+        )}
+      </div>
+
+      <div class="account-name">
+
+        <div>
+          ${escapeHtml(
+            account.nickname ||
+            account.name ||
+            "-"
+          )}
+        </div>
+
+        <small>
+          ${escapeHtml(
+            account.email ||
+            ""
+          )}
+        </small>
+
+      </div>
+
+      <div>
+        ${escapeHtml(
+          account.phone ||
+          account.mobile ||
+          "-"
+        )}
+      </div>
+
+      <div class="account-status ${statusClass}">
+        ${statusText}
+      </div>
+
+      <div class="account-actions">
+
+        ${
+          status !== "APPROVED"
+            ? `
+              <button
+                class="approve-button"
+                onclick="changeAccountStatus(
+                  '${escapeJs(
+                    account.accountNumber ||
+                    account.account_number ||
+                    ""
+                  )}',
+                  'APPROVED'
+                )"
+              >
+                ✓ قبول
+              </button>
+            `
+            : ""
+        }
+
+        ${
+          status !== "REJECTED"
+            ? `
+              <button
+                class="reject-button"
+                onclick="changeAccountStatus(
+                  '${escapeJs(
+                    account.accountNumber ||
+                    account.account_number ||
+                    ""
+                  )}',
+                  'REJECTED'
+                )"
+              >
+                ✗ رفض
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+
+    container.appendChild(
+      row
+    );
+
+  });
 }
 
 
@@ -1357,32 +1349,26 @@ function updateAccountStats(
 
 
   const pending =
-
     accounts.filter(
       account =>
-
         String(
           account.status || ""
         )
         .trim()
         .toUpperCase() ===
         "PENDING"
-
     ).length;
 
 
   const approved =
-
     accounts.filter(
       account =>
-
         String(
           account.status || ""
         )
         .trim()
         .toUpperCase() ===
         "APPROVED"
-
     ).length;
 
 
@@ -1391,12 +1377,10 @@ function updateAccountStats(
       "totalAccounts"
     );
 
-
   const pendingElement =
     document.getElementById(
       "pendingAccounts"
     );
-
 
   const approvedElement =
     document.getElementById(
@@ -1408,7 +1392,6 @@ function updateAccountStats(
 
     totalElement.textContent =
       total;
-
   }
 
 
@@ -1416,7 +1399,6 @@ function updateAccountStats(
 
     pendingElement.textContent =
       pending;
-
   }
 
 
@@ -1424,9 +1406,7 @@ function updateAccountStats(
 
     approvedElement.textContent =
       approved;
-
   }
-
 }
 
 
@@ -1446,23 +1426,17 @@ async function changeAccountStatus(
     );
 
     return;
-
   }
 
 
   const text =
-
     status === "APPROVED"
-
       ? "هل تريد قبول هذا الحساب؟"
-
       : "هل تريد رفض هذا الحساب؟";
 
 
   if (!confirm(text)) {
-
     return;
-
   }
 
 
@@ -1473,19 +1447,16 @@ async function changeAccountStatus(
         "updateAccountStatus",
 
       adminAccountNumber:
-
         String(
           currentUser.accountNumber
         ),
 
       accountNumber:
-
         String(
           accountNumber
         ),
 
-      status:
-        status
+      status
 
     });
 
@@ -1498,24 +1469,19 @@ async function changeAccountStatus(
 
   if (
     !result ||
-    !result.success
+    result.success !== true
   ) {
 
     alert(
-
       result?.message ||
-
       "تعذر تحديث الحساب"
-
     );
 
     return;
-
   }
 
 
   await loadAccounts();
-
 }
 
 
@@ -1533,7 +1499,6 @@ function startGame() {
       ?.value
       .trim();
 
-
   const team2 =
     document
       .getElementById(
@@ -1542,85 +1507,62 @@ function startGame() {
       ?.value
       .trim();
 
-
   const message =
     document.getElementById(
       "gameMessage"
     );
 
 
-  if (
-    !team1 ||
-    !team2
-  ) {
+  if (!team1 || !team2) {
 
     if (message) {
 
       message.textContent =
         "أدخل اسم الفريقين أولاً";
-
     }
 
-
     return;
-
   }
 
 
-  if (
-    team1 === team2
-  ) {
+  if (team1 === team2) {
 
     if (message) {
 
       message.textContent =
         "يجب أن يكون اسم الفريقين مختلفاً";
-
     }
 
-
     return;
-
   }
 
 
   gameState = {
 
-    team1Score:
-      0,
+    team1Score: 0,
 
-    team2Score:
-      0,
+    team2Score: 0,
 
-    turn:
-      1,
+    turn: 1,
 
-    usedQuestions:
-      []
+    usedQuestions: []
 
   };
 
 
   currentGame = {
 
-    team1:
-      team1,
+    team1,
 
-    team2:
-      team2
+    team2
 
   };
-
-
-  currentQuestion =
-    null;
 
 
   const boardTeam1 =
     document.getElementById(
       "boardTeam1"
     );
-
 
   const boardTeam2 =
     document.getElementById(
@@ -1632,7 +1574,6 @@ function startGame() {
 
     boardTeam1.textContent =
       team1;
-
   }
 
 
@@ -1640,20 +1581,16 @@ function startGame() {
 
     boardTeam2.textContent =
       team2;
-
   }
 
 
   updateScoreBoard();
 
-
   buildCategoryBoard();
-
 
   showScreen(
     "boardScreen"
   );
-
 }
 
 
@@ -1670,14 +1607,11 @@ function buildCategoryBoard() {
 
 
   if (!board) {
-
     return;
-
   }
 
 
-  board.innerHTML =
-    "";
+  board.innerHTML = "";
 
 
   CATEGORIES.forEach(
@@ -1745,7 +1679,6 @@ function buildCategoryBoard() {
 
           button.onclick =
             () =>
-
               selectQuestion(
                 categoryIndex,
                 pointIndex,
@@ -1768,7 +1701,6 @@ function buildCategoryBoard() {
 
     }
   );
-
 }
 
 
@@ -1784,7 +1716,6 @@ function selectQuestion(
 ) {
 
   const questionKey =
-
     categoryIndex +
     "-" +
     pointIndex;
@@ -1797,7 +1728,6 @@ function selectQuestion(
   ) {
 
     return;
-
   }
 
 
@@ -1812,10 +1742,7 @@ function selectQuestion(
       "used"
     );
 
-
-    button.disabled =
-      true;
-
+    button.disabled = true;
   }
 
 
@@ -1826,8 +1753,7 @@ function selectQuestion(
         categoryIndex
       ],
 
-    points:
-      points,
+    points,
 
     text:
       "السؤال غير مضاف حالياً",
@@ -1843,30 +1769,25 @@ function selectQuestion(
       "questionPanel"
     );
 
-
   const category =
     document.getElementById(
       "questionCategory"
     );
-
 
   const questionPoints =
     document.getElementById(
       "questionPoints"
     );
 
-
   const questionText =
     document.getElementById(
       "questionText"
     );
 
-
   const answerBox =
     document.getElementById(
       "answerBox"
     );
-
 
   const answerText =
     document.getElementById(
@@ -1878,7 +1799,6 @@ function selectQuestion(
 
     panel.style.display =
       "block";
-
   }
 
 
@@ -1886,7 +1806,6 @@ function selectQuestion(
 
     category.textContent =
       currentQuestion.category;
-
   }
 
 
@@ -1894,7 +1813,6 @@ function selectQuestion(
 
     questionPoints.textContent =
       points;
-
   }
 
 
@@ -1902,7 +1820,6 @@ function selectQuestion(
 
     questionText.textContent =
       currentQuestion.text;
-
   }
 
 
@@ -1910,7 +1827,6 @@ function selectQuestion(
 
     answerBox.style.display =
       "none";
-
   }
 
 
@@ -1918,7 +1834,6 @@ function selectQuestion(
 
     answerText.textContent =
       currentQuestion.answer;
-
   }
 
 
@@ -1927,15 +1842,9 @@ function selectQuestion(
       "questionPanel"
     )
     ?.scrollIntoView({
-
-      behavior:
-        "smooth",
-
-      block:
-        "center"
-
+      behavior: "smooth",
+      block: "center"
     });
-
 }
 
 
@@ -1955,9 +1864,7 @@ function showAnswer() {
 
     answerBox.style.display =
       "block";
-
   }
-
 }
 
 
@@ -1970,15 +1877,14 @@ function answerQuestion(
 ) {
 
   if (!currentQuestion) {
-
     return;
-
   }
 
 
   const points =
     Number(
-      currentQuestion.points || 0
+      currentQuestion.points ||
+      0
     );
 
 
@@ -1991,20 +1897,15 @@ function answerQuestion(
       gameState.team1Score +=
         points;
 
-    }
-
-    else {
+    } else {
 
       gameState.team2Score +=
         points;
-
     }
-
   }
 
 
   gameState.turn =
-
     gameState.turn === 1
       ? 2
       : 1;
@@ -2027,9 +1928,7 @@ function answerQuestion(
 
     panel.style.display =
       "none";
-
   }
-
 }
 
 
@@ -2044,12 +1943,10 @@ function updateScoreBoard() {
       "score1"
     );
 
-
   const score2 =
     document.getElementById(
       "score2"
     );
-
 
   const turn =
     document.getElementById(
@@ -2061,7 +1958,6 @@ function updateScoreBoard() {
 
     score1.textContent =
       gameState.team1Score;
-
   }
 
 
@@ -2069,26 +1965,21 @@ function updateScoreBoard() {
 
     score2.textContent =
       gameState.team2Score;
-
   }
 
 
   if (turn) {
 
     turn.textContent =
-
       gameState.turn === 1
-
         ? (
             currentGame?.team1 ||
             "الفريق الأول"
           )
-
         : (
             currentGame?.team2 ||
             "الفريق الثاني"
           );
-
   }
 
 
@@ -2096,7 +1987,6 @@ function updateScoreBoard() {
     document.getElementById(
       "team1ScoreCard"
     );
-
 
   const team2Card =
     document.getElementById(
@@ -2107,28 +1997,19 @@ function updateScoreBoard() {
   if (team1Card) {
 
     team1Card.classList.toggle(
-
       "active",
-
       gameState.turn === 1
-
     );
-
   }
 
 
   if (team2Card) {
 
     team2Card.classList.toggle(
-
       "active",
-
       gameState.turn === 2
-
     );
-
   }
-
 }
 
 
@@ -2152,7 +2033,6 @@ function backToSetup() {
 
     panel.style.display =
       "none";
-
   }
 
 
@@ -2165,14 +2045,10 @@ function backToSetup() {
 
     showAdminMenu();
 
-  }
-
-  else {
+  } else {
 
     showGameSetup();
-
   }
-
 }
 
 
@@ -2185,10 +2061,8 @@ function logout() {
   currentUser =
     null;
 
-
   currentGame =
     null;
-
 
   currentQuestion =
     null;
@@ -2196,17 +2070,13 @@ function logout() {
 
   gameState = {
 
-    team1Score:
-      0,
+    team1Score: 0,
 
-    team2Score:
-      0,
+    team2Score: 0,
 
-    turn:
-      1,
+    turn: 1,
 
-    usedQuestions:
-      []
+    usedQuestions: []
 
   };
 
@@ -2221,7 +2091,6 @@ function logout() {
       "loginAccount"
     );
 
-
   const loginCode =
     document.getElementById(
       "loginCode"
@@ -2232,7 +2101,6 @@ function logout() {
 
     loginAccount.value =
       "";
-
   }
 
 
@@ -2240,14 +2108,12 @@ function logout() {
 
     loginCode.value =
       "";
-
   }
 
 
   showScreen(
     "loginScreen"
   );
-
 }
 
 
@@ -2266,9 +2132,7 @@ function restoreLogin() {
 
 
     if (!saved) {
-
       return;
-
     }
 
 
@@ -2279,9 +2143,7 @@ function restoreLogin() {
 
 
     if (!user) {
-
       return;
-
     }
 
 
@@ -2295,7 +2157,9 @@ function restoreLogin() {
     );
 
 
-    /* ADMIN */
+    /*
+     * المسؤول
+     */
 
     if (isAdmin()) {
 
@@ -2303,89 +2167,69 @@ function restoreLogin() {
         "gameScreen"
       );
 
-
       updateGameUI();
-
 
       showAdminMenu();
 
-
       return;
-
     }
 
 
-    /* NORMAL USER */
-
-    const status =
-
-      String(
-        currentUser.status ?? ""
-      )
-      .trim()
-      .toUpperCase();
-
+    /*
+     * المستخدم المقبول
+     */
 
     if (
-      status === "APPROVED"
+      isApprovedUser(
+        currentUser
+      )
     ) {
 
       showScreen(
         "gameScreen"
       );
 
-
       updateGameUI();
-
 
       showGameSetup();
 
+      return;
     }
 
-    else {
 
-      const waiting =
-        document.getElementById(
-          "waitingAccount"
-        );
+    /*
+     * غير مقبول
+     */
 
-
-      if (waiting) {
-
-        waiting.textContent =
-
-          currentUser.accountNumber ||
-          "-";
-
-      }
-
-
-      showScreen(
-        "waitingScreen"
+    const waiting =
+      document.getElementById(
+        "waitingAccount"
       );
 
+
+    if (waiting) {
+
+      waiting.textContent =
+        currentUser.accountNumber ||
+        "-";
     }
 
-  }
 
-  catch (error) {
+    showScreen(
+      "waitingScreen"
+    );
+
+  } catch (error) {
 
     console.error(
       "RESTORE LOGIN ERROR:",
       error
     );
 
-
     localStorage.removeItem(
       "currentUser"
     );
-
-
-    currentUser =
-      null;
-
   }
-
 }
 
 
@@ -2398,15 +2242,21 @@ document.addEventListener(
   () => {
 
     console.log(
-      "🚑 سين جيم الطبي بدأ التشغيل"
+      "================================="
     );
 
+    console.log(
+      "سين جيم الطبي بدأ التشغيل"
+    );
 
     console.log(
-      "API SERVER:",
+      "API:",
       API_URL
     );
 
+    console.log(
+      "================================="
+    );
 
     restoreLogin();
 
