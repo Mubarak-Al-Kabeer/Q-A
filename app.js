@@ -1,28 +1,32 @@
-/* =========================================================
+/* ═══════════════════════════════════════════════════════
    CONFIG
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbw-lnT4G5drGMrDCdwXrcPafF7txnSGktuR--l2srIbD0DiX_VHaBwEo8_rlKyyhYLrHA/exec";
 
 const ADMIN_ACCOUNT = "3854";
 
-let currentUser = null;
-let currentGame = null;
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+
+let currentUser     = null;
+let currentGame     = null;
 let currentQuestion = null;
 
 let gameState = {
-  team1Score: 0,
-  team2Score: 0,
-  turn: 1,
+  team1Score:    0,
+  team2Score:    0,
+  turn:          1,   // 1 = فريق أول  |  2 = فريق ثاني
   usedQuestions: []
 };
 
 
-
-/* =========================================================
-   CONSTANTS
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   فئات اللعبة
+═══════════════════════════════════════════════════════ */
 
 const CATEGORIES = [
   "التشريح",
@@ -33,111 +37,50 @@ const CATEGORIES = [
   "الطوارئ والإسعافات"
 ];
 
-const POINTS = [
-  100,
-  200,
-  300,
-  400,
-  500
-];
+// النقاط لكل فئة (كلما زادت كلما صار السؤال أصعب)
+const POINTS = [100, 200, 300, 400, 600];
+
+// ألوان الأزرار حسب الترتيب (الأسهل للأصعب)
+const TIER_CLASSES = ["tier-1", "tier-2", "tier-3", "tier-4", "tier-5"];
 
 
-/* =========================================================
-   API REQUEST
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   API
+═══════════════════════════════════════════════════════ */
 
 async function apiRequest(data) {
 
   try {
 
-    console.log("=================================");
-    console.log("API REQUEST");
-    console.log(data);
-    console.log("=================================");
-
-    const response = await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: "POST",
-
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(data)
     });
 
-    console.log("HTTP STATUS:", response.status);
+    if (!res.ok) throw new Error("HTTP " + res.status);
 
-    if (!response.ok) {
-
-      throw new Error(
-        "HTTP " + response.status
-      );
-    }
-
-    const text =
-      await response.text();
-
-    console.log("API RAW RESPONSE:");
-    console.log(text);
-
-    if (!text) {
-
-      return {
-        success: false,
-        message: "السيرفر أرسل استجابة فارغة"
-      };
-    }
-
-    let result;
+    const text = await res.text();
+    if (!text) return { success: false, message: "استجابة فارغة من السيرفر" };
 
     try {
-
-      result =
-        JSON.parse(text);
-
-    } catch (error) {
-
-      console.error(
-        "JSON PARSE ERROR:",
-        error
-      );
-
-      return {
-        success: false,
-        message:
-          "السيرفر أرسل بيانات غير صحيحة"
-      };
+      return JSON.parse(text);
+    } catch {
+      return { success: false, message: "السيرفر أرسل بيانات غير صالحة" };
     }
 
-    console.log("API PARSED RESULT:");
-    console.log(result);
-
-    return result;
-
-  } catch (error) {
-
-    console.error(
-      "API ERROR:",
-      error
-    );
-
-    return {
-      success: false,
-      message:
-        "تعذر الاتصال بالسيرفر: " +
-        error.message
-    };
+  } catch (err) {
+    return { success: false, message: "تعذّر الاتصال: " + err.message };
   }
 }
 
 
-/* =========================================================
+/* ═══════════════════════════════════════════════════════
    HELPERS
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
-function escapeHtml(value) {
-
-  return String(value ?? "")
+function esc(v) {
+  return String(v ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -145,2121 +88,690 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-
-function escapeJs(value) {
-
-  return String(value ?? "")
+function escJs(v) {
+  return String(v ?? "")
     .replace(/\\/g, "\\\\")
     .replace(/'/g, "\\'");
 }
 
+function el(id) { return document.getElementById(id); }
 
-/* =========================================================
-   NORMALIZE USER
-========================================================= */
+function setMsg(id, text, type = "") {
+  const m = el(id);
+  if (!m) return;
+  m.textContent = text;
+  m.className   = "msg " + type;
+}
+
+function togglePw(inputId, btn) {
+  const inp = el(inputId);
+  if (!inp) return;
+  if (inp.type === "password") {
+    inp.type  = "text";
+    btn.textContent = "🙈";
+  } else {
+    inp.type  = "password";
+    btn.textContent = "👁";
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   USER HELPERS
+═══════════════════════════════════════════════════════ */
 
 function normalizeUser(result, accountNumber) {
 
-  /*
-   * بعض نسخ السيرفر ترجع:
-   *
-   * {
-   *   success: true,
-   *   user: {...}
-   * }
-   *
-   * وبعضها قد ترجع:
-   *
-   * {
-   *   success: true,
-   *   data: {...}
-   * }
-   *
-   * لذلك ندعم الاثنين.
-   */
-
-  let user =
-    result?.user ||
-    result?.data ||
-    result?.account ||
-    null;
-
+  let user = result?.user || result?.data || result?.account || null;
 
   if (!user && result && typeof result === "object") {
-
-    /*
-     * إذا كانت بيانات المستخدم موجودة مباشرة
-     */
-
-    if (
-      result.accountNumber ||
-      result.account_number ||
-      result.nickname ||
-      result.name ||
-      result.status ||
-      result.role
-    ) {
-
+    if (result.accountNumber || result.nickname || result.status || result.role) {
       user = result;
     }
   }
 
+  if (!user) return null;
 
-  if (!user) {
-
-    return null;
-  }
-
-
-  /*
-   * توحيد أسماء الحقول
-   */
-
-  const normalized = {
-
+  return {
     ...user,
-
-    accountNumber:
-      user.accountNumber ??
-      user.account_number ??
-      accountNumber,
-
-    nickname:
-      user.nickname ??
-      user.name ??
-      user.nickName ??
-      "",
-
-    phone:
-      user.phone ??
-      user.mobile ??
-      "",
-
-    email:
-      user.email ??
-      "",
-
-    code:
-      user.code ??
-      "",
-
-    status:
-      user.status ??
-      user.Status ??
-      user.state ??
-      "",
-
-    role:
-      user.role ??
-      user.Role ??
-      ""
+    accountNumber: user.accountNumber ?? user.account_number ?? accountNumber,
+    nickname:      user.nickname ?? user.name ?? user.nickName ?? "",
+    phone:         user.phone   ?? user.mobile ?? "",
+    email:         user.email   ?? "",
+    code:          user.code    ?? "",
+    status:        String(user.status ?? user.Status ?? user.state ?? "").trim().toUpperCase(),
+    role:          String(user.role   ?? user.Role   ?? "").trim().toUpperCase(),
+    gamesRemaining: Number(user.gamesRemaining ?? user.remainingGames ?? 0)
   };
-
-
-  return normalized;
 }
 
-
-/* =========================================================
-   GET USER STATUS
-========================================================= */
-
-function getUserStatus(user) {
-
-  if (!user) {
-    return "";
-  }
-
-
-  return String(
-    user.status ??
-    user.Status ??
-    user.state ??
-    ""
-  )
-    .trim()
-    .toUpperCase();
+function userStatus(user) {
+  return String(user?.status ?? "").trim().toUpperCase();
 }
 
-
-/* =========================================================
-   IS APPROVED
-========================================================= */
-
-function isApprovedUser(user) {
-
-  const status =
-    getUserStatus(user);
-
-
-  return (
-    status === "APPROVED" ||
-    status === "ACCEPTED" ||
-    status === "ACTIVE" ||
-    status === "مقبول" ||
-    status === "معتمد" ||
-    status === "تمت الموافقة"
-  );
+function isApproved(user) {
+  const s = userStatus(user);
+  return s === "APPROVED" || s === "ACCEPTED" || s === "ACTIVE";
 }
-
-
-/* =========================================================
-   IS ADMIN
-========================================================= */
 
 function isAdmin() {
-
-  if (!currentUser) {
-    return false;
-  }
-
-
-  const account =
-    String(
-      currentUser.accountNumber ??
-      ""
-    ).trim();
-
-
-  const role =
-    String(
-      currentUser.role ??
-      ""
-    ).trim()
-    .toUpperCase();
-
-
-  return (
-    account === ADMIN_ACCOUNT ||
-    role === "ADMIN" ||
-    role === "ADMINISTRATOR" ||
-    role === "مسؤول" ||
-    role === "مدير"
-  );
+  if (!currentUser) return false;
+  const acc  = String(currentUser.accountNumber ?? "").trim();
+  const role = String(currentUser.role ?? "").trim().toUpperCase();
+  return acc === ADMIN_ACCOUNT || role === "ADMIN" || role === "ADMINISTRATOR";
 }
 
 
-/* =========================================================
-   SCREEN SYSTEM
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════════════════════ */
 
-function showScreen(screenId) {
-
-  document
-    .querySelectorAll(".screen")
-    .forEach(screen => {
-
-      screen.classList.remove(
-        "active"
-      );
-    });
-
-
-  const screen =
-    document.getElementById(
-      screenId
-    );
-
-
-  if (!screen) {
-
-    console.error(
-      "SCREEN NOT FOUND:",
-      screenId
-    );
-
-    return;
-  }
-
-
-  screen.classList.add(
-    "active"
-  );
-
-
-  window.scrollTo(
-    0,
-    0
-  );
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const scr = el(id);
+  if (scr) { scr.classList.add("active"); window.scrollTo(0, 0); }
 }
 
 
-/* =========================================================
+/* ═══════════════════════════════════════════════════════
    LOGIN
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
 async function login() {
 
-  const accountInput =
-    document.getElementById(
-      "loginAccount"
-    );
+  const account = el("loginAccount")?.value.trim();
+  const code    = el("loginCode")?.value.trim();
 
-  const codeInput =
-    document.getElementById(
-      "loginCode"
-    );
-
-  const message =
-    document.getElementById(
-      "loginMessage"
-    );
-
-
-  if (
-    !accountInput ||
-    !codeInput ||
-    !message
-  ) {
-
-    console.error(
-      "LOGIN ELEMENTS MISSING"
-    );
-
-    return;
+  if (!account || !code) {
+    setMsg("loginMessage", "أدخل رقم الحساب والرمز", "error"); return;
   }
 
+  setMsg("loginMessage", "جاري التحقق…");
 
-  const accountNumber =
-    accountInput.value
-      .trim();
+  const result = await apiRequest({ action: "login", accountNumber: account, code });
 
-
-  const code =
-    codeInput.value
-      .trim();
-
-
-  if (
-    !accountNumber ||
-    !code
-  ) {
-
-    message.textContent =
-      "أدخل رقم الحساب والرمز";
-
-    return;
+  if (!result?.success) {
+    setMsg("loginMessage", result?.message || "رقم الحساب أو الرمز غير صحيح", "error"); return;
   }
 
-
-  message.textContent =
-    "جاري تسجيل الدخول...";
-
-
-  /*
-   * إرسال الطلب للسيرفر الجديد
-   */
-
-  const result =
-    await apiRequest({
-
-      action: "login",
-
-      accountNumber:
-        accountNumber,
-
-      code:
-        code
-
-    });
-
-
-  console.log(
-    "LOGIN RESULT:",
-    result
-  );
-
-
-  /*
-   * السيرفر رفض الدخول
-   */
-
-  if (
-    !result ||
-    result.success !== true
-  ) {
-
-    message.textContent =
-      result?.message ||
-      result?.error ||
-      "رقم الحساب أو الرمز غير صحيح";
-
-    return;
-  }
-
-
-  /*
-   * استخراج بيانات المستخدم
-   */
-
-  const user =
-    normalizeUser(
-      result,
-      accountNumber
-    );
-
-
-  /*
-   * إذا السيرفر قال نجاح لكن لم يرسل بيانات المستخدم
-   */
-
+  const user = normalizeUser(result, account);
   if (!user) {
-
-    console.error(
-      "LOGIN SUCCESS BUT USER IS MISSING:",
-      result
-    );
-
-    message.textContent =
-      "تم التحقق من الحساب لكن السيرفر لم يرسل بيانات المستخدم.";
-
-    return;
+    setMsg("loginMessage", "السيرفر لم يُرسل بيانات المستخدم", "error"); return;
   }
 
+  currentUser = user;
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-  /*
-   * حفظ المستخدم
-   */
-
-  currentUser =
-    user;
-
-
-  localStorage.setItem(
-    "currentUser",
-    JSON.stringify(
-      currentUser
-    )
-  );
-
-
-  console.log(
-    "CURRENT USER:",
-    currentUser
-  );
-
-
-  /*
-   * تنظيف الرسالة
-   */
-
-  message.textContent = "";
-
-
-  /* =====================================================
-     ADMIN
-  ====================================================== */
-
-  if (isAdmin()) {
-
-    console.log(
-      "ADMIN LOGIN SUCCESS"
-    );
-
-    showScreen(
-      "gameScreen"
-    );
-
-    updateGameUI();
-
-    showAdminMenu();
-
-    return;
-  }
-
-
-  /* =====================================================
-     NORMAL USER
-  ====================================================== */
-
-  const status =
-    getUserStatus(
-      currentUser
-    );
-
-
-  console.log(
-    "USER STATUS:",
-    status
-  );
-
-
-  /*
-   * الحساب المقبول
-   */
-
-  if (
-    isApprovedUser(
-      currentUser
-    )
-  ) {
-
-    console.log(
-      "APPROVED USER LOGIN SUCCESS"
-    );
-
-    showScreen(
-      "gameScreen"
-    );
-
-    updateGameUI();
-
-    showGameSetup();
-
-    return;
-  }
-
-
-  /*
-   * الحساب غير مقبول بعد
-   */
-
-  const waiting =
-    document.getElementById(
-      "waitingAccount"
-    );
-
-
-  if (waiting) {
-
-    waiting.textContent =
-      currentUser.accountNumber ||
-      accountNumber;
-  }
-
-
-  showScreen(
-    "waitingScreen"
-  );
+  setMsg("loginMessage", "");
+  afterLogin();
 }
 
 
-/* =========================================================
+function afterLogin() {
+
+  showScreen("gameScreen");
+  updateTopbar();
+
+  if (isAdmin()) {
+    showAdminMenu(); return;
+  }
+
+  if (isApproved(currentUser)) {
+    showGameSetup(); return;
+  }
+
+  // بانتظار الموافقة
+  const w = el("waitingAccount");
+  if (w) w.textContent = currentUser.accountNumber || "—";
+  showScreen("waitingScreen");
+}
+
+
+/* ═══════════════════════════════════════════════════════
    REGISTER
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
 async function register() {
 
-  const nickname =
-    document
-      .getElementById(
-        "registerNickname"
-      )
-      ?.value
-      .trim();
+  const nickname = el("registerNickname")?.value.trim();
+  const phone    = el("registerPhone")?.value.trim();
+  const email    = el("registerEmail")?.value.trim();
+  const code     = el("registerCode")?.value.trim();
 
-  const phone =
-    document
-      .getElementById(
-        "registerPhone"
-      )
-      ?.value
-      .trim();
-
-  const email =
-    document
-      .getElementById(
-        "registerEmail"
-      )
-      ?.value
-      .trim();
-
-  const code =
-    document
-      .getElementById(
-        "registerCode"
-      )
-      ?.value
-      .trim();
-
-  const message =
-    document.getElementById(
-      "registerMessage"
-    );
-
-
-  if (
-    !nickname ||
-    !phone ||
-    !email ||
-    !code
-  ) {
-
-    if (message) {
-
-      message.textContent =
-        "أكمل جميع البيانات";
-    }
-
-    return;
+  if (!nickname || !phone || !email || !code) {
+    setMsg("registerMessage", "أكمل جميع الحقول", "error"); return;
   }
 
+  setMsg("registerMessage", "جاري إنشاء الحساب…");
 
-  if (message) {
+  const result = await apiRequest({ action: "register", nickname, phone, email, code });
 
-    message.textContent =
-      "جاري إنشاء الحساب...";
+  if (!result?.success) {
+    setMsg("registerMessage", result?.message || "تعذّر إنشاء الحساب", "error"); return;
   }
 
+  const num = result.accountNumber || result.account_number || "—";
 
-  const result =
-    await apiRequest({
-
-      action: "register",
-
-      nickname,
-
-      phone,
-
-      email,
-
-      code
-
-    });
-
-
-  console.log(
-    "REGISTER RESULT:",
-    result
-  );
-
-
-  if (
-    !result ||
-    result.success !== true
-  ) {
-
-    if (message) {
-
-      message.textContent =
-        result?.message ||
-        "تعذر إنشاء الحساب";
-    }
-
-    return;
+  const msgEl = el("registerMessage");
+  if (msgEl) {
+    msgEl.className = "msg success";
+    msgEl.innerHTML = `تم إنشاء الحساب ✅<br>رقمك: <strong style="font-size:1.2rem;color:#ffc338">${esc(num)}</strong>`;
   }
 
+  const w = el("waitingAccount");
+  if (w) w.textContent = num;
 
-  if (message) {
-
-    message.innerHTML =
-      "تم إنشاء الحساب بنجاح.<br>" +
-      "رقم حسابك: <strong>" +
-      escapeHtml(
-        result.accountNumber ||
-        result.account_number ||
-        "-"
-      ) +
-      "</strong>";
-  }
-
-
-  const waiting =
-    document.getElementById(
-      "waitingAccount"
-    );
-
-
-  if (waiting) {
-
-    waiting.textContent =
-      result.accountNumber ||
-      result.account_number ||
-      "-";
-  }
-
-
-  setTimeout(() => {
-
-    showScreen(
-      "waitingScreen"
-    );
-
-  }, 1200);
+  setTimeout(() => showScreen("waitingScreen"), 1600);
 }
 
 
-/* =========================================================
+/* ═══════════════════════════════════════════════════════
    FORGOT CODE
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
 async function forgotCode() {
 
-  const accountNumber =
-    document
-      .getElementById(
-        "forgotAccount"
-      )
-      ?.value
-      .trim();
+  const accountNumber = el("forgotAccount")?.value.trim();
+  const phone         = el("forgotPhone")?.value.trim();
+  const email         = el("forgotEmail")?.value.trim();
 
-  const phone =
-    document
-      .getElementById(
-        "forgotPhone"
-      )
-      ?.value
-      .trim();
-
-  const email =
-    document
-      .getElementById(
-        "forgotEmail"
-      )
-      ?.value
-      .trim();
-
-  const message =
-    document.getElementById(
-      "forgotMessage"
-    );
-
-
-  if (
-    !accountNumber ||
-    !phone ||
-    !email
-  ) {
-
-    if (message) {
-
-      message.textContent =
-        "أدخل جميع البيانات";
-    }
-
-    return;
+  if (!accountNumber || !phone || !email) {
+    setMsg("forgotMessage", "أدخل جميع البيانات", "error"); return;
   }
 
+  setMsg("forgotMessage", "جاري التحقق…");
 
-  if (message) {
+  const result = await apiRequest({ action: "forgotCode", accountNumber, phone, email });
 
-    message.textContent =
-      "جاري التحقق...";
-  }
-
-
-  const result =
-    await apiRequest({
-
-      action: "forgotCode",
-
-      accountNumber,
-
-      phone,
-
-      email
-
-    });
-
-
-  if (message) {
-
-    message.textContent =
-      result?.message ||
-      (
-        result?.success
-          ? "تم التحقق بنجاح"
-          : "تعذر استرجاع الرمز"
-      );
-  }
+  setMsg(
+    "forgotMessage",
+    result?.message || (result?.success ? "تم التحقق" : "البيانات غير صحيحة"),
+    result?.success ? "success" : "error"
+  );
 }
 
 
-/* =========================================================
-   UPDATE GAME UI
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════ */
 
-function updateGameUI() {
+function updateTopbar() {
 
-  if (!currentUser) {
-    return;
-  }
+  if (!currentUser) return;
 
+  const nn = el("playerNickname");
+  if (nn) nn.textContent = currentUser.nickname || currentUser.accountNumber || "";
 
-  const nickname =
-    currentUser.nickname ||
-    currentUser.name ||
-    currentUser.accountNumber ||
-    "";
+  const gr = el("gamesRemaining");
+  if (gr) gr.textContent = isAdmin() ? "∞" : (currentUser.gamesRemaining ?? 0);
 
-
-  const playerNickname =
-    document.getElementById(
-      "playerNickname"
-    );
-
-
-  if (playerNickname) {
-
-    playerNickname.textContent =
-      nickname;
-  }
-
-
-  const boardNickname =
-    document.getElementById(
-      "boardPlayerNickname"
-    );
-
-
-  if (boardNickname) {
-
-    boardNickname.textContent =
-      nickname;
-  }
-
-
-  const gamesRemaining =
-    document.getElementById(
-      "gamesRemaining"
-    );
-
-
-  if (gamesRemaining) {
-
-    gamesRemaining.textContent =
-      currentUser.gamesRemaining ??
-      currentUser.remainingGames ??
-      0;
-  }
+  const badge = el("gamesRemainingBadge");
+  if (badge) badge.style.display = isAdmin() ? "none" : "";
 }
 
 
-/* =========================================================
-   ADMIN MENU
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   ZONE VISIBILITY
+═══════════════════════════════════════════════════════ */
 
 function showAdminMenu() {
-
-  if (!isAdmin()) {
-    return;
-  }
-
-
-  const menu =
-    document.getElementById(
-      "adminMenu"
-    );
-
-  const setup =
-    document.getElementById(
-      "gameSetupArea"
-    );
-
-  const panel =
-    document.getElementById(
-      "adminPanel"
-    );
-
-
-  if (menu) {
-
-    menu.style.display =
-      "block";
-  }
-
-
-  if (setup) {
-
-    setup.style.display =
-      "none";
-  }
-
-
-  if (panel) {
-
-    panel.style.display =
-      "none";
-  }
+  el("adminMenu").style.display    = "block";
+  el("gameSetupArea").style.display = "none";
+  el("adminPanel").style.display   = "none";
 }
-
-
-/* =========================================================
-   SHOW GAME SETUP
-========================================================= */
 
 function showGameSetup() {
+  el("adminMenu").style.display    = "none";
+  el("adminPanel").style.display   = "none";
+  el("gameSetupArea").style.display = "block";
 
-  const menu =
-    document.getElementById(
-      "adminMenu"
-    );
-
-  const setup =
-    document.getElementById(
-      "gameSetupArea"
-    );
-
-  const panel =
-    document.getElementById(
-      "adminPanel"
-    );
-
-  const backButton =
-    document.getElementById(
-      "adminBackButton"
-    );
-
-
-  if (menu) {
-
-    menu.style.display =
-      "none";
-  }
-
-
-  if (panel) {
-
-    panel.style.display =
-      "none";
-  }
-
-
-  if (setup) {
-
-    setup.style.display =
-      "block";
-  }
-
-
-  if (backButton) {
-
-    backButton.style.display =
-      isAdmin()
-        ? "block"
-        : "none";
-  }
+  const backBtn = el("adminBackBtn");
+  if (backBtn) backBtn.style.display = isAdmin() ? "block" : "none";
 }
 
-
-/* =========================================================
-   SHOW ADMIN PANEL
-========================================================= */
-
 async function showAdminPanel() {
-
-  if (!isAdmin()) {
-
-    alert(
-      "غير مصرح لك بالدخول"
-    );
-
-    return;
-  }
-
-
-  const menu =
-    document.getElementById(
-      "adminMenu"
-    );
-
-  const setup =
-    document.getElementById(
-      "gameSetupArea"
-    );
-
-  const panel =
-    document.getElementById(
-      "adminPanel"
-    );
-
-
-  if (menu) {
-
-    menu.style.display =
-      "none";
-  }
-
-
-  if (setup) {
-
-    setup.style.display =
-      "none";
-  }
-
-
-  if (panel) {
-
-    panel.style.display =
-      "block";
-  }
-
-
+  if (!isAdmin()) { alert("غير مصرح لك"); return; }
+  el("adminMenu").style.display    = "none";
+  el("gameSetupArea").style.display = "none";
+  el("adminPanel").style.display   = "block";
   await loadAccounts();
 }
 
 
-/* =========================================================
-   LOAD ACCOUNTS
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   ACCOUNTS (ADMIN)
+═══════════════════════════════════════════════════════ */
 
 async function loadAccounts() {
 
-  if (!isAdmin()) {
+  if (!isAdmin()) return;
+  const list = el("accountsList");
+  if (!list) return;
+
+  list.innerHTML = '<div class="loading-text">جاري تحميل الحسابات…</div>';
+
+  const result = await apiRequest({
+    action: "getAccounts",
+    accountNumber: String(currentUser.accountNumber)
+  });
+
+  if (!result?.success) {
+    list.innerHTML = `<div class="loading-text">${esc(result?.message || "تعذّر تحميل الحسابات")}</div>`;
     return;
   }
 
+  const accounts = Array.isArray(result.accounts) ? result.accounts
+                  : Array.isArray(result.data)     ? result.data : [];
 
-  const container =
-    document.getElementById(
-      "accountsList"
-    );
+  // إحصائيات
+  const total    = accounts.length;
+  const pending  = accounts.filter(a => String(a.status||"").toUpperCase() === "PENDING").length;
+  const approved = accounts.filter(a => String(a.status||"").toUpperCase() === "APPROVED").length;
 
-
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    '<div class="loading">جاري تحميل الحسابات...</div>';
-
-
-  const result =
-    await apiRequest({
-
-      action: "getAccounts",
-
-      accountNumber:
-        String(
-          currentUser.accountNumber
-        )
-
-    });
-
-
-  console.log(
-    "ACCOUNTS RESULT:",
-    result
-  );
-
-
-  if (
-    !result ||
-    result.success !== true
-  ) {
-
-    container.innerHTML =
-      `<div class="loading">
-        ${escapeHtml(
-          result?.message ||
-          "تعذر تحميل الحسابات"
-        )}
-      </div>`;
-
-    return;
-  }
-
-
-  const accounts =
-    Array.isArray(
-      result.accounts
-    )
-      ? result.accounts
-      : Array.isArray(
-          result.data
-        )
-        ? result.data
-        : [];
-
-
-  updateAccountStats(
-    accounts
-  );
-
+  const te = el("totalAccounts");    if (te) te.textContent = total;
+  const pe = el("pendingAccounts");  if (pe) pe.textContent = pending;
+  const ae = el("approvedAccounts"); if (ae) ae.textContent = approved;
 
   if (!accounts.length) {
-
-    container.innerHTML =
-      '<div class="loading">لا توجد حسابات</div>';
-
+    list.innerHTML = '<div class="loading-text">لا توجد حسابات مسجّلة</div>';
     return;
   }
 
+  list.innerHTML = "";
 
-  container.innerHTML = "";
+  accounts.forEach(acc => {
 
+    const st  = String(acc.status || "").toUpperCase();
+    let stTxt = "غير معروف", stCls = "s-unknown";
 
-  accounts.forEach(account => {
+    if (st === "APPROVED" || st === "ACCEPTED" || st === "ACTIVE") { stTxt = "مقبول";  stCls = "s-approved"; }
+    else if (st === "PENDING")  { stTxt = "انتظار"; stCls = "s-pending"; }
+    else if (st === "REJECTED") { stTxt = "مرفوض";  stCls = "s-rejected"; }
 
-    const row =
-      document.createElement(
-        "div"
-      );
+    const num = acc.accountNumber || acc.account_number || "";
 
-
-    row.className =
-      "account-row";
-
-
-    const status =
-      String(
-        account.status || ""
-      )
-      .trim()
-      .toUpperCase();
-
-
-    let statusText =
-      "غير معروف";
-
-    let statusClass =
-      "";
-
-
-    if (
-      status === "APPROVED" ||
-      status === "ACCEPTED" ||
-      status === "ACTIVE"
-    ) {
-
-      statusText =
-        "مقبول";
-
-      statusClass =
-        "status-approved";
-
-    } else if (
-      status === "PENDING"
-    ) {
-
-      statusText =
-        "بانتظار";
-
-      statusClass =
-        "status-pending";
-
-    } else if (
-      status === "REJECTED"
-    ) {
-
-      statusText =
-        "مرفوض";
-
-      statusClass =
-        "status-rejected";
-    }
-
-
+    const row = document.createElement("div");
+    row.className = "acc-row";
     row.innerHTML = `
-
-      <div class="account-number">
-        ${escapeHtml(
-          account.accountNumber ||
-          account.account_number ||
-          "-"
-        )}
-      </div>
-
-      <div class="account-name">
-
-        <div>
-          ${escapeHtml(
-            account.nickname ||
-            account.name ||
-            "-"
-          )}
-        </div>
-
-        <small>
-          ${escapeHtml(
-            account.email ||
-            ""
-          )}
-        </small>
-
-      </div>
+      <div class="acc-num">${esc(num)}</div>
 
       <div>
-        ${escapeHtml(
-          account.phone ||
-          account.mobile ||
-          "-"
-        )}
+        <div class="acc-name">${esc(acc.nickname || acc.name || "—")}</div>
+        <div class="acc-email">${esc(acc.email || "")}</div>
       </div>
 
-      <div class="account-status ${statusClass}">
-        ${statusText}
+      <div class="acc-phone">${esc(acc.phone || acc.mobile || "—")}</div>
+
+      <div class="acc-status ${stCls}">${stTxt}</div>
+
+      <div class="acc-actions">
+        ${st !== "APPROVED"
+          ? `<button class="btn-approve"
+               onclick="changeStatus('${escJs(num)}','APPROVED')">✓ قبول</button>`
+          : ""}
+        ${st !== "REJECTED"
+          ? `<button class="btn-reject"
+               onclick="changeStatus('${escJs(num)}','REJECTED')">✗ رفض</button>`
+          : ""}
+        <button class="btn-games"
+          onclick="editGames('${escJs(num)}',${Number(acc.gamesRemaining||0)})">🎮 ألعاب</button>
       </div>
-
-      <div class="account-actions">
-
-        ${
-          status !== "APPROVED"
-            ? `
-              <button
-                class="approve-button"
-                onclick="changeAccountStatus(
-                  '${escapeJs(
-                    account.accountNumber ||
-                    account.account_number ||
-                    ""
-                  )}',
-                  'APPROVED'
-                )"
-              >
-                ✓ قبول
-              </button>
-            `
-            : ""
-        }
-
-        ${
-          status !== "REJECTED"
-            ? `
-              <button
-                class="reject-button"
-                onclick="changeAccountStatus(
-                  '${escapeJs(
-                    account.accountNumber ||
-                    account.account_number ||
-                    ""
-                  )}',
-                  'REJECTED'
-                )"
-              >
-                ✗ رفض
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-
     `;
-
-
-    container.appendChild(
-      row
-    );
-
+    list.appendChild(row);
   });
 }
 
 
-/* =========================================================
-   ACCOUNT STATS
-========================================================= */
+async function changeStatus(accountNumber, status) {
+  if (!isAdmin()) return;
+  const msg = status === "APPROVED" ? "قبول هذا الحساب؟" : "رفض هذا الحساب؟";
+  if (!confirm(msg)) return;
 
-function updateAccountStats(
-  accounts
-) {
+  const result = await apiRequest({
+    action: "updateAccountStatus",
+    adminAccountNumber: String(currentUser.accountNumber),
+    accountNumber: String(accountNumber),
+    status
+  });
 
-  const total =
-    accounts.length;
-
-
-  const pending =
-    accounts.filter(
-      account =>
-        String(
-          account.status || ""
-        )
-        .trim()
-        .toUpperCase() ===
-        "PENDING"
-    ).length;
-
-
-  const approved =
-    accounts.filter(
-      account =>
-        String(
-          account.status || ""
-        )
-        .trim()
-        .toUpperCase() ===
-        "APPROVED"
-    ).length;
-
-
-  const totalElement =
-    document.getElementById(
-      "totalAccounts"
-    );
-
-  const pendingElement =
-    document.getElementById(
-      "pendingAccounts"
-    );
-
-  const approvedElement =
-    document.getElementById(
-      "approvedAccounts"
-    );
-
-
-  if (totalElement) {
-
-    totalElement.textContent =
-      total;
-  }
-
-
-  if (pendingElement) {
-
-    pendingElement.textContent =
-      pending;
-  }
-
-
-  if (approvedElement) {
-
-    approvedElement.textContent =
-      approved;
-  }
-}
-
-
-/* =========================================================
-   CHANGE ACCOUNT STATUS
-========================================================= */
-
-async function changeAccountStatus(
-  accountNumber,
-  status
-) {
-
-  if (!isAdmin()) {
-
-    alert(
-      "غير مصرح لك"
-    );
-
-    return;
-  }
-
-
-  const text =
-    status === "APPROVED"
-      ? "هل تريد قبول هذا الحساب؟"
-      : "هل تريد رفض هذا الحساب؟";
-
-
-  if (!confirm(text)) {
-    return;
-  }
-
-
-  const result =
-    await apiRequest({
-
-      action:
-        "updateAccountStatus",
-
-      adminAccountNumber:
-        String(
-          currentUser.accountNumber
-        ),
-
-      accountNumber:
-        String(
-          accountNumber
-        ),
-
-      status
-
-    });
-
-
-  console.log(
-    "STATUS UPDATE:",
-    result
-  );
-
-
-  if (
-    !result ||
-    result.success !== true
-  ) {
-
-    alert(
-      result?.message ||
-      "تعذر تحديث الحساب"
-    );
-
-    return;
-  }
-
-
+  if (!result?.success) { alert(result?.message || "تعذّر التحديث"); return; }
   await loadAccounts();
 }
 
 
-/* =========================================================
+async function editGames(accountNumber, current) {
+  const input = prompt(`عدد الألعاب الحالي: ${current}\nأدخل العدد الجديد:`, current);
+  if (input === null) return;
+  const n = parseInt(input, 10);
+  if (isNaN(n) || n < 0) { alert("رقم غير صحيح"); return; }
+
+  const result = await apiRequest({
+    action: "updateGames",
+    adminAccountNumber: String(currentUser.accountNumber),
+    targetAccountNumber: String(accountNumber),
+    games: n
+  });
+
+  if (!result?.success) { alert(result?.message || "تعذّر التحديث"); return; }
+  await loadAccounts();
+}
+
+
+/* ═══════════════════════════════════════════════════════
    START GAME
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
-function startGame() {
+async function startGame() {
 
-  const team1 =
-    document
-      .getElementById(
-        "team1"
-      )
-      ?.value
-      .trim();
+  const t1 = el("team1")?.value.trim();
+  const t2 = el("team2")?.value.trim();
 
-  const team2 =
-    document
-      .getElementById(
-        "team2"
-      )
-      ?.value
-      .trim();
-
-  const message =
-    document.getElementById(
-      "gameMessage"
-    );
-
-
-  if (!team1 || !team2) {
-
-    if (message) {
-
-      message.textContent =
-        "أدخل اسم الفريقين أولاً";
-    }
-
-    return;
+  if (!t1 || !t2) {
+    setMsg("gameMessage", "أدخل اسمَي الفريقين", "error"); return;
+  }
+  if (t1 === t2) {
+    setMsg("gameMessage", "يجب أن يكون اسم الفريقين مختلفاً", "error"); return;
   }
 
-
-  if (team1 === team2) {
-
-    if (message) {
-
-      message.textContent =
-        "يجب أن يكون اسم الفريقين مختلفاً";
-    }
-
-    return;
-  }
-
-
-  gameState = {
-
-    team1Score: 0,
-
-    team2Score: 0,
-
-    turn: 1,
-
-    usedQuestions: []
-
-  };
-
-
-  currentGame = {
-
-    team1,
-
-    team2
-
-  };
-
-
-  const boardTeam1 =
-    document.getElementById(
-      "boardTeam1"
-    );
-
-  const boardTeam2 =
-    document.getElementById(
-      "boardTeam2"
-    );
-
-
-  if (boardTeam1) {
-
-    boardTeam1.textContent =
-      team1;
-  }
-
-
-  if (boardTeam2) {
-
-    boardTeam2.textContent =
-      team2;
-  }
-
-
-  updateScoreBoard();
-
-  buildCategoryBoard();
-
-  showScreen(
-    "boardScreen"
-  );
-}
-
-
-/* =========================================================
-   BUILD CATEGORY BOARD
-========================================================= */
-
-function buildCategoryBoard() {
-
-  const board =
-    document.getElementById(
-      "categoryBoard"
-    );
-
-
-  if (!board) {
-    return;
-  }
-
-
-  board.innerHTML = "";
-
-
-  CATEGORIES.forEach(
-    (
-      category,
-      categoryIndex
-    ) => {
-
-      const column =
-        document.createElement(
-          "div"
-        );
-
-
-      column.className =
-        "category-column";
-
-
-      const title =
-        document.createElement(
-          "div"
-        );
-
-
-      title.className =
-        "category-title";
-
-
-      title.textContent =
-        category;
-
-
-      column.appendChild(
-        title
-      );
-
-
-      POINTS.forEach(
-        (
-          points,
-          pointIndex
-        ) => {
-
-          const button =
-            document.createElement(
-              "button"
-            );
-
-
-          button.className =
-            "points-button";
-
-
-          button.textContent =
-            points;
-
-
-          button.dataset.category =
-            categoryIndex;
-
-
-          button.dataset.points =
-            points;
-
-
-          button.onclick =
-            () =>
-              selectQuestion(
-                categoryIndex,
-                pointIndex,
-                points,
-                button
-              );
-
-
-          column.appendChild(
-            button
-          );
-
-        }
-      );
-
-
-      board.appendChild(
-        column
-      );
-
-    }
-  );
-}
-
-
-/* =========================================================
-   SELECT QUESTION
-========================================================= */
-
-function selectQuestion(
-  categoryIndex,
-  pointIndex,
-  points,
-  button
-) {
-
-  const questionKey =
-    categoryIndex +
-    "-" +
-    pointIndex;
-
-
-  if (
-    gameState.usedQuestions.includes(
-      questionKey
-    )
-  ) {
-
-    return;
-  }
-
-
-  gameState.usedQuestions.push(
-    questionKey
-  );
-
-
-  if (button) {
-
-    button.classList.add(
-      "used"
-    );
-
-    button.disabled = true;
-  }
-
-
-  currentQuestion = {
-
-    category:
-      CATEGORIES[
-        categoryIndex
-      ],
-
-    points,
-
-    text:
-      "السؤال غير مضاف حالياً",
-
-    answer:
-      "الإجابة غير مضافة حالياً"
-
-  };
-
-
-  const panel =
-    document.getElementById(
-      "questionPanel"
-    );
-
-  const category =
-    document.getElementById(
-      "questionCategory"
-    );
-
-  const questionPoints =
-    document.getElementById(
-      "questionPoints"
-    );
-
-  const questionText =
-    document.getElementById(
-      "questionText"
-    );
-
-  const answerBox =
-    document.getElementById(
-      "answerBox"
-    );
-
-  const answerText =
-    document.getElementById(
-      "answerText"
-    );
-
-
-  if (panel) {
-
-    panel.style.display =
-      "block";
-  }
-
-
-  if (category) {
-
-    category.textContent =
-      currentQuestion.category;
-  }
-
-
-  if (questionPoints) {
-
-    questionPoints.textContent =
-      points;
-  }
-
-
-  if (questionText) {
-
-    questionText.textContent =
-      currentQuestion.text;
-  }
-
-
-  if (answerBox) {
-
-    answerBox.style.display =
-      "none";
-  }
-
-
-  if (answerText) {
-
-    answerText.textContent =
-      currentQuestion.answer;
-  }
-
-
-  document
-    .getElementById(
-      "questionPanel"
-    )
-    ?.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
+  // إذا كان مستخدماً عادياً نخصم لعبة من الحساب
+  if (!isAdmin()) {
+
+    setMsg("gameMessage", "جاري التحقق…");
+
+    const result = await apiRequest({
+      action: "createGame",
+      accountNumber: String(currentUser.accountNumber),
+      team1: t1,
+      team2: t2
     });
-}
 
-
-/* =========================================================
-   SHOW ANSWER
-========================================================= */
-
-function showAnswer() {
-
-  const answerBox =
-    document.getElementById(
-      "answerBox"
-    );
-
-
-  if (answerBox) {
-
-    answerBox.style.display =
-      "block";
-  }
-}
-
-
-/* =========================================================
-   ANSWER QUESTION
-========================================================= */
-
-function answerQuestion(
-  correct
-) {
-
-  if (!currentQuestion) {
-    return;
-  }
-
-
-  const points =
-    Number(
-      currentQuestion.points ||
-      0
-    );
-
-
-  if (correct) {
-
-    if (
-      gameState.turn === 1
-    ) {
-
-      gameState.team1Score +=
-        points;
-
-    } else {
-
-      gameState.team2Score +=
-        points;
+    if (!result?.success) {
+      setMsg("gameMessage", result?.message || "تعذّر البدء", "error"); return;
     }
-  }
 
+    // تحديث عدد الألعاب
+    currentUser.gamesRemaining = result.gamesRemaining ?? (currentUser.gamesRemaining - 1);
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    updateTopbar();
 
-  gameState.turn =
-    gameState.turn === 1
-      ? 2
-      : 1;
-
-
-  updateScoreBoard();
-
-
-  currentQuestion =
-    null;
-
-
-  const panel =
-    document.getElementById(
-      "questionPanel"
-    );
-
-
-  if (panel) {
-
-    panel.style.display =
-      "none";
-  }
-}
-
-
-/* =========================================================
-   UPDATE SCORE BOARD
-========================================================= */
-
-function updateScoreBoard() {
-
-  const score1 =
-    document.getElementById(
-      "score1"
-    );
-
-  const score2 =
-    document.getElementById(
-      "score2"
-    );
-
-  const turn =
-    document.getElementById(
-      "currentTurn"
-    );
-
-
-  if (score1) {
-
-    score1.textContent =
-      gameState.team1Score;
-  }
-
-
-  if (score2) {
-
-    score2.textContent =
-      gameState.team2Score;
-  }
-
-
-  if (turn) {
-
-    turn.textContent =
-      gameState.turn === 1
-        ? (
-            currentGame?.team1 ||
-            "الفريق الأول"
-          )
-        : (
-            currentGame?.team2 ||
-            "الفريق الثاني"
-          );
-  }
-
-
-  const team1Card =
-    document.getElementById(
-      "team1ScoreCard"
-    );
-
-  const team2Card =
-    document.getElementById(
-      "team2ScoreCard"
-    );
-
-
-  if (team1Card) {
-
-    team1Card.classList.toggle(
-      "active",
-      gameState.turn === 1
-    );
-  }
-
-
-  if (team2Card) {
-
-    team2Card.classList.toggle(
-      "active",
-      gameState.turn === 2
-    );
-  }
-}
-
-
-/* =========================================================
-   BACK TO SETUP
-========================================================= */
-
-function backToSetup() {
-
-  currentQuestion =
-    null;
-
-
-  const panel =
-    document.getElementById(
-      "questionPanel"
-    );
-
-
-  if (panel) {
-
-    panel.style.display =
-      "none";
-  }
-
-
-  showScreen(
-    "gameScreen"
-  );
-
-
-  if (isAdmin()) {
-
-    showAdminMenu();
+    currentGame = { gameId: result.gameId, team1: t1, team2: t2 };
 
   } else {
+    currentGame = { gameId: null, team1: t1, team2: t2 };
+  }
 
-    showGameSetup();
+  // إعادة تهيئة الحالة
+  gameState = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [] };
+  currentQuestion = null;
+
+  // شاشة اللعبة
+  const bt1 = el("bTeam1"); if (bt1) bt1.textContent = t1;
+  const bt2 = el("bTeam2"); if (bt2) bt2.textContent = t2;
+
+  updateScoreboard();
+  buildBoard();
+  hideQuestionPanel();
+  showScreen("boardScreen");
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   BOARD
+═══════════════════════════════════════════════════════ */
+
+function buildBoard() {
+
+  const board = el("categoryBoard");
+  if (!board) return;
+  board.innerHTML = "";
+
+  CATEGORIES.forEach((cat, ci) => {
+
+    const col = document.createElement("div");
+    col.className = "cat-col";
+
+    // العنوان
+    const title = document.createElement("div");
+    title.className   = "cat-title";
+    title.textContent = cat;
+    col.appendChild(title);
+
+    // أزرار النقاط
+    POINTS.forEach((pts, pi) => {
+
+      const btn = document.createElement("button");
+      btn.className   = `pts-btn ${TIER_CLASSES[pi]}`;
+      btn.textContent = pts;
+      btn.dataset.key = ci + "-" + pi;
+
+      const key = ci + "-" + pi;
+      if (gameState.usedQuestions.includes(key)) {
+        btn.classList.add("used");
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => openQuestion(ci, pi, pts, cat, btn);
+      }
+
+      col.appendChild(btn);
+    });
+
+    board.appendChild(col);
+  });
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   QUESTION
+═══════════════════════════════════════════════════════ */
+
+async function openQuestion(catIdx, ptIdx, pts, cat, btn) {
+
+  const key = catIdx + "-" + ptIdx;
+  if (gameState.usedQuestions.includes(key)) return;
+
+  // مباشرةً نعطّل الزر ونحجز السؤال
+  btn.classList.add("used");
+  btn.disabled = true;
+  gameState.usedQuestions.push(key);
+
+  // نحاول نجيب سؤال من السيرفر
+  const result = await apiRequest({
+    action: "getRandomQuestion",
+    category: cat,
+    points: pts
+  });
+
+  if (result?.success && result.question) {
+    currentQuestion = {
+      id:       result.question.id,
+      category: cat,
+      points:   pts,
+      text:     result.question.question || "—",
+      answer:   result.question.answer   || "—"
+    };
+  } else {
+    // لا يوجد سؤال في الشيت — نعرض placeholder
+    currentQuestion = {
+      id:       null,
+      category: cat,
+      points:   pts,
+      text:     `[ سؤال ${cat} — ${pts} نقطة ] — لم يُضَف بعد`,
+      answer:   "الإجابة غير مضافة"
+    };
+  }
+
+  renderQuestion();
+}
+
+
+function renderQuestion() {
+  if (!currentQuestion) return;
+
+  const cat  = el("qCategory");
+  const pts  = el("qPoints");
+  const txt  = el("qText");
+  const ansTxt = el("answerText");
+  const ansBox = el("answerBox");
+  const panel  = el("questionPanel");
+
+  if (cat)    cat.textContent  = currentQuestion.category;
+  if (pts)    pts.textContent  = currentQuestion.points + " نقطة";
+  if (txt)    txt.textContent  = currentQuestion.text;
+  if (ansTxt) ansTxt.textContent = currentQuestion.answer;
+  if (ansBox) ansBox.style.display = "none";
+  if (panel)  {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+function showAnswer() {
+  const b = el("answerBox");
+  if (b) { b.style.display = "block"; b.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+}
+
+
+function answerQuestion(correct) {
+
+  if (!currentQuestion) return;
+
+  if (correct) {
+    if (gameState.turn === 1) gameState.team1Score += Number(currentQuestion.points);
+    else                      gameState.team2Score += Number(currentQuestion.points);
+  }
+
+  // تبديل الدور تلقائياً بعد كل سؤال
+  gameState.turn = gameState.turn === 1 ? 2 : 1;
+
+  updateScoreboard();
+  hideQuestionPanel();
+  currentQuestion = null;
+
+  // تسجيل الإجابة في الشيت (إن توفّر gameId)
+  if (currentGame?.gameId) {
+    apiRequest({
+      action:        "submitAnswer",
+      gameId:        currentGame.gameId,
+      accountNumber: String(currentUser.accountNumber),
+      team1:         currentGame.team1,
+      team2:         currentGame.team2,
+      category:      currentQuestion?.category || "",
+      questionId:    currentQuestion?.id        || "",
+      question:      currentQuestion?.text      || "",
+      points:        currentQuestion?.points    || 0,
+      team:          gameState.turn === 1 ? currentGame.team2 : currentGame.team1,  // من فاز بالنقطة
+      correct
+    }).catch(() => {});
+  }
+}
+
+
+function skipQuestion() {
+  // تخطي بدون نقاط وبدون تبديل دور
+  hideQuestionPanel();
+  currentQuestion = null;
+}
+
+
+function hideQuestionPanel() {
+  const p = el("questionPanel");
+  if (p) p.style.display = "none";
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   SCOREBOARD
+═══════════════════════════════════════════════════════ */
+
+function updateScoreboard() {
+
+  const s1   = el("score1");
+  const s2   = el("score2");
+  const turn = el("currentTurn");
+  const c1   = el("team1Card");
+  const c2   = el("team2Card");
+
+  if (s1)   s1.textContent   = gameState.team1Score;
+  if (s2)   s2.textContent   = gameState.team2Score;
+  if (turn) turn.textContent = gameState.turn === 1
+    ? (currentGame?.team1 || "الفريق الأول")
+    : (currentGame?.team2 || "الفريق الثاني");
+
+  if (c1) c1.classList.toggle("active-team", gameState.turn === 1);
+  if (c2) c2.classList.toggle("active-team", gameState.turn === 2);
+}
+
+
+// زر تبديل الدور يدوياً
+function swapTurn() {
+  gameState.turn = gameState.turn === 1 ? 2 : 1;
+  updateScoreboard();
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   BACK / LOGOUT
+═══════════════════════════════════════════════════════ */
+
+function confirmBack() {
+  if (!confirm("هل تريد الخروج من اللعبة الحالية؟")) return;
+  backToSetup();
+}
+
+function backToSetup() {
+  hideQuestionPanel();
+  currentQuestion = null;
+  showScreen("gameScreen");
+  if (isAdmin()) showAdminMenu();
+  else           showGameSetup();
+}
 
 function logout() {
+  currentUser = currentGame = currentQuestion = null;
+  gameState   = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [] };
+  localStorage.removeItem("currentUser");
 
-  currentUser =
-    null;
-
-  currentGame =
-    null;
-
-  currentQuestion =
-    null;
-
-
-  gameState = {
-
-    team1Score: 0,
-
-    team2Score: 0,
-
-    turn: 1,
-
-    usedQuestions: []
-
-  };
-
-
-  localStorage.removeItem(
-    "currentUser"
-  );
-
-
-  const loginAccount =
-    document.getElementById(
-      "loginAccount"
-    );
-
-  const loginCode =
-    document.getElementById(
-      "loginCode"
-    );
-
-
-  if (loginAccount) {
-
-    loginAccount.value =
-      "";
-  }
-
-
-  if (loginCode) {
-
-    loginCode.value =
-      "";
-  }
-
-
-  showScreen(
-    "loginScreen"
-  );
+  // مسح الحقول
+  ["loginAccount","loginCode"].forEach(id => { const i = el(id); if (i) i.value = ""; });
+  setMsg("loginMessage", "");
+  showScreen("loginScreen");
 }
 
 
-/* =========================================================
-   RESTORE LOGIN
-========================================================= */
+/* ═══════════════════════════════════════════════════════
+   RESTORE SESSION
+═══════════════════════════════════════════════════════ */
 
-function restoreLogin() {
+function restoreSession() {
 
   try {
+    const saved = localStorage.getItem("currentUser");
+    if (!saved) return;
+    const user = JSON.parse(saved);
+    if (!user)  return;
 
-    const saved =
-      localStorage.getItem(
-        "currentUser"
-      );
+    currentUser = user;
+    showScreen("gameScreen");
+    updateTopbar();
 
+    if (isAdmin())             { showAdminMenu();  return; }
+    if (isApproved(currentUser)) { showGameSetup(); return; }
 
-    if (!saved) {
-      return;
-    }
+    const w = el("waitingAccount");
+    if (w) w.textContent = currentUser.accountNumber || "—";
+    showScreen("waitingScreen");
 
-
-    const user =
-      JSON.parse(
-        saved
-      );
-
-
-    if (!user) {
-      return;
-    }
-
-
-    currentUser =
-      user;
-
-
-    console.log(
-      "RESTORED USER:",
-      currentUser
-    );
-
-
-    /*
-     * المسؤول
-     */
-
-    if (isAdmin()) {
-
-      showScreen(
-        "gameScreen"
-      );
-
-      updateGameUI();
-
-      showAdminMenu();
-
-      return;
-    }
-
-
-    /*
-     * المستخدم المقبول
-     */
-
-    if (
-      isApprovedUser(
-        currentUser
-      )
-    ) {
-
-      showScreen(
-        "gameScreen"
-      );
-
-      updateGameUI();
-
-      showGameSetup();
-
-      return;
-    }
-
-
-    /*
-     * غير مقبول
-     */
-
-    const waiting =
-      document.getElementById(
-        "waitingAccount"
-      );
-
-
-    if (waiting) {
-
-      waiting.textContent =
-        currentUser.accountNumber ||
-        "-";
-    }
-
-
-    showScreen(
-      "waitingScreen"
-    );
-
-  } catch (error) {
-
-    console.error(
-      "RESTORE LOGIN ERROR:",
-      error
-    );
-
-    localStorage.removeItem(
-      "currentUser"
-    );
+  } catch {
+    localStorage.removeItem("currentUser");
   }
 }
 
 
-/* =========================================================
+/* ═══════════════════════════════════════════════════════
    INIT
-========================================================= */
+═══════════════════════════════════════════════════════ */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    console.log(
-      "================================="
-    );
-
-    console.log(
-      "سين جيم الطبي بدأ التشغيل"
-    );
-
-    console.log(
-      "API:",
-      API_URL
-    );
-
-    console.log(
-      "================================="
-    );
-
-    restoreLogin();
-
-  }
-);
+document.addEventListener("DOMContentLoaded", () => {
+  restoreSession();
+});
