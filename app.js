@@ -1,50 +1,631 @@
 /* =========================================================
-   ADMIN MENU
+   CONFIG
+========================================================= */
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
+
+
+const ADMIN_ACCOUNT = "3854";
+
+
+let currentUser = null;
+
+let currentGame = null;
+
+let currentQuestion = null;
+
+
+let gameState = {
+
+  team1Score: 0,
+
+  team2Score: 0,
+
+  turn: 1,
+
+  usedQuestions: []
+
+};
+
+
+/* =========================================================
+   CONSTANTS
+========================================================= */
+
+const CATEGORIES = [
+
+  "التشريح",
+
+  "الإحالة",
+
+  "الأدوات والمعدات",
+
+  "العلامات الحيوية",
+
+  "الأدوية",
+
+  "الطوارئ والإسعافات"
+
+];
+
+
+const POINTS = [
+
+  100,
+
+  200,
+
+  300,
+
+  400,
+
+  500
+
+];
+
+
+/* =========================================================
+   API REQUEST
+========================================================= */
+
+async function apiRequest(data) {
+
+  try {
+
+    console.log("API REQUEST:", data);
+
+
+    const response =
+      await fetch(API_URL, {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "text/plain;charset=utf-8"
+
+        },
+
+        body:
+          JSON.stringify(data)
+
+      });
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
+
+    }
+
+
+    const text =
+      await response.text();
+
+
+    console.log(
+      "API RAW RESPONSE:",
+      text
+    );
+
+
+    let result;
+
+
+    try {
+
+      result =
+        JSON.parse(text);
+
+    } catch (e) {
+
+      console.error(
+        "JSON ERROR:",
+        e
+      );
+
+      return {
+
+        success: false,
+
+        message:
+          "الخادم أرسل استجابة غير صحيحة"
+
+      };
+
+    }
+
+
+    return result;
+
+
+  } catch (error) {
+
+    console.error(
+      "API ERROR:",
+      error
+    );
+
+
+    return {
+
+      success: false,
+
+      message:
+        "تعذر الاتصال بالخادم"
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN CHECK
 ========================================================= */
 
 function isAdmin() {
 
   if (!currentUser) {
+
     return false;
+
   }
 
+
   return (
-    String(currentUser.accountNumber) === "3854" ||
-    String(currentUser.role).toUpperCase() === "ADMIN"
+
+    String(
+      currentUser.accountNumber
+    ) === ADMIN_ACCOUNT
+
+    ||
+
+    String(
+      currentUser.role || ""
+    ).toUpperCase() === "ADMIN"
+
   );
+
 }
 
 
 /* =========================================================
-   SHOW ADMIN MENU
+   LOGIN
+========================================================= */
+
+async function login() {
+
+  const accountNumber =
+    document
+      .getElementById("loginAccount")
+      .value
+      .trim();
+
+
+  const code =
+    document
+      .getElementById("loginCode")
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  if (!accountNumber || !code) {
+
+    message.textContent =
+      "أدخل رقم الحساب والرمز";
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "جاري تسجيل الدخول...";
+
+
+  const result =
+    await apiRequest({
+
+      action: "login",
+
+      accountNumber:
+        accountNumber,
+
+      code:
+        code
+
+    });
+
+
+  console.log(
+    "LOGIN RESULT:",
+    result
+  );
+
+
+  if (!result.success) {
+
+    message.textContent =
+      result.message ||
+      "فشل تسجيل الدخول";
+
+    return;
+
+  }
+
+
+  currentUser =
+    result.user;
+
+
+  localStorage.setItem(
+
+    "currentUser",
+
+    JSON.stringify(
+      currentUser
+    )
+
+  );
+
+
+  message.textContent = "";
+
+
+  /*
+   * المسؤول
+   */
+
+  if (isAdmin()) {
+
+    showScreen(
+      "gameScreen"
+    );
+
+    updateGameUI();
+
+    showAdminMenu();
+
+    return;
+
+  }
+
+
+  /*
+   * المستخدم العادي
+   */
+
+  if (
+
+    String(
+      currentUser.status || ""
+    ).toUpperCase() !==
+    "APPROVED"
+
+  ) {
+
+    const waiting =
+      document.getElementById(
+        "waitingAccount"
+      );
+
+
+    if (waiting) {
+
+      waiting.textContent =
+        currentUser.accountNumber;
+
+    }
+
+
+    showScreen(
+      "waitingScreen"
+    );
+
+    return;
+
+  }
+
+
+  showScreen(
+    "gameScreen"
+  );
+
+
+  updateGameUI();
+
+
+  showGameSetup();
+
+}
+
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+async function register() {
+
+  const nickname =
+    document
+      .getElementById(
+        "registerNickname"
+      )
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById(
+        "registerPhone"
+      )
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById(
+        "registerEmail"
+      )
+      .value
+      .trim();
+
+
+  const code =
+    document
+      .getElementById(
+        "registerCode"
+      )
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "registerMessage"
+    );
+
+
+  if (
+    !nickname ||
+    !phone ||
+    !email ||
+    !code
+  ) {
+
+    message.textContent =
+      "أكمل جميع البيانات";
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "جاري إنشاء الحساب...";
+
+
+  const result =
+    await apiRequest({
+
+      action: "register",
+
+      nickname,
+
+      phone,
+
+      email,
+
+      code
+
+    });
+
+
+  console.log(
+    "REGISTER:",
+    result
+  );
+
+
+  if (!result.success) {
+
+    message.textContent =
+      result.message ||
+      "تعذر إنشاء الحساب";
+
+    return;
+
+  }
+
+
+  message.innerHTML =
+    "تم إنشاء الحساب بنجاح.<br>" +
+    "رقم حسابك: <strong>" +
+    escapeHtml(
+      result.accountNumber
+    ) +
+    "</strong>";
+
+
+  const waiting =
+    document.getElementById(
+      "waitingAccount"
+    );
+
+
+  if (waiting) {
+
+    waiting.textContent =
+      result.accountNumber;
+
+  }
+
+
+  setTimeout(
+    () => {
+
+      showScreen(
+        "waitingScreen"
+      );
+
+    },
+    1200
+  );
+
+}
+
+
+/* =========================================================
+   FORGOT CODE
+========================================================= */
+
+async function forgotCode() {
+
+  const accountNumber =
+    document
+      .getElementById(
+        "forgotAccount"
+      )
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById(
+        "forgotPhone"
+      )
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById(
+        "forgotEmail"
+      )
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "forgotMessage"
+    );
+
+
+  if (
+    !accountNumber ||
+    !phone ||
+    !email
+  ) {
+
+    message.textContent =
+      "أدخل جميع البيانات";
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "جاري التحقق...";
+
+
+  const result =
+    await apiRequest({
+
+      action: "forgotCode",
+
+      accountNumber,
+
+      phone,
+
+      email
+
+    });
+
+
+  message.textContent =
+    result.message ||
+    (
+      result.success
+        ? "تم التحقق بنجاح"
+        : "تعذر استرجاع الرمز"
+    );
+
+}
+
+
+/* =========================================================
+   ADMIN MENU
 ========================================================= */
 
 function showAdminMenu() {
 
   if (!isAdmin()) {
+
     return;
+
   }
 
-  const adminMenu =
-    document.getElementById("adminMenu");
 
-  const gameSetup =
-    document.getElementById("gameSetupArea");
+  const menu =
+    document.getElementById(
+      "adminMenu"
+    );
 
-  const adminPanel =
-    document.getElementById("adminPanel");
 
-  if (adminMenu) {
-    adminMenu.style.display = "block";
+  const setup =
+    document.getElementById(
+      "gameSetupArea"
+    );
+
+
+  const panel =
+    document.getElementById(
+      "adminPanel"
+    );
+
+
+  if (menu) {
+
+    menu.style.display =
+      "block";
+
   }
 
-  if (gameSetup) {
-    gameSetup.style.display = "none";
+
+  if (setup) {
+
+    setup.style.display =
+      "none";
+
   }
 
-  if (adminPanel) {
-    adminPanel.style.display = "none";
+
+  if (panel) {
+
+    panel.style.display =
+      "none";
+
   }
+
 }
 
 
@@ -54,385 +635,57 @@ function showAdminMenu() {
 
 function showGameSetup() {
 
-  const gameSetup =
-    document.getElementById("gameSetupArea");
-
-  const adminMenu =
-    document.getElementById("adminMenu");
-
-  const adminPanel =
-    document.getElementById("adminPanel");
-
-  if (adminMenu) {
-    adminMenu.style.display = "none";
-  }
-
-  if (adminPanel) {
-    adminPanel.style.display = "none";
-  }
-
-  if (gameSetup) {
-    gameSetup.style.display = "block";
-  }
-}
-
-
-/* =========================================================
-   SHOW ADMIN PANEL
-========================================================= */
-
-async function showAdminPanel() {
-
-  if (!isAdmin()) {
-    alert("غير مصرح لك بالدخول");
-    return;
-  }
-
-  const adminMenu =
-    document.getElementById("adminMenu");
-
-  const gameSetup =
-    document.getElementById("gameSetupArea");
-
-  const adminPanel =
-    document.getElementById("adminPanel");
-
-  if (adminMenu) {
-    adminMenu.style.display = "none";
-  }
-
-  if (gameSetup) {
-    gameSetup.style.display = "none";
-  }
-
-  if (adminPanel) {
-    adminPanel.style.display = "block";
-  }
-
-  await loadAccounts();
-}
-
-
-/* =========================================================
-   LOAD ACCOUNTS
-========================================================= */
-
-async function loadAccounts() {
-
-  if (!isAdmin()) {
-    return;
-  }
-
-  const container =
-    document.getElementById("accountsList");
-
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML =
-    '<div class="loading">جاري تحميل الحسابات...</div>';
-
-
-  const result =
-    await apiRequest({
-      action: "getAccounts",
-      accountNumber:
-        String(currentUser.accountNumber)
-    });
-
-
-  console.log("ACCOUNTS:", result);
-
-
-  if (!result.success) {
-
-    container.innerHTML =
-      `<div class="loading">
-        ${escapeHtml(
-          result.message ||
-          "تعذر تحميل الحسابات"
-        )}
-      </div>`;
-
-    return;
-  }
-
-
-  const accounts =
-    result.accounts || [];
-
-
-  updateAccountStats(accounts);
-
-
-  if (!accounts.length) {
-
-    container.innerHTML =
-      '<div class="loading">لا توجد حسابات</div>';
-
-    return;
-  }
-
-
-  container.innerHTML = "";
-
-
-  accounts.forEach(account => {
-
-    const row =
-      document.createElement("div");
-
-    row.className =
-      "account-row";
-
-
-    const status =
-      String(
-        account.status || ""
-      ).toUpperCase();
-
-
-    let statusText =
-      "غير معروف";
-
-    let statusClass =
-      "";
-
-
-    if (status === "APPROVED") {
-
-      statusText = "مقبول";
-
-      statusClass =
-        "status-approved";
-
-    } else if (
-      status === "PENDING"
-    ) {
-
-      statusText = "بانتظار";
-
-      statusClass =
-        "status-pending";
-
-    } else if (
-      status === "REJECTED"
-    ) {
-
-      statusText = "مرفوض";
-
-      statusClass =
-        "status-rejected";
-    }
-
-
-    row.innerHTML = `
-
-      <div class="account-number">
-        ${escapeHtml(account.accountNumber)}
-      </div>
-
-
-      <div class="account-name">
-
-        <div>
-          ${escapeHtml(
-            account.nickname || "-"
-          )}
-        </div>
-
-        <small>
-          ${escapeHtml(
-            account.email || ""
-          )}
-        </small>
-
-      </div>
-
-
-      <div>
-        ${escapeHtml(
-          account.phone || "-"
-        )}
-      </div>
-
-
-      <div
-        class="account-status ${statusClass}"
-      >
-        ${statusText}
-      </div>
-
-
-      <div class="account-actions">
-
-        ${
-          status !== "APPROVED"
-            ? `
-              <button
-                class="approve-button"
-                onclick="changeAccountStatus(
-                  '${escapeJs(account.accountNumber)}',
-                  'APPROVED'
-                )"
-              >
-                ✓ قبول
-              </button>
-            `
-            : ""
-        }
-
-
-        ${
-          status !== "REJECTED"
-            ? `
-              <button
-                class="reject-button"
-                onclick="changeAccountStatus(
-                  '${escapeJs(account.accountNumber)}',
-                  'REJECTED'
-                )"
-              >
-                ✗ رفض
-              </button>
-            `
-            : ""
-        }
-
-      </div>
-
-    `;
-
-
-    container.appendChild(row);
-
-  });
-
-}
-
-
-/* =========================================================
-   ACCOUNT STATS
-========================================================= */
-
-function updateAccountStats(accounts) {
-
-  const total =
-    accounts.length;
-
-
-  const pending =
-    accounts.filter(
-      account =>
-        String(
-          account.status
-        ).toUpperCase() === "PENDING"
-    ).length;
-
-
-  const approved =
-    accounts.filter(
-      account =>
-        String(
-          account.status
-        ).toUpperCase() === "APPROVED"
-    ).length;
-
-
-  const totalElement =
+  const menu =
     document.getElementById(
-      "totalAccounts"
+      "adminMenu"
     );
 
-  const pendingElement =
+
+  const setup =
     document.getElementById(
-      "pendingAccounts"
+      "gameSetupArea"
     );
 
-  const approvedElement =
+
+  const panel =
     document.getElementById(
-      "approvedAccounts"
+      "adminPanel"
     );
 
 
-  if (totalElement) {
-    totalElement.textContent = total;
-  }
+  if (menu) {
 
-  if (pendingElement) {
-    pendingElement.textContent = pending;
-  }
+    menu.style.display =
+      "none";
 
-  if (approvedElement) {
-    approvedElement.textContent = approved;
-  }
-
-}
-
-
-/* =========================================================
-   CHANGE ACCOUNT STATUS
-========================================================= */
-
-async function changeAccountStatus(
-  accountNumber,
-  status
-) {
-
-  if (!isAdmin()) {
-    alert("غير مصرح لك");
-    return;
   }
 
 
-  const text =
-    status === "APPROVED"
-      ? "هل تريد قبول هذا الحساب؟"
-      : "هل تريد رفض هذا الحساب؟";
+  if (panel) {
 
+    panel.style.display =
+      "none";
 
-  if (!confirm(text)) {
-    return;
   }
 
 
-  const result =
-    await apiRequest({
+  if (setup) {
 
-      action: "updateAccountStatus",
+    setup.style.display =
+      "block";
 
-      adminAccountNumber:
-        String(
-          currentUser.accountNumber
-        ),
-
-      accountNumber:
-        String(accountNumber),
-
-      status:
-        status
-
-    });
+  }
 
 
-  console.log(
-    "UPDATE ACCOUNT:",
-    result
-  );
-
-
-  if (!result.success) {
-
-    alert(
-      result.message ||
-      "تعذر تحديث الحساب"
+  const backButton =
+    document.getElementById(
+      "adminBackButton"
     );
 
-    return;
-  }
 
+  if (backButton) {
 
-  await loadAccounts();
-
-}
+    backButton.style.display =
+      isAdmin()
+        ? "block"
+        : "none";
