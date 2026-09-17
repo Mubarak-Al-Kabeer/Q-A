@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════════════════ */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwSF8rZlQAA9TA_H-fgOYzo-ZMdtjXajcW7s33pDw7zQ6dyJlXIZnac8YOG8gXiO7CFBA/exec";
+  "https://script.google.com/macros/s/AKfycbz6ZAZG_BN_ae-tS1u0HnQVg6Vezo-USCriwYsexWjLXnavJRzNp3Tp4sa11V1PNLrleQ/exec";
 
 const ADMIN_ACCOUNT = "3854";
 
