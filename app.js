@@ -1,38 +1,509 @@
-  }
+/* =========================================================
+   CONFIG
+========================================================= */
 
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwtM6EpRaz9R09523IEtdiTWbghH2HQ1cVc9CQjAn32r6UsFIfZQ0doSF1PddQjKExgkw/exec";
+
+const ADMIN_ACCOUNT = "3854";
+
+let currentUser = null;
+let currentGame = null;
+let currentQuestion = null;
+
+let gameState = {
+  team1Score: 0,
+  team2Score: 0,
+  turn: 1,
+  usedQuestions: []
+};
+
+
+/* =========================================================
+   CONSTANTS
+========================================================= */
+
+const CATEGORIES = [
+  "التشريح",
+  "الإحالة",
+  "الأدوات والمعدات",
+  "العلامات الحيوية",
+  "الأدوية",
+  "الطوارئ والإسعافات"
+];
+
+const POINTS = [
+  100,
+  200,
+  300,
+  400,
+  500
+];
+
+
+/* =========================================================
+   API
+========================================================= */
+
+async function apiRequest(data) {
+
+  try {
+
+    console.log("API REQUEST:", data);
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const text = await response.text();
+
+    console.log("API RESPONSE:", text);
+
+    try {
+
+      return JSON.parse(text);
+
+    } catch (error) {
+
+      console.error("JSON ERROR:", error);
+
+      return {
+        success: false,
+        message: "الخادم أرسل استجابة غير صحيحة"
+      };
+    }
+
+  } catch (error) {
+
+    console.error("API ERROR:", error);
+
+    return {
+      success: false,
+      message: "تعذر الاتصال بالخادم"
+    };
+  }
 }
 
 
 /* =========================================================
-   SHOW SCREEN
+   HELPERS
+========================================================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+function escapeJs(value) {
+
+  return String(value ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+}
+
+
+/* =========================================================
+   SCREEN SYSTEM
 ========================================================= */
 
 function showScreen(screenId) {
 
-  const screens =
-    document.querySelectorAll(".screen");
+  document
+    .querySelectorAll(".screen")
+    .forEach(screen => {
 
-  screens.forEach(screen => {
+      screen.classList.remove("active");
 
-    screen.classList.remove("active");
-
-  });
+    });
 
 
-  const target =
+  const screen =
     document.getElementById(screenId);
 
-  if (target) {
 
-    target.classList.add("active");
+  if (!screen) {
 
+    console.error(
+      "SCREEN NOT FOUND:",
+      screenId
+    );
+
+    return;
   }
 
+
+  screen.classList.add("active");
+
+  window.scrollTo(0, 0);
 }
 
 
 /* =========================================================
-   GAME UI
+   ADMIN CHECK
+========================================================= */
+
+function isAdmin() {
+
+  if (!currentUser) {
+    return false;
+  }
+
+  return (
+    String(currentUser.accountNumber) === ADMIN_ACCOUNT ||
+    String(currentUser.role || "").toUpperCase() === "ADMIN"
+  );
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login() {
+
+  const accountInput =
+    document.getElementById("loginAccount");
+
+  const codeInput =
+    document.getElementById("loginCode");
+
+  const message =
+    document.getElementById("loginMessage");
+
+
+  if (!accountInput || !codeInput || !message) {
+
+    console.error("LOGIN ELEMENTS MISSING");
+
+    return;
+  }
+
+
+  const accountNumber =
+    accountInput.value.trim();
+
+  const code =
+    codeInput.value.trim();
+
+
+  if (!accountNumber || !code) {
+
+    message.textContent =
+      "أدخل رقم الحساب والرمز";
+
+    return;
+  }
+
+
+  message.textContent =
+    "جاري تسجيل الدخول...";
+
+
+  const result =
+    await apiRequest({
+
+      action: "login",
+
+      accountNumber,
+
+      code
+
+    });
+
+
+  console.log("LOGIN RESULT:", result);
+
+
+  if (!result || !result.success) {
+
+    message.textContent =
+      result?.message ||
+      "فشل تسجيل الدخول";
+
+    return;
+  }
+
+
+  currentUser =
+    result.user;
+
+
+  localStorage.setItem(
+    "currentUser",
+    JSON.stringify(currentUser)
+  );
+
+
+  message.textContent = "";
+
+
+  /* -----------------------------------------
+     ADMIN
+  ----------------------------------------- */
+
+  if (isAdmin()) {
+
+    showScreen("gameScreen");
+
+    updateGameUI();
+
+    showAdminMenu();
+
+    return;
+  }
+
+
+  /* -----------------------------------------
+     NORMAL USER
+  ----------------------------------------- */
+
+  const status =
+    String(
+      currentUser.status || ""
+    ).toUpperCase();
+
+
+  if (status !== "APPROVED") {
+
+    const waiting =
+      document.getElementById(
+        "waitingAccount"
+      );
+
+
+    if (waiting) {
+
+      waiting.textContent =
+        currentUser.accountNumber || "-";
+    }
+
+
+    showScreen("waitingScreen");
+
+    return;
+  }
+
+
+  showScreen("gameScreen");
+
+  updateGameUI();
+
+  showGameSetup();
+}
+
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+async function register() {
+
+  const nickname =
+    document
+      .getElementById("registerNickname")
+      ?.value
+      .trim();
+
+  const phone =
+    document
+      .getElementById("registerPhone")
+      ?.value
+      .trim();
+
+  const email =
+    document
+      .getElementById("registerEmail")
+      ?.value
+      .trim();
+
+  const code =
+    document
+      .getElementById("registerCode")
+      ?.value
+      .trim();
+
+  const message =
+    document.getElementById(
+      "registerMessage"
+    );
+
+
+  if (!nickname || !phone || !email || !code) {
+
+    if (message) {
+      message.textContent =
+        "أكمل جميع البيانات";
+    }
+
+    return;
+  }
+
+
+  if (message) {
+    message.textContent =
+      "جاري إنشاء الحساب...";
+  }
+
+
+  const result =
+    await apiRequest({
+
+      action: "register",
+
+      nickname,
+
+      phone,
+
+      email,
+
+      code
+
+    });
+
+
+  console.log("REGISTER RESULT:", result);
+
+
+  if (!result.success) {
+
+    if (message) {
+
+      message.textContent =
+        result.message ||
+        "تعذر إنشاء الحساب";
+    }
+
+    return;
+  }
+
+
+  if (message) {
+
+    message.innerHTML =
+      "تم إنشاء الحساب بنجاح.<br>" +
+      "رقم حسابك: <strong>" +
+      escapeHtml(
+        result.accountNumber
+      ) +
+      "</strong>";
+  }
+
+
+  const waiting =
+    document.getElementById(
+      "waitingAccount"
+    );
+
+
+  if (waiting) {
+
+    waiting.textContent =
+      result.accountNumber;
+  }
+
+
+  setTimeout(() => {
+
+    showScreen(
+      "waitingScreen"
+    );
+
+  }, 1200);
+}
+
+
+/* =========================================================
+   FORGOT CODE
+========================================================= */
+
+async function forgotCode() {
+
+  const accountNumber =
+    document
+      .getElementById("forgotAccount")
+      ?.value
+      .trim();
+
+  const phone =
+    document
+      .getElementById("forgotPhone")
+      ?.value
+      .trim();
+
+  const email =
+    document
+      .getElementById("forgotEmail")
+      ?.value
+      .trim();
+
+  const message =
+    document.getElementById(
+      "forgotMessage"
+    );
+
+
+  if (!accountNumber || !phone || !email) {
+
+    if (message) {
+
+      message.textContent =
+        "أدخل جميع البيانات";
+    }
+
+    return;
+  }
+
+
+  if (message) {
+
+    message.textContent =
+      "جاري التحقق...";
+  }
+
+
+  const result =
+    await apiRequest({
+
+      action: "forgotCode",
+
+      accountNumber,
+
+      phone,
+
+      email
+
+    });
+
+
+  if (message) {
+
+    message.textContent =
+      result.message ||
+      (
+        result.success
+          ? "تم التحقق بنجاح"
+          : "تعذر استرجاع الرمز"
+      );
+  }
+}
+
+
+/* =========================================================
+   UPDATE GAME UI
 ========================================================= */
 
 function updateGameUI() {
@@ -43,16 +514,22 @@ function updateGameUI() {
 
 
   const nickname =
+    currentUser.nickname ||
+    currentUser.name ||
+    currentUser.accountNumber ||
+    "";
+
+
+  const playerNickname =
     document.getElementById(
       "playerNickname"
     );
 
 
-  if (nickname) {
+  if (playerNickname) {
 
-    nickname.textContent =
-      currentUser.nickname || "";
-
+    playerNickname.textContent =
+      nickname;
   }
 
 
@@ -65,8 +542,7 @@ function updateGameUI() {
   if (boardNickname) {
 
     boardNickname.textContent =
-      currentUser.nickname || "";
-
+      nickname;
   }
 
 
@@ -79,10 +555,481 @@ function updateGameUI() {
   if (gamesRemaining) {
 
     gamesRemaining.textContent =
-      currentUser.gamesRemaining || 0;
+      currentUser.gamesRemaining ??
+      currentUser.remainingGames ??
+      0;
+  }
+}
 
+
+/* =========================================================
+   ADMIN MENU
+========================================================= */
+
+function showAdminMenu() {
+
+  if (!isAdmin()) {
+    return;
   }
 
+
+  const menu =
+    document.getElementById(
+      "adminMenu"
+    );
+
+  const setup =
+    document.getElementById(
+      "gameSetupArea"
+    );
+
+  const panel =
+    document.getElementById(
+      "adminPanel"
+    );
+
+
+  if (menu) {
+    menu.style.display = "block";
+  }
+
+  if (setup) {
+    setup.style.display = "none";
+  }
+
+  if (panel) {
+    panel.style.display = "none";
+  }
+}
+
+
+/* =========================================================
+   SHOW GAME SETUP
+========================================================= */
+
+function showGameSetup() {
+
+  const menu =
+    document.getElementById(
+      "adminMenu"
+    );
+
+  const setup =
+    document.getElementById(
+      "gameSetupArea"
+    );
+
+  const panel =
+    document.getElementById(
+      "adminPanel"
+    );
+
+  const backButton =
+    document.getElementById(
+      "adminBackButton"
+    );
+
+
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  if (panel) {
+    panel.style.display = "none";
+  }
+
+  if (setup) {
+    setup.style.display = "block";
+  }
+
+
+  if (backButton) {
+
+    backButton.style.display =
+      isAdmin()
+        ? "block"
+        : "none";
+  }
+}
+
+
+/* =========================================================
+   SHOW ADMIN PANEL
+========================================================= */
+
+async function showAdminPanel() {
+
+  if (!isAdmin()) {
+
+    alert("غير مصرح لك بالدخول");
+
+    return;
+  }
+
+
+  const menu =
+    document.getElementById(
+      "adminMenu"
+    );
+
+  const setup =
+    document.getElementById(
+      "gameSetupArea"
+    );
+
+  const panel =
+    document.getElementById(
+      "adminPanel"
+    );
+
+
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  if (setup) {
+    setup.style.display = "none";
+  }
+
+  if (panel) {
+    panel.style.display = "block";
+  }
+
+
+  await loadAccounts();
+}
+
+
+/* =========================================================
+   LOAD ACCOUNTS
+========================================================= */
+
+async function loadAccounts() {
+
+  if (!isAdmin()) {
+    return;
+  }
+
+
+  const container =
+    document.getElementById(
+      "accountsList"
+    );
+
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    '<div class="loading">جاري تحميل الحسابات...</div>';
+
+
+  const result =
+    await apiRequest({
+
+      action: "getAccounts",
+
+      accountNumber:
+        String(
+          currentUser.accountNumber
+        )
+
+    });
+
+
+  console.log(
+    "ACCOUNTS RESULT:",
+    result
+  );
+
+
+  if (!result.success) {
+
+    container.innerHTML =
+      `<div class="loading">
+        ${escapeHtml(
+          result.message ||
+          "تعذر تحميل الحسابات"
+        )}
+      </div>`;
+
+    return;
+  }
+
+
+  const accounts =
+    Array.isArray(result.accounts)
+      ? result.accounts
+      : [];
+
+
+  updateAccountStats(
+    accounts
+  );
+
+
+  if (!accounts.length) {
+
+    container.innerHTML =
+      '<div class="loading">لا توجد حسابات</div>';
+
+    return;
+  }
+
+
+  container.innerHTML = "";
+
+
+  accounts.forEach(account => {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "account-row";
+
+
+    const status =
+      String(
+        account.status || ""
+      ).toUpperCase();
+
+
+    let statusText =
+      "غير معروف";
+
+    let statusClass =
+      "";
+
+
+    if (status === "APPROVED") {
+
+      statusText = "مقبول";
+
+      statusClass =
+        "status-approved";
+
+    } else if (status === "PENDING") {
+
+      statusText = "بانتظار";
+
+      statusClass =
+        "status-pending";
+
+    } else if (status === "REJECTED") {
+
+      statusText = "مرفوض";
+
+      statusClass =
+        "status-rejected";
+    }
+
+
+    row.innerHTML = `
+
+      <div class="account-number">
+        ${escapeHtml(
+          account.accountNumber
+        )}
+      </div>
+
+      <div class="account-name">
+
+        <div>
+          ${escapeHtml(
+            account.nickname || "-"
+          )}
+        </div>
+
+        <small>
+          ${escapeHtml(
+            account.email || ""
+          )}
+        </small>
+
+      </div>
+
+      <div>
+        ${escapeHtml(
+          account.phone || "-"
+        )}
+      </div>
+
+      <div class="account-status ${statusClass}">
+        ${statusText}
+      </div>
+
+      <div class="account-actions">
+
+        ${
+          status !== "APPROVED"
+            ? `
+              <button
+                class="approve-button"
+                onclick="changeAccountStatus(
+                  '${escapeJs(
+                    account.accountNumber
+                  )}',
+                  'APPROVED'
+                )"
+              >
+                ✓ قبول
+              </button>
+            `
+            : ""
+        }
+
+        ${
+          status !== "REJECTED"
+            ? `
+              <button
+                class="reject-button"
+                onclick="changeAccountStatus(
+                  '${escapeJs(
+                    account.accountNumber
+                  )}',
+                  'REJECTED'
+                )"
+              >
+                ✗ رفض
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+
+    container.appendChild(row);
+
+  });
+}
+
+
+/* =========================================================
+   ACCOUNT STATS
+========================================================= */
+
+function updateAccountStats(accounts) {
+
+  const total =
+    accounts.length;
+
+
+  const pending =
+    accounts.filter(account =>
+      String(
+        account.status || ""
+      ).toUpperCase() === "PENDING"
+    ).length;
+
+
+  const approved =
+    accounts.filter(account =>
+      String(
+        account.status || ""
+      ).toUpperCase() === "APPROVED"
+    ).length;
+
+
+  const totalElement =
+    document.getElementById(
+      "totalAccounts"
+    );
+
+  const pendingElement =
+    document.getElementById(
+      "pendingAccounts"
+    );
+
+  const approvedElement =
+    document.getElementById(
+      "approvedAccounts"
+    );
+
+
+  if (totalElement) {
+    totalElement.textContent = total;
+  }
+
+  if (pendingElement) {
+    pendingElement.textContent = pending;
+  }
+
+  if (approvedElement) {
+    approvedElement.textContent = approved;
+  }
+}
+
+
+/* =========================================================
+   CHANGE ACCOUNT STATUS
+========================================================= */
+
+async function changeAccountStatus(
+  accountNumber,
+  status
+) {
+
+  if (!isAdmin()) {
+
+    alert("غير مصرح لك");
+
+    return;
+  }
+
+
+  const text =
+    status === "APPROVED"
+      ? "هل تريد قبول هذا الحساب؟"
+      : "هل تريد رفض هذا الحساب؟";
+
+
+  if (!confirm(text)) {
+    return;
+  }
+
+
+  const result =
+    await apiRequest({
+
+      action: "updateAccountStatus",
+
+      adminAccountNumber:
+        String(
+          currentUser.accountNumber
+        ),
+
+      accountNumber:
+        String(accountNumber),
+
+      status
+
+    });
+
+
+  console.log(
+    "STATUS UPDATE:",
+    result
+  );
+
+
+  if (!result.success) {
+
+    alert(
+      result.message ||
+      "تعذر تحديث الحساب"
+    );
+
+    return;
+  }
+
+
+  await loadAccounts();
 }
 
 
@@ -95,16 +1042,14 @@ function startGame() {
   const team1 =
     document
       .getElementById("team1")
-      .value
+      ?.value
       .trim();
-
 
   const team2 =
     document
       .getElementById("team2")
-      .value
+      ?.value
       .trim();
-
 
   const message =
     document.getElementById(
@@ -114,31 +1059,26 @@ function startGame() {
 
   if (!team1 || !team2) {
 
-    message.textContent =
-      "أدخل اسم الفريقين أولاً";
+    if (message) {
+
+      message.textContent =
+        "أدخل اسم الفريقين أولاً";
+    }
 
     return;
-
   }
 
 
   if (team1 === team2) {
 
-    message.textContent =
-      "يجب أن يكون اسم الفريقين مختلفًا";
+    if (message) {
+
+      message.textContent =
+        "يجب أن يكون اسم الفريقين مختلفاً";
+    }
 
     return;
-
   }
-
-
-  currentGame = {
-
-    team1: team1,
-
-    team2: team2
-
-  };
 
 
   gameState = {
@@ -154,143 +1094,42 @@ function startGame() {
   };
 
 
-  showScreen("boardScreen");
+  currentGame = {
 
-  updateBoardUI();
+    team1,
 
-  buildCategoryBoard();
+    team2
 
-
-  const questionPanel =
-    document.getElementById(
-      "questionPanel"
-    );
+  };
 
 
-  if (questionPanel) {
-
-    questionPanel.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   UPDATE BOARD
-========================================================= */
-
-function updateBoardUI() {
-
-  if (!currentGame) {
-    return;
-  }
-
-
-  const team1 =
+  const boardTeam1 =
     document.getElementById(
       "boardTeam1"
     );
 
-
-  const team2 =
+  const boardTeam2 =
     document.getElementById(
       "boardTeam2"
     );
 
 
-  const score1 =
-    document.getElementById(
-      "score1"
-    );
+  if (boardTeam1) {
+    boardTeam1.textContent =
+      team1;
+  }
 
-
-  const score2 =
-    document.getElementById(
-      "score2"
-    );
-
-
-  const turn =
-    document.getElementById(
-      "currentTurn"
-    );
-
-
-  if (team1) {
-
-    team1.textContent =
-      currentGame.team1;
-
+  if (boardTeam2) {
+    boardTeam2.textContent =
+      team2;
   }
 
 
-  if (team2) {
+  updateScoreBoard();
 
-    team2.textContent =
-      currentGame.team2;
+  buildCategoryBoard();
 
-  }
-
-
-  if (score1) {
-
-    score1.textContent =
-      gameState.team1Score;
-
-  }
-
-
-  if (score2) {
-
-    score2.textContent =
-      gameState.team2Score;
-
-  }
-
-
-  if (turn) {
-
-    turn.textContent =
-      gameState.turn === 1
-        ? currentGame.team1
-        : currentGame.team2;
-
-  }
-
-
-  const team1Card =
-    document.getElementById(
-      "team1ScoreCard"
-    );
-
-
-  const team2Card =
-    document.getElementById(
-      "team2ScoreCard"
-    );
-
-
-  if (team1Card) {
-
-    team1Card.classList.toggle(
-      "active",
-      gameState.turn === 1
-    );
-
-  }
-
-
-  if (team2Card) {
-
-    team2Card.classList.toggle(
-      "active",
-      gameState.turn === 2
-    );
-
-  }
-
+  showScreen("boardScreen");
 }
 
 
@@ -314,187 +1153,183 @@ function buildCategoryBoard() {
   board.innerHTML = "";
 
 
-  CATEGORIES.forEach(
-    (category, categoryIndex) => {
+  CATEGORIES.forEach((category, categoryIndex) => {
 
-      const column =
-        document.createElement("div");
+    const column =
+      document.createElement("div");
 
-      column.className =
-        "category-column";
-
-
-      const title =
-        document.createElement("div");
-
-      title.className =
-        "category-title";
-
-      title.textContent =
-        category;
+    column.className =
+      "category-column";
 
 
-      column.appendChild(title);
+    const title =
+      document.createElement("div");
+
+    title.className =
+      "category-title";
+
+    title.textContent =
+      category;
 
 
-      POINTS.forEach(
-        (points, pointsIndex) => {
-
-          const button =
-            document.createElement("button");
-
-          button.className =
-            "points-button";
-
-          button.textContent =
-            points;
+    column.appendChild(title);
 
 
-          const questionId =
-            categoryIndex +
-            "-" +
-            pointsIndex;
+    POINTS.forEach((points, pointIndex) => {
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "points-button";
+
+      button.textContent =
+        points;
 
 
-          if (
-            gameState.usedQuestions
-              .includes(questionId)
-          ) {
+      button.dataset.category =
+        categoryIndex;
 
-            button.classList.add("used");
+      button.dataset.points =
+        points;
 
-            button.disabled = true;
-
-          }
-
-
-          button.onclick =
-            () => openQuestion(
-              category,
-              points,
-              questionId
-            );
+      button.onclick =
+        () => selectQuestion(
+          categoryIndex,
+          pointIndex,
+          points,
+          button
+        );
 
 
-          column.appendChild(button);
+      column.appendChild(button);
 
-        }
-      );
+    });
 
 
-      board.appendChild(column);
+    board.appendChild(column);
 
-    }
-  );
-
+  });
 }
 
 
 /* =========================================================
-   OPEN QUESTION
+   SELECT QUESTION
 ========================================================= */
 
-function openQuestion(
-  category,
+function selectQuestion(
+  categoryIndex,
+  pointIndex,
   points,
-  questionId
+  button
 ) {
 
   if (
-    gameState.usedQuestions
-      .includes(questionId)
+    gameState.usedQuestions.includes(
+      categoryIndex + "-" + pointIndex
+    )
   ) {
 
     return;
+  }
 
+
+  gameState.usedQuestions.push(
+    categoryIndex + "-" + pointIndex
+  );
+
+
+  if (button) {
+
+    button.classList.add("used");
+
+    button.disabled = true;
   }
 
 
   currentQuestion = {
 
-    category,
+    category:
+      CATEGORIES[categoryIndex],
 
     points,
 
-    questionId
+    text:
+      "السؤال غير مضاف حالياً",
+
+    answer:
+      "الإجابة غير مضافة حالياً"
 
   };
 
 
-  const categoryElement =
+  const panel =
+    document.getElementById(
+      "questionPanel"
+    );
+
+
+  const category =
     document.getElementById(
       "questionCategory"
     );
 
-
-  const pointsElement =
+  const questionPoints =
     document.getElementById(
       "questionPoints"
     );
 
-
-  const questionElement =
+  const questionText =
     document.getElementById(
       "questionText"
     );
-
 
   const answerBox =
     document.getElementById(
       "answerBox"
     );
 
-
-  if (categoryElement) {
-
-    categoryElement.textContent =
-      category;
-
-  }
-
-
-  if (pointsElement) {
-
-    pointsElement.textContent =
-      points;
-
-  }
-
-
-  if (questionElement) {
-
-    questionElement.textContent =
-      "السؤال غير مضاف بعد";
-
-  }
-
-
-  if (answerBox) {
-
-    answerBox.style.display =
-      "none";
-
-  }
-
-
-  const questionPanel =
+  const answerText =
     document.getElementById(
-      "questionPanel"
+      "answerText"
     );
 
 
-  if (questionPanel) {
+  if (panel) {
+    panel.style.display = "block";
+  }
 
-    questionPanel.style.display =
-      "block";
+  if (category) {
+    category.textContent =
+      currentQuestion.category;
+  }
 
-    questionPanel.scrollIntoView({
+  if (questionPoints) {
+    questionPoints.textContent =
+      points;
+  }
+
+  if (questionText) {
+    questionText.textContent =
+      currentQuestion.text;
+  }
+
+  if (answerBox) {
+    answerBox.style.display = "none";
+  }
+
+  if (answerText) {
+    answerText.textContent =
+      currentQuestion.answer;
+  }
+
+
+  document
+    .getElementById("questionPanel")
+    ?.scrollIntoView({
       behavior: "smooth",
       block: "center"
     });
-
-  }
-
 }
 
 
@@ -510,24 +1345,11 @@ function showAnswer() {
     );
 
 
-  const answerText =
-    document.getElementById(
-      "answerText"
-    );
+  if (answerBox) {
 
-
-  if (!answerBox || !answerText) {
-    return;
+    answerBox.style.display =
+      "block";
   }
-
-
-  answerText.textContent =
-    "الإجابة غير مضافة بعد";
-
-
-  answerBox.style.display =
-    "block";
-
 }
 
 
@@ -544,7 +1366,7 @@ function answerQuestion(correct) {
 
   const points =
     Number(
-      currentQuestion.points
+      currentQuestion.points || 0
     );
 
 
@@ -557,15 +1379,8 @@ function answerQuestion(correct) {
     } else {
 
       gameState.team2Score += points;
-
     }
-
   }
-
-
-  gameState.usedQuestions.push(
-    currentQuestion.questionId
-  );
 
 
   gameState.turn =
@@ -574,27 +1389,104 @@ function answerQuestion(correct) {
       : 1;
 
 
+  updateScoreBoard();
+
+
   currentQuestion = null;
 
 
-  const questionPanel =
+  const panel =
     document.getElementById(
       "questionPanel"
     );
 
 
-  if (questionPanel) {
+  if (panel) {
 
-    questionPanel.style.display =
+    panel.style.display =
       "none";
+  }
+}
 
+
+/* =========================================================
+   UPDATE SCORE
+========================================================= */
+
+function updateScoreBoard() {
+
+  const score1 =
+    document.getElementById(
+      "score1"
+    );
+
+  const score2 =
+    document.getElementById(
+      "score2"
+    );
+
+  const turn =
+    document.getElementById(
+      "currentTurn"
+    );
+
+
+  if (score1) {
+
+    score1.textContent =
+      gameState.team1Score;
   }
 
 
-  buildCategoryBoard();
+  if (score2) {
 
-  updateBoardUI();
+    score2.textContent =
+      gameState.team2Score;
+  }
 
+
+  if (turn) {
+
+    turn.textContent =
+      gameState.turn === 1
+        ? (
+            currentGame?.team1 ||
+            "الفريق الأول"
+          )
+        : (
+            currentGame?.team2 ||
+            "الفريق الثاني"
+          );
+  }
+
+
+  const team1Card =
+    document.getElementById(
+      "team1ScoreCard"
+    );
+
+  const team2Card =
+    document.getElementById(
+      "team2ScoreCard"
+    );
+
+
+  if (team1Card) {
+
+    team1Card.classList.toggle(
+      "active",
+      gameState.turn === 1
+    );
+  }
+
+
+  if (team2Card) {
+
+    team2Card.classList.toggle(
+      "active",
+      gameState.turn === 2
+    );
+  }
 }
 
 
@@ -606,18 +1498,16 @@ function backToSetup() {
 
   currentQuestion = null;
 
-
-  const questionPanel =
+  const panel =
     document.getElementById(
       "questionPanel"
     );
 
 
-  if (questionPanel) {
+  if (panel) {
 
-    questionPanel.style.display =
+    panel.style.display =
       "none";
-
   }
 
 
@@ -626,14 +1516,12 @@ function backToSetup() {
 
   if (isAdmin()) {
 
-    showGameSetup();
+    showAdminMenu();
 
   } else {
 
     showGameSetup();
-
   }
-
 }
 
 
@@ -650,72 +1538,53 @@ function logout() {
   currentQuestion = null;
 
 
+  gameState = {
+
+    team1Score: 0,
+
+    team2Score: 0,
+
+    turn: 1,
+
+    usedQuestions: []
+
+  };
+
+
   localStorage.removeItem(
     "currentUser"
   );
 
 
-  showScreen(
-    "loginScreen"
-  );
-
-
-  const loginMessage =
+  const loginAccount =
     document.getElementById(
-      "loginMessage"
+      "loginAccount"
+    );
+
+  const loginCode =
+    document.getElementById(
+      "loginCode"
     );
 
 
-  if (loginMessage) {
-
-    loginMessage.textContent = "";
-
+  if (loginAccount) {
+    loginAccount.value = "";
   }
 
+  if (loginCode) {
+    loginCode.value = "";
+  }
+
+
+  showScreen("loginScreen");
 }
 
 
 /* =========================================================
-   ESCAPE HTML
+   RESTORE LOGIN
 ========================================================= */
 
-function escapeHtml(value) {
-
-  return String(
-    value ?? ""
-  )
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   ESCAPE JS
-========================================================= */
-
-function escapeJs(value) {
-
-  return String(
-    value ?? ""
-  )
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"')
-    .replace(/\r/g, "\\r")
-    .replace(/\n/g, "\\n");
-
-}
-
-
-/* =========================================================
-   LOAD SAVED LOGIN
-========================================================= */
-
-function loadSavedUser() {
+function restoreLogin() {
 
   try {
 
@@ -751,16 +1620,24 @@ function loadSavedUser() {
       showAdminMenu();
 
       return;
-
     }
 
 
-    if (
+    const status =
       String(
         currentUser.status || ""
-      ).toUpperCase() !==
-      "APPROVED"
-    ) {
+      ).toUpperCase();
+
+
+    if (status === "APPROVED") {
+
+      showScreen("gameScreen");
+
+      updateGameUI();
+
+      showGameSetup();
+
+    } else {
 
       const waiting =
         document.getElementById(
@@ -771,57 +1648,42 @@ function loadSavedUser() {
       if (waiting) {
 
         waiting.textContent =
-          currentUser.accountNumber;
-
+          currentUser.accountNumber || "-";
       }
 
 
       showScreen(
         "waitingScreen"
       );
-
-      return;
-
     }
-
-
-    showScreen(
-      "gameScreen"
-    );
-
-    updateGameUI();
-
-    showGameSetup();
-
 
   } catch (error) {
 
     console.error(
-      "LOAD USER ERROR:",
+      "RESTORE LOGIN ERROR:",
       error
     );
-
 
     localStorage.removeItem(
       "currentUser"
     );
-
   }
-
 }
 
 
 /* =========================================================
-   STARTUP
+   INIT
 ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    showScreen("loginScreen");
+    console.log(
+      "سين جيم الطبي بدأ التشغيل"
+    );
 
-    loadSavedUser();
+    restoreLogin();
 
   }
 );
