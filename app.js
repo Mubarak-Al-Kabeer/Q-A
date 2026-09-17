@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════════════════ */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzwzpc_zdtxWFRbv2OyjpewbbG4MJUzhcdb-WhungMWa3sB4yXxBNhXxoMS5w9mUoKPbA/exec";
+  "https://script.google.com/macros/s/AKfycbwSF8rZlQAA9TA_H-fgOYzo-ZMdtjXajcW7s33pDw7zQ6dyJlXIZnac8YOG8gXiO7CFBA/exec";
 
 const ADMIN_ACCOUNT = "3854";
 
@@ -636,9 +636,13 @@ function answerQuestion(correct) {
 
   if (!currentQuestion) return;
 
+  // نلتقط بيانات السؤال والفريق المجاوب *قبل* أي تبديل أو تصفير
+  const q          = currentQuestion;
+  const answeringTeam = gameState.turn === 1 ? currentGame?.team1 : currentGame?.team2;
+
   if (correct) {
-    if (gameState.turn === 1) gameState.team1Score += Number(currentQuestion.points);
-    else                      gameState.team2Score += Number(currentQuestion.points);
+    if (gameState.turn === 1) gameState.team1Score += Number(q.points);
+    else                      gameState.team2Score += Number(q.points);
   }
 
   // تبديل الدور تلقائياً بعد كل سؤال
@@ -656,11 +660,11 @@ function answerQuestion(correct) {
       accountNumber: String(currentUser.accountNumber),
       team1:         currentGame.team1,
       team2:         currentGame.team2,
-      category:      currentQuestion?.category || "",
-      questionId:    currentQuestion?.id        || "",
-      question:      currentQuestion?.text      || "",
-      points:        currentQuestion?.points    || 0,
-      team:          gameState.turn === 1 ? currentGame.team2 : currentGame.team1,  // من فاز بالنقطة
+      category:      q.category,
+      questionId:    q.id     || "",
+      question:      q.text   || "",
+      points:        q.points || 0,
+      team:          answeringTeam,
       correct
     }).catch(() => {});
   }
