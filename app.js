@@ -3,7 +3,7 @@
 ========================================================= */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxhh2RogcFHqzP2YEW9z45UlWYb1Jx4wzMpMhfAbMDLSSw_72dnfQAtSczKrGuYi0mSsg/exec";
+  "https://script.google.com/macros/s/AKfycbw-lnT4G5drGMrDCdwXrcPafF7txnSGktuR--l2srIbD0DiX_VHaBwEo8_rlKyyhYLrHA/exec";
 
 const ADMIN_ACCOUNT = "3854";
 
@@ -17,6 +17,7 @@ let gameState = {
   turn: 1,
   usedQuestions: []
 };
+
 
 
 /* =========================================================
