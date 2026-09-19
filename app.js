@@ -4,7 +4,7 @@
 
 // ⚠️ رابط النشر (Web App URL) — يتغير إذا أنشأت Deployment جديد (مو "إدارة النشر ← نسخة جديدة")
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxgKkwB3P6yquLXu2ghiSZT4htK0vFOCZWc-lfdZDz6yOjTRPLnBUeYYm-KeX7HDNG1vA/exec";
+  "https://script.google.com/macros/s/AKfycbzIDwjV5pVP_dm1IIIXex0sUWstG69Z7kJIartUlg0JzyZYLeUTM-WHJmuaJHtLHWevHg/exec";
 
 /* ═══════════════════════════════════════════════════════
    CATEGORIES & POINTS
