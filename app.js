@@ -20,7 +20,8 @@ let gameState = {
   team1Score:    0,
   team2Score:    0,
   turn:          1,   // 1 = فريق أول  |  2 = فريق ثاني
-  usedQuestions: []
+  usedQuestions: [],
+  pool:          []   // كل الأسئلة الفعّالة — تُحمّل مرة واحدة عند بدء اللعبة
 };
 
 
@@ -186,9 +187,13 @@ async function login() {
     setMsg("loginMessage", "أدخل رقم الحساب والرمز", "error"); return;
   }
 
+  const btn = document.querySelector('#loginScreen .btn-primary');
+  if (btn) btn.disabled = true;
   setMsg("loginMessage", "جاري التحقق…");
 
   const result = await apiRequest({ action: "login", accountNumber: account, code });
+
+  if (btn) btn.disabled = false;
 
   if (!result?.success) {
     setMsg("loginMessage", result?.message || "رقم الحساب أو الرمز غير صحيح", "error"); return;
@@ -363,7 +368,6 @@ async function loadAccounts() {
   const accounts = Array.isArray(result.accounts) ? result.accounts
                   : Array.isArray(result.data)     ? result.data : [];
 
-  // إحصائيات
   const total    = accounts.length;
   const pending  = accounts.filter(a => String(a.status||"").toUpperCase() === "PENDING").length;
   const approved = accounts.filter(a => String(a.status||"").toUpperCase() === "APPROVED").length;
@@ -473,6 +477,9 @@ async function startGame() {
     setMsg("gameMessage", "يجب أن يكون اسم الفريقين مختلفاً", "error"); return;
   }
 
+  const startBtn = document.querySelector('#gameSetupArea .btn-start');
+  if (startBtn) startBtn.disabled = true;
+
   // إذا كان مستخدماً عادياً نخصم لعبة من الحساب
   if (!isAdmin()) {
 
@@ -486,10 +493,11 @@ async function startGame() {
     });
 
     if (!result?.success) {
-      setMsg("gameMessage", result?.message || "تعذّر البدء", "error"); return;
+      setMsg("gameMessage", result?.message || "تعذّر البدء", "error");
+      if (startBtn) startBtn.disabled = false;
+      return;
     }
 
-    // تحديث عدد الألعاب
     currentUser.gamesRemaining = result.gamesRemaining ?? (currentUser.gamesRemaining - 1);
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
     updateTopbar();
@@ -500,17 +508,24 @@ async function startGame() {
     currentGame = { gameId: null, team1: t1, team2: t2 };
   }
 
+  // تحميل كل الأسئلة دفعة واحدة (مرة واحدة فقط لكل مباراة)
+  setMsg("gameMessage", "جاري تحميل الأسئلة…");
+  const qResult = await apiRequest({ action: "getAllQuestions" });
+  const pool = (qResult?.success && Array.isArray(qResult.questions)) ? qResult.questions : [];
+
+  if (startBtn) startBtn.disabled = false;
+  setMsg("gameMessage", "");
+
   // إعادة تهيئة الحالة
-  gameState = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [] };
+  gameState = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [], pool };
   currentQuestion = null;
 
-  // شاشة اللعبة
   const bt1 = el("bTeam1"); if (bt1) bt1.textContent = t1;
   const bt2 = el("bTeam2"); if (bt2) bt2.textContent = t2;
 
   updateScoreboard();
   buildBoard();
-  hideQuestionPanel();
+  showStageIdle();
   showScreen("boardScreen");
 }
 
@@ -530,13 +545,11 @@ function buildBoard() {
     const col = document.createElement("div");
     col.className = "cat-col";
 
-    // العنوان
     const title = document.createElement("div");
     title.className   = "cat-title";
     title.textContent = cat;
     col.appendChild(title);
 
-    // أزرار النقاط
     POINTS.forEach((pts, pi) => {
 
       const btn = document.createElement("button");
@@ -561,36 +574,57 @@ function buildBoard() {
 
 
 /* ═══════════════════════════════════════════════════════
+   QUESTION STAGE (منطقة عرض السؤال الثابتة أعلى اللوحة)
+═══════════════════════════════════════════════════════ */
+
+function showStageIdle() {
+  const idle = el("stageIdle");
+  const q    = el("stageQuestion");
+  if (idle) idle.style.display = "flex";
+  if (q)    q.style.display    = "none";
+}
+
+function showStageQuestion() {
+  const idle = el("stageIdle");
+  const q    = el("stageQuestion");
+  if (idle) idle.style.display = "none";
+  if (q)    q.style.display    = "block";
+}
+
+
+/* ═══════════════════════════════════════════════════════
    QUESTION
 ═══════════════════════════════════════════════════════ */
 
-async function openQuestion(catIdx, ptIdx, pts, cat, btn) {
+function openQuestion(catIdx, ptIdx, pts, cat, btn) {
 
   const key = catIdx + "-" + ptIdx;
   if (gameState.usedQuestions.includes(key)) return;
 
-  // مباشرةً نعطّل الزر ونحجز السؤال
+  // نعطّل الزر فوراً ونحجز الخانة
   btn.classList.add("used");
   btn.disabled = true;
   gameState.usedQuestions.push(key);
 
-  // نحاول نجيب سؤال من السيرفر
-  const result = await apiRequest({
-    action: "getRandomQuestion",
-    category: cat,
-    points: pts
-  });
+  // نختار سؤالاً من المجموعة المحمّلة مسبقاً — لا يوجد أي اتصال بالسيرفر هنا (فوري)
+  const matches = gameState.pool.filter(q => q.category === cat && Number(q.points) === pts);
 
-  if (result?.success && result.question) {
+  if (matches.length) {
+    const idx    = Math.floor(Math.random() * matches.length);
+    const picked = matches[idx];
+
+    // نحذفها من المجموعة حتى لا تتكرر لاحقاً بنفس المباراة
+    const poolIdx = gameState.pool.indexOf(picked);
+    if (poolIdx > -1) gameState.pool.splice(poolIdx, 1);
+
     currentQuestion = {
-      id:       result.question.id,
+      id:       picked.id,
       category: cat,
       points:   pts,
-      text:     result.question.question || "—",
-      answer:   result.question.answer   || "—"
+      text:     picked.question || "—",
+      answer:   picked.answer   || "—"
     };
   } else {
-    // لا يوجد سؤال في الشيت — نعرض placeholder
     currentQuestion = {
       id:       null,
       category: cat,
@@ -607,52 +641,66 @@ async function openQuestion(catIdx, ptIdx, pts, cat, btn) {
 function renderQuestion() {
   if (!currentQuestion) return;
 
-  const cat  = el("qCategory");
-  const pts  = el("qPoints");
-  const txt  = el("qText");
+  const cat    = el("qCategory");
+  const pts    = el("qPoints");
+  const txt    = el("qText");
   const ansTxt = el("answerText");
-  const ansBox = el("answerBox");
-  const panel  = el("questionPanel");
+  const reveal = el("revealArea");
+  const answer = el("answerArea");
+  const t1btn  = el("teamBtn1");
+  const t2btn  = el("teamBtn2");
 
   if (cat)    cat.textContent  = currentQuestion.category;
   if (pts)    pts.textContent  = currentQuestion.points + " نقطة";
   if (txt)    txt.textContent  = currentQuestion.text;
   if (ansTxt) ansTxt.textContent = currentQuestion.answer;
-  if (ansBox) ansBox.style.display = "none";
-  if (panel)  {
-    panel.style.display = "block";
-    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
+
+  // نبدأ دائماً بخيار واحد فقط: إظهار الإجابة
+  if (reveal) reveal.style.display = "block";
+  if (answer) answer.style.display = "none";
+
+  if (t1btn) t1btn.textContent = "✅ " + (currentGame?.team1 || "الفريق الأول") + " جاوب صح";
+  if (t2btn) t2btn.textContent = "✅ " + (currentGame?.team2 || "الفريق الثاني") + " جاوب صح";
+
+  showStageQuestion();
+
+  const stage = el("questionStage");
+  if (stage) stage.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 
 function showAnswer() {
-  const b = el("answerBox");
-  if (b) { b.style.display = "block"; b.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+  const reveal = el("revealArea");
+  const answer = el("answerArea");
+  if (reveal) reveal.style.display = "none";
+  if (answer) answer.style.display = "block";
 }
 
 
-function answerQuestion(correct) {
+/**
+ * يُستدعى بعد إظهار الإجابة، لتحديد أي فريق أجاب بشكل صحيح.
+ * which: 1 = الفريق الأول، 2 = الفريق الثاني، 0 = لا أحد
+ */
+function awardTeam(which) {
 
   if (!currentQuestion) return;
 
-  // نلتقط بيانات السؤال والفريق المجاوب *قبل* أي تبديل أو تصفير
-  const q          = currentQuestion;
-  const answeringTeam = gameState.turn === 1 ? currentGame?.team1 : currentGame?.team2;
+  const q = currentQuestion;
+  const correct = which === 1 || which === 2;
+  const answeringTeam = which === 1 ? currentGame?.team1
+                       : which === 2 ? currentGame?.team2
+                       : "";
 
-  if (correct) {
-    if (gameState.turn === 1) gameState.team1Score += Number(q.points);
-    else                      gameState.team2Score += Number(q.points);
-  }
+  if (which === 1) gameState.team1Score += Number(q.points);
+  if (which === 2) gameState.team2Score += Number(q.points);
 
   // تبديل الدور تلقائياً بعد كل سؤال
   gameState.turn = gameState.turn === 1 ? 2 : 1;
 
   updateScoreboard();
-  hideQuestionPanel();
   currentQuestion = null;
+  showStageIdle();
 
-  // تسجيل الإجابة في الشيت (إن توفّر gameId)
   if (currentGame?.gameId) {
     apiRequest({
       action:        "submitAnswer",
@@ -668,19 +716,6 @@ function answerQuestion(correct) {
       correct
     }).catch(() => {});
   }
-}
-
-
-function skipQuestion() {
-  // تخطي بدون نقاط وبدون تبديل دور
-  hideQuestionPanel();
-  currentQuestion = null;
-}
-
-
-function hideQuestionPanel() {
-  const p = el("questionPanel");
-  if (p) p.style.display = "none";
 }
 
 
@@ -724,8 +759,8 @@ function confirmBack() {
 }
 
 function backToSetup() {
-  hideQuestionPanel();
   currentQuestion = null;
+  showStageIdle();
   showScreen("gameScreen");
   if (isAdmin()) showAdminMenu();
   else           showGameSetup();
@@ -733,10 +768,9 @@ function backToSetup() {
 
 function logout() {
   currentUser = currentGame = currentQuestion = null;
-  gameState   = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [] };
+  gameState   = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [], pool: [] };
   localStorage.removeItem("currentUser");
 
-  // مسح الحقول
   ["loginAccount","loginCode"].forEach(id => { const i = el(id); if (i) i.value = ""; });
   setMsg("loginMessage", "");
   showScreen("loginScreen");
