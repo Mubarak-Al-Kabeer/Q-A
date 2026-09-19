@@ -121,7 +121,6 @@
   ═══════════════════════════════════════════ -->
   <section id="gameScreen" class="screen">
 
-    <!-- الشريط العلوي -->
     <header class="topbar">
       <div class="topbar-brand">
         <span class="topbar-icon">🩺</span>
@@ -250,31 +249,56 @@
       <button class="btn-secondary btn-sm" onclick="confirmBack()">← رجوع</button>
     </header>
 
-    <!-- لوحة الفئات -->
     <div class="board-wrap">
+
+      <!-- ═══════════════════════════════════════
+           منطقة عرض السؤال الثابتة (فوق اللوحة دائماً)
+      ═══════════════════════════════════════ -->
+      <div id="questionStage" class="q-stage">
+
+        <!-- الحالة الافتراضية: لا يوجد سؤال مفتوح -->
+        <div id="stageIdle" class="stage-idle">
+          <div class="stage-idle-icon">🎯</div>
+          <p>اختر سؤالاً من اللوحة بالأسفل</p>
+        </div>
+
+        <!-- حالة السؤال المفتوح -->
+        <div id="stageQuestion" class="stage-question" style="display:none">
+
+          <div class="q-meta">
+            <span id="qCategory" class="q-cat-tag"></span>
+            <span id="qPoints" class="q-pts-tag"></span>
+          </div>
+
+          <div id="qText" class="q-text"></div>
+
+          <!-- خيار واحد فقط بالبداية: إظهار الإجابة -->
+          <div id="revealArea" class="reveal-area">
+            <button class="btn-reveal-big" onclick="showAnswer()">👁 إظهار الإجابة</button>
+          </div>
+
+          <!-- تظهر بعد الضغط على إظهار الإجابة -->
+          <div id="answerArea" class="answer-area" style="display:none">
+
+            <div class="ans-box">
+              <div class="ans-label">✅ الإجابة الصحيحة</div>
+              <div id="answerText" class="ans-text"></div>
+            </div>
+
+            <div class="team-answer-row">
+              <button id="teamBtn1" class="btn-team btn-team-1" onclick="awardTeam(1)"></button>
+              <button id="teamBtn2" class="btn-team btn-team-2" onclick="awardTeam(2)"></button>
+            </div>
+            <button class="btn-none" onclick="awardTeam(0)">✕ لا أحد جاوب صح</button>
+
+          </div>
+
+        </div>
+
+      </div><!-- /questionStage -->
+
+      <!-- لوحة الفئات — سطر واحد -->
       <div id="categoryBoard" class="cat-board"></div>
-
-      <!-- بانل السؤال -->
-      <div id="questionPanel" class="q-panel" style="display:none">
-        <div class="q-meta">
-          <span id="qCategory" class="q-cat-tag"></span>
-          <span id="qPoints" class="q-pts-tag"></span>
-        </div>
-
-        <div id="qText" class="q-text"></div>
-
-        <div id="answerBox" class="ans-box" style="display:none">
-          <div class="ans-label">✅ الإجابة الصحيحة</div>
-          <div id="answerText" class="ans-text"></div>
-        </div>
-
-        <div class="q-actions">
-          <button class="btn-reveal" onclick="showAnswer()">👁 إظهار الإجابة</button>
-          <button class="btn-correct" onclick="answerQuestion(true)">✅ صحيحة</button>
-          <button class="btn-wrong" onclick="answerQuestion(false)">❌ خاطئة</button>
-          <button class="btn-skip" onclick="skipQuestion()">⏭ تخطي</button>
-        </div>
-      </div>
 
     </div><!-- /board-wrap -->
   </section>
