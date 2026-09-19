@@ -2,11 +2,9 @@
    CONFIG
 ═══════════════════════════════════════════════════════ */
 
-// ⚠️ ضع هنا رابط النشر (Web App URL) الخاص بالـ Script بعد إعادة النشر
+// ⚠️ رابط النشر (Web App URL) — يتغير إذا أنشأت Deployment جديد (مو "إدارة النشر ← نسخة جديدة")
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxgKkwB3P6yquLXu2ghiSZT4htK0vFOCZWc-lfdZDz6yOjTRPLnBUeYYm-KeX7HDNG1vA/exec";
-
-const ADMIN_ACCOUNT = "3854";
 
 /* ═══════════════════════════════════════════════════════
    CATEGORIES & POINTS
@@ -122,21 +120,30 @@ function playBeep() {
 }
 
 /* ═══════════════════════════════════════════════════════
-   API
+   API  (يرسل رمز الجلسة تلقائياً مع كل طلب)
 ═══════════════════════════════════════════════════════ */
 
-async function apiRequest(data) {
+async function apiRequest(data, silentExpire = false) {
   try {
+    const payload = { ...data, token: currentUser?.token || "" };
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const text = await res.text();
     if (!text) return { success: false, message: "استجابة فارغة من السيرفر" };
-    try { return JSON.parse(text); }
-    catch { return { success: false, message: "السيرفر أرسل بيانات غير صالحة" }; }
+
+    let result;
+    try { result = JSON.parse(text); }
+    catch { return { success: false, message: "السيرفر أرسل بيانات غير صالحة (تأكد من إعدادات النشر)" }; }
+
+    if (result?.expired && currentUser && !silentExpire) {
+      logout();
+      setMsg("loginMessage", result.message || "انتهت الجلسة، سجّل الدخول من جديد", "error");
+    }
+    return result;
   } catch (err) {
     return { success: false, message: "تعذّر الاتصال: " + err.message };
   }
@@ -183,18 +190,18 @@ function normalizeUser(result, accountNumber) {
     email:          user.email ?? "",
     status:         String(user.status ?? user.Status ?? user.state ?? "").trim().toUpperCase(),
     role:           String(user.role ?? user.Role ?? "").trim().toUpperCase(),
-    gamesRemaining: Number(user.gamesRemaining ?? user.remainingGames ?? 0)
+    gamesRemaining: Number(user.gamesRemaining ?? user.remainingGames ?? 0),
+    token:          user.token ?? ""
   };
 }
 function isApproved(user) {
   const s = String(user?.status ?? "").trim().toUpperCase();
   return s === "APPROVED" || s === "ACCEPTED" || s === "ACTIVE";
 }
+/* للعرض فقط — السيرفر هو اللي يتحقق فعلياً من صلاحية المسؤول */
 function isAdmin() {
-  if (!currentUser) return false;
-  const acc  = String(currentUser.accountNumber ?? "").trim();
-  const role = String(currentUser.role ?? "").trim().toUpperCase();
-  return acc === ADMIN_ACCOUNT || role === "ADMIN" || role === "ADMINISTRATOR";
+  const role = String(currentUser?.role ?? "").trim().toUpperCase();
+  return role === "ADMIN" || role === "ADMINISTRATOR";
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -227,6 +234,12 @@ async function login() {
 
   const user = normalizeUser(result, account);
   if (!user) { setMsg("loginMessage", "السيرفر لم يُرسل بيانات المستخدم", "error"); return; }
+  if (!user.token) { setMsg("loginMessage", "السيرفر لم يُرسل رمز الجلسة — تأكد من نشر النسخة الجديدة من Code.gs", "error"); return; }
+
+  if (user.status === "REJECTED") {
+    setMsg("loginMessage", "تم رفض حسابك، تواصل مع المسؤول", "error");
+    return;
+  }
 
   currentUser = user;
   localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -313,7 +326,7 @@ async function loadAccounts() {
   const list = el("accountsList"); if (!list) return;
   list.innerHTML = '<div class="loading-text">جاري تحميل الحسابات…</div>';
 
-  const result = await apiRequest({ action: "getAccounts", accountNumber: String(currentUser.accountNumber) });
+  const result = await apiRequest({ action: "getAccounts" });
   if (!result?.success) {
     list.innerHTML = `<div class="loading-text">${esc(result?.message || "تعذّر التحميل")}</div>`;
     return;
@@ -358,11 +371,10 @@ async function changeStatus(accountNumber, status) {
   if (!confirm(status === "APPROVED" ? "قبول هذا الحساب؟" : "رفض هذا الحساب؟")) return;
   const result = await apiRequest({
     action: "updateAccountStatus",
-    adminAccountNumber: String(currentUser.accountNumber),
     accountNumber: String(accountNumber),
     status
   });
-  if (!result?.success) { alert(result?.message || "تعذّر التحديث"); return; }
+  if (!result?.success) { if (!result?.expired) alert(result?.message || "تعذّر التحديث"); return; }
   await loadAccounts();
 }
 
@@ -373,16 +385,16 @@ async function editGames(accountNumber, current) {
   if (isNaN(n) || n < 0) { alert("رقم غير صحيح"); return; }
   const result = await apiRequest({
     action: "updateGames",
-    adminAccountNumber: String(currentUser.accountNumber),
     targetAccountNumber: String(accountNumber),
     games: n
   });
-  if (!result?.success) { alert(result?.message || "تعذّر التحديث"); return; }
+  if (!result?.success) { if (!result?.expired) alert(result?.message || "تعذّر التحديث"); return; }
   await loadAccounts();
 }
 
 /* ═══════════════════════════════════════════════════════
    START GAME
+   (نحمّل الأسئلة أولاً حتى لا يُخصم من رصيد اللاعب إذا فشل التحميل)
 ═══════════════════════════════════════════════════════ */
 
 async function startGame() {
@@ -394,13 +406,18 @@ async function startGame() {
   const startBtn = document.querySelector("#gameSetupArea .btn-start");
   if (startBtn) startBtn.disabled = true;
 
+  setMsg("gameMessage", "جاري تحميل الأسئلة…");
+  const qResult = await apiRequest({ action: "getAllQuestions" });
+  if (!qResult?.success || !Array.isArray(qResult.questions) || !qResult.questions.length) {
+    setMsg("gameMessage", qResult?.message || "لا توجد أسئلة حالياً، تواصل مع المسؤول", "error");
+    if (startBtn) startBtn.disabled = false;
+    return;
+  }
+  const pool = qResult.questions;
+
   if (!isAdmin()) {
     setMsg("gameMessage", "جاري التحقق…");
-    const result = await apiRequest({
-      action: "createGame",
-      accountNumber: String(currentUser.accountNumber),
-      team1: t1, team2: t2
-    });
+    const result = await apiRequest({ action: "createGame", team1: t1, team2: t2 });
     if (!result?.success) {
       setMsg("gameMessage", result?.message || "تعذّر البدء", "error");
       if (startBtn) startBtn.disabled = false;
@@ -413,10 +430,6 @@ async function startGame() {
   } else {
     currentGame = { gameId: null, team1: t1, team2: t2 };
   }
-
-  setMsg("gameMessage", "جاري تحميل الأسئلة…");
-  const qResult = await apiRequest({ action: "getAllQuestions" });
-  const pool = (qResult?.success && Array.isArray(qResult.questions)) ? qResult.questions : [];
 
   if (startBtn) startBtn.disabled = false;
   setMsg("gameMessage", "");
@@ -557,13 +570,12 @@ function awardTeam(which) {
     apiRequest({
       action: "submitAnswer",
       gameId: currentGame.gameId,
-      accountNumber: String(currentUser.accountNumber),
       team1: currentGame.team1, team2: currentGame.team2,
       category: q.category,
       questionId: q.id || "", question: q.text || "", points: q.points || 0,
       team: which === 1 ? currentGame.team1 : which === 2 ? currentGame.team2 : "",
       correct: which === 1 || which === 2
-    }).catch(() => {});
+    }, true).catch(() => {});   // true = لا تسجّل خروج وسط اللعبة إذا انتهت الجلسة
   }
 }
 
@@ -619,15 +631,24 @@ function restoreSession() {
     const saved = localStorage.getItem("currentUser");
     if (!saved) return;
     const user = JSON.parse(saved);
-    if (!user) return;
+    // جلسة قديمة بدون رمز، أو حساب غير مقبول → يرجع لشاشة الدخول ويتحقق من السيرفر من جديد
+    if (!user || !user.token) { localStorage.removeItem("currentUser"); return; }
     currentUser = user;
+    if (!isAdmin() && !isApproved(currentUser)) {
+      currentUser = null;
+      localStorage.removeItem("currentUser");
+      return;
+    }
     showScreen("gameScreen");
     updateTopbar();
-    if (isAdmin())               { showAdminMenu(); return; }
-    if (isApproved(currentUser)) { showGameSetup(); return; }
-    const w = el("waitingAccount"); if (w) w.textContent = currentUser.accountNumber || "—";
-    showScreen("waitingScreen");
+    if (isAdmin()) showAdminMenu(); else showGameSetup();
   } catch { localStorage.removeItem("currentUser"); }
 }
 
-document.addEventListener("DOMContentLoaded", restoreSession);
+document.addEventListener("DOMContentLoaded", () => {
+  restoreSession();
+  // زر Enter يسجّل الدخول
+  ["loginAccount", "loginCode"].forEach(id => {
+    el(id)?.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  });
+});
