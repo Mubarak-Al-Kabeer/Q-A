@@ -1,41 +1,40 @@
-/* ═══════════════════════════════════════════════════════
-   V2 — TIMER (أعلى اللوحة، دقيقة لكل فريق)
-═══════════════════════════════════════════════════════ */
+/* ═══ V2 — TIMER (أعلى اللوحة، دقيقة لكل فريق) ═══ */
 .timer-wrap {
   display: flex; align-items: center; gap: 10px;
   padding: 6px 14px;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--r-lg);
+  background: var(--bg3, #1b2545);
+  border: 1px solid var(--border2, rgba(255,255,255,.14));
+  border-radius: var(--r-lg, 16px);
   flex-shrink: 0;
 }
 .timer-team-label {
-  font-size: .8rem; font-weight: 800; color: var(--cyan);
+  font-size: .8rem; font-weight: 800; color: var(--cyan, #22d3ee);
   max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .timer-ring-wrap { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
 .timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .timer-track { fill: none; stroke: rgba(255,255,255,.10); stroke-width: 5; }
 .timer-fill {
-  fill: none; stroke: var(--cyan); stroke-width: 5; stroke-linecap: round;
+  fill: none; stroke: var(--cyan, #22d3ee); stroke-width: 5; stroke-linecap: round;
   transition: stroke-dashoffset 1s linear, stroke .3s;
 }
-.timer-fill.warning { stroke: var(--gold); }
-.timer-fill.danger  { stroke: var(--red); }
+.timer-fill.warning { stroke: var(--gold, #ffc338); }
+.timer-fill.danger  { stroke: var(--red, #ff4d5e); }
 .timer-num {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.35rem; font-weight: 900; color: var(--t1);
+  font-size: 1.35rem; font-weight: 900; color: var(--t1, #fff);
   font-variant-numeric: tabular-nums;
 }
-.timer-num.done { color: var(--red); animation: timerPulse .6s ease-in-out 3; }
+.timer-num.done { color: var(--red, #ff4d5e); animation: timerPulse .6s ease-in-out 3; }
 .timer-controls { display: flex; flex-direction: column; gap: 4px; }
 .btn-timer-ctrl {
-  width: 30px; height: 24px; border-radius: 8px;
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--t2); font-size: .8rem; line-height: 1;
+  width: 30px; height: 24px; border-radius: 8px; cursor: pointer;
+  background: var(--surface, rgba(255,255,255,.06));
+  border: 1px solid var(--border, rgba(255,255,255,.10));
+  color: var(--t2, rgba(255,255,255,.7)); font-size: .8rem; line-height: 1;
 }
-.btn-timer-ctrl:hover { color: var(--t1); background: rgba(255,255,255,.12); }
+.btn-timer-ctrl:hover { color: var(--t1, #fff); background: rgba(255,255,255,.12); }
 
 @keyframes timerPulse {
   0%,100% { transform: scale(1); }
