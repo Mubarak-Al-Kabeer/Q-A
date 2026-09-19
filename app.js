@@ -4,7 +4,7 @@
 
 // ⚠️ ضع هنا رابط النشر (Web App URL) الخاص بالـ Script بعد إعادة النشر
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyHXg4aEXmcV-nRH04XF1IYTBo6dTEYBgzB4HyDmJwA0nFS8-j1736LW6IXqhQLe0LxBw/exec";
+  "https://script.google.com/macros/s/AKfycbxgKkwB3P6yquLXu2ghiSZT4htK0vFOCZWc-lfdZDz6yOjTRPLnBUeYYm-KeX7HDNG1vA/exec";
 
 const ADMIN_ACCOUNT = "3854";
 
