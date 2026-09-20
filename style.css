@@ -293,8 +293,77 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
 .btn-none { width: 100%; margin-top: 10px; padding: 11px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--border2); color: var(--t2); font-weight: 800; }
 .btn-none:hover { background: rgba(255,255,255,.12); }
 
-/* ═══ لوحة الفئات ═══ */
-.cat-board { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+/* ═══ ميديا السؤال (صورة / صوت / فيديو) ═══ */
+.q-media-wrap {
+  margin-bottom: 16px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+  text-align: center;
+}
+.q-media-wrap img {
+  max-width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  border-radius: var(--r-md);
+}
+.q-media-wrap video,
+.q-media-wrap audio {
+  width: 100%;
+  border-radius: var(--r-md);
+}
+.q-media-wrap audio { padding: 12px; }
+.media-error { padding: 22px; color: var(--t2); font-weight: 700; }
+
+/* ═══ اختيارات A/B/C/D ═══ */
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+.choice-btn {
+  padding: 14px 12px;
+  border-radius: var(--r-md);
+  background: var(--bg3);
+  border: 2px solid var(--border2);
+  color: var(--t1);
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: right;
+  transition: border-color .2s, background .2s;
+  font-family: inherit;
+}
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--cyan);
+  background: rgba(34,211,238,.1);
+}
+.choice-btn:disabled { opacity: 1; cursor: default; }
+.choice-btn:disabled:not(.correct):not(.wrong) { opacity: .55; }
+.choice-btn.correct {
+  border-color: var(--green);
+  background: rgba(46,204,113,.18);
+  color: var(--green);
+}
+.choice-btn.wrong {
+  border-color: var(--red);
+  background: rgba(255,77,94,.18);
+  color: var(--red);
+}
+
+/* ═══ لوحة الفئات — شبكة متجاوبة (25 فئة) ═══ */
+.cat-board { display: grid; gap: 10px; }
+
+@media (min-width: 900px) {
+  .cat-board { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 899px) {
+  .cat-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 500px) {
+  .cat-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .cat-col { display: flex; flex-direction: column; gap: 8px; }
 .cat-title {
   display: flex; align-items: center; justify-content: center; text-align: center;
@@ -337,9 +406,6 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
 .btn-timer-ctrl:hover { color: var(--t1); background: rgba(255,255,255,.12); }
 @keyframes timerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
 
-/* فئة اكتشف الحالة */
-.cat-title.special { background: linear-gradient(145deg, #6b2fa8, #3a1466); border-color: rgba(199,125,255,.45); }
-
 /* ═══ الجوال والشاشات الصغيرة ═══ */
 @media (max-width: 900px) {
   .board-header { justify-content: center; }
@@ -349,7 +415,6 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
   .acc-actions { grid-column: 1 / -1; justify-content: flex-start; }
 }
 @media (max-width: 700px) {
-  .cat-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .q-text { font-size: 1.2rem; }
 }
 @media (max-width: 600px) {
@@ -358,6 +423,7 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
   .vs-badge { margin: 0 auto; }
   .topbar-title { display: none; }
   .team-answer-row { grid-template-columns: 1fr; }
+  .choices-grid { grid-template-columns: 1fr; }
   .timer-wrap { padding: 4px 10px; gap: 6px; }
   .timer-ring-wrap { width: 50px; height: 50px; }
   .timer-num { font-size: 1.1rem; }
