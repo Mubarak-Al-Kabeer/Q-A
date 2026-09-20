@@ -355,7 +355,7 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
 .cat-board { display: grid; gap: 10px; }
 
 @media (min-width: 900px) {
-  .cat-board { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .cat-board { grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); }
 }
 @media (max-width: 899px) {
   .cat-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -434,3 +434,30 @@ input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.
 @media (prefers-reduced-motion: reduce) {
   .timer-num.done, .screen.active { animation: none; }
 }
+
+/* ═══ صفحة اختيار الفئات ═══ */
+.cats-body { max-width: 900px; }
+.cats-head { text-align: center; margin-bottom: 18px; }
+.cats-head h2 { font-size: 1.5rem; font-weight: 900; }
+.cats-teams { color: var(--gold); font-weight: 900; margin: 4px 0; }
+.cats-tools { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.cats-counter { color: var(--t2); font-weight: 700; font-size: .9rem; }
+.cats-counter strong { color: var(--cyan); font-size: 1.1rem; }
+.cats-group { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; }
+.cats-group-head { display: flex; justify-content: space-between; align-items: center; font-weight: 900; margin-bottom: 10px; }
+.cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.cat-chip {
+  padding: 12px 8px; border-radius: var(--r-md);
+  background: var(--bg3); border: 2px solid var(--border2);
+  color: var(--t1); font-weight: 800; font-size: .92rem; line-height: 1.3;
+  transition: border-color .15s, background .15s;
+}
+.cat-chip:hover { border-color: var(--cyan); }
+.cat-chip.on { border-color: var(--cyan); background: rgba(34,211,238,.18); color: var(--cyan); }
+.cats-bar {
+  position: sticky; bottom: 0; padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+.q-media-wrap iframe { width: 100%; border: 0; border-radius: var(--r-md); }
+.q-media-wrap .frame-video { height: 340px; }
+.q-media-wrap .frame-audio { height: 110px; }
