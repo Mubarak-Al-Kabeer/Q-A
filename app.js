@@ -2,26 +2,49 @@
    CONFIG
 ═══════════════════════════════════════════════════════ */
 
-// ⚠️ رابط النشر (Web App URL) — يتغير إذا أنشأت Deployment جديد (مو "إدارة النشر ← نسخة جديدة")
+// ⚠️ رابط النشر (Web App URL) — يتغير إذا أنشأت Deployment جديد
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyDMRhlABfveRXvD0LLTS9x9QqbKMRLRF9E4rBd8YXP9G7RQBtI7bv_SCvh32e7bNn68Q/exec";
+  "https://script.google.com/macros/s/AKfycbyEk4p3tzoLU0cy8Un0omcjZhP0XbfDIzNeIH-Qo88XhYhDylz1X8J-Yq7SWQa5EFcJvw/exec";
 
 /* ═══════════════════════════════════════════════════════
    CATEGORIES & POINTS
 ═══════════════════════════════════════════════════════ */
 
+// 25 فئة مقسمة على 4 مجموعات — الأسماء لازم تطابق عمود category في الشيت حرفياً
 const CATEGORIES = [
+  // KNOWLEDGE
   "التشريح",
-  "اكتشف الحالة",
+  "Heart Master",
+  "Blood Lab",
+  "Bone Artist",
+  "Medical Abbreviations",
+  // EMS
+  "ER Master",
   "الأدوات والمعدات",
+  "BLS/CPR",
+  "ACLS",
+  "Trauma",
+  "SAMPLE/OPQRST",
   "العلامات الحيوية",
-  "الأدوية",
-  "الطوارئ والإسعافات"
+  // VISUAL
+  "Hospital Detective",
+  "X-Ray Detective",
+  "What's This?",
+  "What's Wrong?",
+  "Medical Memory",
+  // FUN
+  "Real or Myth",
+  "5 Second Challenge",
+  "Speed Round",
+  "Audio Challenge",
+  "Video Challenge",
+  "Battle 1v1",
+  "Wild Card",
+  "Final Boss"
 ];
 
-const CASE_CATEGORY_INDEX = 1;
-
-const POINTS       = [100, 200, 300, 400, 600];
+// 5 مستويات نقاط
+const POINTS       = [100, 200, 300, 400, 500];
 const TIER_CLASSES = ["tier-1", "tier-2", "tier-3", "tier-4", "tier-5"];
 
 /* ═══════════════════════════════════════════════════════
@@ -171,6 +194,9 @@ function togglePw(inputId, btn) {
   inp.type = inp.type === "password" ? "text" : "password";
   btn.textContent = inp.type === "password" ? "👁" : "🙈";
 }
+// تحويل أي قيمة قادمة من الشيت لنص آمن (الأرقام مثل 5 أو 206 تصير "5" و"206")
+function str(v) { return v === null || v === undefined ? "" : String(v); }
+function isTrue(v) { return v === true || String(v).trim().toUpperCase() === "TRUE"; }
 
 /* ═══════════════════════════════════════════════════════
    USER HELPERS
@@ -198,7 +224,7 @@ function isApproved(user) {
   const s = String(user?.status ?? "").trim().toUpperCase();
   return s === "APPROVED" || s === "ACCEPTED" || s === "ACTIVE";
 }
-/* للعرض فقط — السيرفر هو اللي يتحقق فعلياً من صلاحية المسؤول */
+// للعرض فقط — السيرفر هو اللي يتحقق فعلياً من صلاحية المسؤول
 function isAdmin() {
   const role = String(currentUser?.role ?? "").trim().toUpperCase();
   return role === "ADMIN" || role === "ADMINISTRATOR";
@@ -460,8 +486,8 @@ function buildBoard() {
     col.className = "cat-col";
 
     const title = document.createElement("div");
-    title.className   = ci === CASE_CATEGORY_INDEX ? "cat-title special" : "cat-title";
-    title.textContent = ci === CASE_CATEGORY_INDEX ? "🔍 " + cat : cat;
+    title.className   = "cat-title";
+    title.textContent = cat;
     col.appendChild(title);
 
     POINTS.forEach((pts, pi) => {
@@ -493,6 +519,15 @@ function showStageQuestion() {
   if (q)    q.style.display    = "block";
 }
 
+// إيقاف أي صوت أو فيديو شغّال وتفريغ منطقة الميديا
+function clearMedia() {
+  const media = el("qMediaWrap");
+  if (!media) return;
+  media.querySelectorAll("audio,video").forEach(m => { try { m.pause(); } catch {} });
+  media.innerHTML = "";
+  media.style.display = "none";
+}
+
 function openQuestion(catIdx, ptIdx, pts, cat, btn) {
   const key = catIdx + "-" + ptIdx;
   if (gameState.usedQuestions.includes(key)) return;
@@ -500,22 +535,37 @@ function openQuestion(catIdx, ptIdx, pts, cat, btn) {
   btn.disabled = true;
   gameState.usedQuestions.push(key);
 
-  const isCase  = catIdx === CASE_CATEGORY_INDEX;
-  const matches = gameState.pool.filter(q => q.category === cat && Number(q.points) === pts);
+  const matches = gameState.pool.filter(q =>
+    String(q.category || "").trim() === cat && Number(q.points) === pts);
 
   if (matches.length) {
+    // سحب سؤال عشوائي من الأسئلة المطابقة للفئة والنقاط، وحذفه من المجموعة حتى لا يتكرر
     const picked = matches[Math.floor(Math.random() * matches.length)];
     gameState.pool.splice(gameState.pool.indexOf(picked), 1);
     currentQuestion = {
-      id: picked.id, category: cat, points: pts,
-      text: picked.question || "—", answer: picked.answer || "—", isCase
+      id:         picked.id,
+      category:   cat,
+      points:     pts,
+      text:       picked.question || "—",
+      answer:     str(picked.answer) || "—",
+      // الميديا
+      imageUrl:   str(picked.imageUrl || picked.image_url),
+      audioUrl:   str(picked.audioUrl || picked.audio_url),
+      videoUrl:   str(picked.videoUrl || picked.video_url),
+      // الاختيارات
+      hasChoices: isTrue(picked.hasChoices ?? picked.has_choices),
+      choiceA:    str(picked.choiceA ?? picked.choice_a),
+      choiceB:    str(picked.choiceB ?? picked.choice_b),
+      choiceC:    str(picked.choiceC ?? picked.choice_c),
+      choiceD:    str(picked.choiceD ?? picked.choice_d)
     };
   } else {
     currentQuestion = {
-      id: null, category: cat, points: pts, isCase,
-      text: isCase ? `[ سيناريو ${cat} — ${pts} نقطة ] — لم يُضَف بعد`
-                   : `[ سؤال ${cat} — ${pts} نقطة ] — لم يُضَف بعد`,
-      answer: "الإجابة غير مضافة"
+      id: null, category: cat, points: pts,
+      text:       `[ سؤال ${cat} — ${pts} نقطة ] — لم يُضَف بعد`,
+      answer:     "الإجابة غير مضافة",
+      imageUrl:   "", audioUrl: "", videoUrl: "",
+      hasChoices: false, choiceA: "", choiceB: "", choiceC: "", choiceD: ""
     };
   }
 
@@ -526,24 +576,113 @@ function openQuestion(catIdx, ptIdx, pts, cat, btn) {
   startTimer();
 }
 
+// نص الإجابة الصحيحة: لو السؤال بخيارات نعرض الحرف مع نص الخيار
+function answerDisplay(q) {
+  if (q.hasChoices) {
+    const letter = q.answer.trim().toUpperCase();
+    const txt = q["choice" + letter];
+    if (txt) return letter + " — " + txt;
+  }
+  return q.answer;
+}
+
 function renderQuestion() {
   if (!currentQuestion) return;
-  const cat = el("qCategory"), pts = el("qPoints");
-  const txt = el("qText"), ansTxt = el("answerText");
-  const reveal = el("revealArea"), answer = el("answerArea");
-  const t1btn = el("teamBtn1"), t2btn = el("teamBtn2");
+  const q       = currentQuestion;
+  const cat     = el("qCategory"), pts = el("qPoints");
+  const txt     = el("qText"),     ansTxt = el("answerText");
+  const reveal  = el("revealArea"), answer = el("answerArea");
+  const t1btn   = el("teamBtn1"),  t2btn = el("teamBtn2");
+  const media   = el("qMediaWrap");
+  const choices = el("choicesArea");
 
-  if (cat) cat.textContent = currentQuestion.isCase ? "🔍 " + currentQuestion.category : currentQuestion.category;
-  if (pts) pts.textContent = currentQuestion.points + " نقطة";
-  if (txt) txt.textContent = currentQuestion.text;
-  if (ansTxt) ansTxt.textContent = currentQuestion.answer;
-  if (reveal) reveal.style.display = "block";
+  if (cat) cat.textContent = q.category;
+  if (pts) pts.textContent = q.points + " نقطة";
+  if (txt) txt.textContent = q.text;
+  if (ansTxt) ansTxt.textContent = answerDisplay(q);
   if (answer) answer.style.display = "none";
   if (t1btn) t1btn.textContent = "✅ " + (currentGame?.team1 || "الفريق الأول") + " أجاب صح";
   if (t2btn) t2btn.textContent = "✅ " + (currentGame?.team2 || "الفريق الثاني") + " أجاب صح";
 
+  // ── الميديا قبل نص السؤال (صورة / صوت / فيديو) ──
+  clearMedia();
+  if (media) {
+    const resolve = (ref, kind) =>
+      (typeof window.resolveMediaUrl === "function") ? window.resolveMediaUrl(ref, kind) : ref;
+
+    if (q.imageUrl) {
+      const src = resolve(q.imageUrl, "image");
+      if (src) {
+        const img = document.createElement("img");
+        img.alt = "صورة السؤال";
+        img.src = src;
+        img.onerror = () => { img.replaceWith(Object.assign(document.createElement("div"),
+          { className: "media-error", textContent: "تعذّر تحميل الصورة" })); };
+        media.appendChild(img);
+      }
+    }
+    if (q.audioUrl) {
+      const src = resolve(q.audioUrl, "audio");
+      if (src) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload  = "auto";
+        audio.src = src;
+        media.appendChild(audio);
+      }
+    }
+    if (q.videoUrl) {
+      const src = resolve(q.videoUrl, "video");
+      if (src) {
+        const video = document.createElement("video");
+        video.controls = true;
+        video.setAttribute("playsinline", "");
+        video.src = src;
+        media.appendChild(video);
+      }
+    }
+    media.style.display = media.children.length ? "block" : "none";
+  }
+
+  // ── الاختيارات A/B/C/D ──
+  if (choices) {
+    if (q.hasChoices) {
+      ["A", "B", "C", "D"].forEach(l => {
+        const b = el("choice" + l);
+        if (!b) return;
+        b.textContent = l + " — " + q["choice" + l];
+        b.className   = "choice-btn";
+        b.disabled    = false;
+      });
+      choices.style.display = "grid";
+      if (reveal) reveal.style.display = "none";   // يظهر زر الإجابة بعد الاختيار
+    } else {
+      choices.style.display = "none";
+      if (reveal) reveal.style.display = "block";
+    }
+  }
+
   showStageQuestion();
   el("questionStage")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ── الضغط على أحد الاختيارات ──
+function selectChoice(letter) {
+  if (!currentQuestion || !currentQuestion.hasChoices) return;
+  const correct = currentQuestion.answer.trim().toUpperCase();
+
+  ["A", "B", "C", "D"].forEach(l => {
+    const btn = el("choice" + l);
+    if (!btn) return;
+    btn.disabled = true;
+    if (l === correct)     btn.classList.add("correct");
+    else if (l === letter) btn.classList.add("wrong");
+  });
+
+  const reveal = el("revealArea"), answer = el("answerArea");
+  if (reveal) reveal.style.display = "none";
+  if (answer) { answer.style.display = "block"; answer.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+  pauseTimer();
 }
 
 function showAnswer() {
@@ -563,6 +702,7 @@ function awardTeam(which) {
   gameState.turn = gameState.turn === 1 ? 2 : 1;
   updateScoreboard();
   currentQuestion = null;
+  clearMedia();
   showStageIdle();
   resetTimer();
 
@@ -575,7 +715,7 @@ function awardTeam(which) {
       questionId: q.id || "", question: q.text || "", points: q.points || 0,
       team: which === 1 ? currentGame.team1 : which === 2 ? currentGame.team2 : "",
       correct: which === 1 || which === 2
-    }, true).catch(() => {});   // true = لا تسجّل خروج وسط اللعبة إذا انتهت الجلسة
+    }, true).catch(() => {});
   }
 }
 
@@ -612,12 +752,14 @@ function confirmBack() {
 function backToSetup() {
   resetTimer();
   currentQuestion = null;
+  clearMedia();
   showStageIdle();
   showScreen("gameScreen");
   if (isAdmin()) showAdminMenu(); else showGameSetup();
 }
 function logout() {
   resetTimer();
+  clearMedia();
   currentUser = currentGame = currentQuestion = null;
   gameState = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [], pool: [] };
   localStorage.removeItem("currentUser");
@@ -631,7 +773,6 @@ function restoreSession() {
     const saved = localStorage.getItem("currentUser");
     if (!saved) return;
     const user = JSON.parse(saved);
-    // جلسة قديمة بدون رمز، أو حساب غير مقبول → يرجع لشاشة الدخول ويتحقق من السيرفر من جديد
     if (!user || !user.token) { localStorage.removeItem("currentUser"); return; }
     currentUser = user;
     if (!isAdmin() && !isApproved(currentUser)) {
