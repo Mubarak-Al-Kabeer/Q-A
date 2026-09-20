@@ -187,7 +187,7 @@
       return "";
     }
     const id = driveId(ref);
-    if (id) return kind === "image" ? "https://drive.google.com/uc?export=view&id=" + id : "https://drive.google.com/uc?export=download&id=" + id;
+    if (id) return kind === "image" ? "https://lh3.googleusercontent.com/d/" + id : "https://drive.google.com/uc?export=download&id=" + id;
     return ref;
   };
   window.__mediaKeys = { images: Object.keys(IMAGES), audios: Object.keys(AUDIOS) };
