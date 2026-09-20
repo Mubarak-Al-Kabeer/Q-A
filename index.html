@@ -143,7 +143,7 @@
               <input id="team2" type="text" placeholder="اسم الفريق الثاني">
             </div>
           </div>
-          <button class="btn-primary btn-start" onclick="startGame()">🚀 ابدأ اللعبة</button>
+          <button class="btn-primary btn-start" onclick="goToCategories()">التالي: اختيار الفئات ←</button>
           <div id="gameMessage" class="msg"></div>
         </div>
       </div>
@@ -166,6 +166,34 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- اختيار الفئات -->
+  <section id="categoriesScreen" class="screen">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="topbar-icon">🗂️</span>
+        <span class="topbar-title">اختيار الفئات</span>
+      </div>
+      <button class="btn-secondary btn-sm" onclick="backToTeams()">← الفريقين</button>
+    </header>
+    <div class="game-body cats-body">
+      <div class="cats-head">
+        <h2>اختر فئات المباراة</h2>
+        <div id="catsTeams" class="cats-teams"></div>
+        <p class="auth-note">اختر من <span id="catsMin">3</span> إلى <span id="catsMax">10</span> فئات</p>
+        <div class="cats-tools">
+          <button class="btn-secondary btn-sm" onclick="pickRandomCats(RANDOM_CATS)">🎲 عشوائي</button>
+          <button class="btn-secondary btn-sm" onclick="clearCats()">مسح</button>
+          <span class="cats-counter">المختار: <strong id="catsCount">0</strong> / <span id="catsTotal">10</span></span>
+        </div>
+      </div>
+      <div id="catsGroups"></div>
+      <div class="cats-bar">
+        <div id="categoriesMessage" class="msg"></div>
+        <button id="btnStartPlay" class="btn-primary btn-start" onclick="startGame()">🚀 ابدأ اللعب</button>
+      </div>
     </div>
   </section>
 
