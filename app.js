@@ -4,44 +4,25 @@
 
 // ⚠️ رابط النشر (Web App URL) — يتغير إذا أنشأت Deployment جديد
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyEk4p3tzoLU0cy8Un0omcjZhP0XbfDIzNeIH-Qo88XhYhDylz1X8J-Yq7SWQa5EFcJvw/exec";
+  "https://script.google.com/macros/s/AKfycbyDMRhlABfveRXvD0LLTS9x9QqbKMRLRF9E4rBd8YXP9G7RQBtI7bv_SCvh32e7bNn68Q/exec";
 
 /* ═══════════════════════════════════════════════════════
    CATEGORIES & POINTS
 ═══════════════════════════════════════════════════════ */
 
 // 25 فئة مقسمة على 4 مجموعات — الأسماء لازم تطابق عمود category في الشيت حرفياً
-const CATEGORIES = [
-  // KNOWLEDGE
-  "التشريح",
-  "Heart Master",
-  "Blood Lab",
-  "Bone Artist",
-  "Medical Abbreviations",
-  // EMS
-  "ER Master",
-  "الأدوات والمعدات",
-  "BLS/CPR",
-  "ACLS",
-  "Trauma",
-  "SAMPLE/OPQRST",
-  "العلامات الحيوية",
-  // VISUAL
-  "Hospital Detective",
-  "X-Ray Detective",
-  "What's This?",
-  "What's Wrong?",
-  "Medical Memory",
-  // FUN
-  "Real or Myth",
-  "5 Second Challenge",
-  "Speed Round",
-  "Audio Challenge",
-  "Video Challenge",
-  "Battle 1v1",
-  "Wild Card",
-  "Final Boss"
+const CATEGORY_GROUPS = [
+  { key: "KNOWLEDGE", title: "🧠 المعرفة",  cats: ["التشريح", "Heart Master", "Blood Lab", "Bone Artist", "Medical Abbreviations"] },
+  { key: "EMS",       title: "🚑 الطوارئ",  cats: ["ER Master", "الأدوات والمعدات", "BLS/CPR", "ACLS", "Trauma", "SAMPLE/OPQRST", "العلامات الحيوية"] },
+  { key: "VISUAL",    title: "👁 بصري",     cats: ["Hospital Detective", "X-Ray Detective", "What's This?", "What's Wrong?", "Medical Memory"] },
+  { key: "FUN",       title: "🎉 تحديات",   cats: ["Real or Myth", "5 Second Challenge", "Speed Round", "Audio Challenge", "Video Challenge", "Battle 1v1", "Wild Card", "Final Boss"] }
 ];
+const CATEGORIES = CATEGORY_GROUPS.flatMap(g => g.cats);
+
+// حدود اختيار الفئات (غيّرها براحتك)
+const MIN_CATS    = 3;
+const MAX_CATS    = 10;
+const RANDOM_CATS = 6;
 
 // 5 مستويات نقاط
 const POINTS       = [100, 200, 300, 400, 500];
@@ -54,6 +35,10 @@ const TIER_CLASSES = ["tier-1", "tier-2", "tier-3", "tier-4", "tier-5"];
 let currentUser     = null;
 let currentGame     = null;
 let currentQuestion = null;
+
+let pendingTeams     = null;          // أسماء الفريقين قبل بدء اللعب
+let activeCategories = [];            // الفئات المختارة للمباراة الحالية
+const selectedCats   = new Set();     // اختيار صفحة الفئات
 
 let gameState = {
   team1Score: 0,
@@ -419,33 +404,126 @@ async function editGames(accountNumber, current) {
 }
 
 /* ═══════════════════════════════════════════════════════
+   صفحة اختيار الفئات
+═══════════════════════════════════════════════════════ */
+
+function goToCategories() {
+  const t1 = el("team1")?.value.trim();
+  const t2 = el("team2")?.value.trim();
+  if (!t1 || !t2) { setMsg("gameMessage", "أدخل اسمَي الفريقين", "error"); return; }
+  if (t1 === t2)  { setMsg("gameMessage", "يجب أن يكون اسم الفريقين مختلفاً", "error"); return; }
+  setMsg("gameMessage", "");
+  pendingTeams = { t1, t2 };
+
+  const teamsEl = el("catsTeams"); if (teamsEl) teamsEl.textContent = t1 + "  VS  " + t2;
+  const minEl = el("catsMin"); if (minEl) minEl.textContent = MIN_CATS;
+  const maxEl = el("catsMax"); if (maxEl) maxEl.textContent = MAX_CATS;
+  setMsg("categoriesMessage", "");
+  renderCategoryPicker();
+  showScreen("categoriesScreen");
+}
+
+function backToTeams() { showScreen("gameScreen"); }
+
+function renderCategoryPicker() {
+  const wrap = el("catsGroups"); if (!wrap) return;
+  wrap.innerHTML = "";
+  CATEGORY_GROUPS.forEach(g => {
+    const box = document.createElement("div");
+    box.className = "cats-group";
+    const head = document.createElement("div");
+    head.className = "cats-group-head";
+    head.innerHTML = `<span>${esc(g.title)}</span>`;
+    const all = document.createElement("button");
+    all.className = "btn-link";
+    all.textContent = "تحديد المجموعة";
+    all.onclick = () => {
+      let hit = false;
+      g.cats.forEach(c => {
+        if (selectedCats.has(c)) return;
+        if (selectedCats.size >= MAX_CATS) { hit = true; return; }
+        selectedCats.add(c);
+      });
+      renderCategoryPicker();
+      setMsg("categoriesMessage", hit ? "الحد الأقصى " + MAX_CATS + " فئات" : "", hit ? "error" : "");
+    };
+    head.appendChild(all);
+    box.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "cats-grid";
+    g.cats.forEach(c => {
+      const chip = document.createElement("button");
+      chip.className = "cat-chip" + (selectedCats.has(c) ? " on" : "");
+      chip.textContent = c;
+      chip.onclick = () => toggleCat(c);
+      grid.appendChild(chip);
+    });
+    box.appendChild(grid);
+    wrap.appendChild(box);
+  });
+  updateCatsCount();
+}
+
+function toggleCat(c) {
+  if (selectedCats.has(c)) {
+    selectedCats.delete(c);
+    setMsg("categoriesMessage", "");
+  } else {
+    if (selectedCats.size >= MAX_CATS) { setMsg("categoriesMessage", "الحد الأقصى " + MAX_CATS + " فئات", "error"); return; }
+    selectedCats.add(c);
+    setMsg("categoriesMessage", "");
+  }
+  renderCategoryPicker();
+}
+function clearCats() { selectedCats.clear(); setMsg("categoriesMessage", ""); renderCategoryPicker(); }
+function pickRandomCats(n) {
+  const arr = CATEGORIES.slice().sort(() => Math.random() - 0.5).slice(0, n);
+  selectedCats.clear(); arr.forEach(c => selectedCats.add(c));
+  renderCategoryPicker();
+}
+function updateCatsCount() {
+  const c = el("catsCount"); if (c) c.textContent = selectedCats.size;
+  const t = el("catsTotal"); if (t) t.textContent = MAX_CATS;
+}
+
+/* ═══════════════════════════════════════════════════════
    START GAME
    (نحمّل الأسئلة أولاً حتى لا يُخصم من رصيد اللاعب إذا فشل التحميل)
 ═══════════════════════════════════════════════════════ */
 
 async function startGame() {
-  const t1 = el("team1")?.value.trim();
-  const t2 = el("team2")?.value.trim();
-  if (!t1 || !t2) { setMsg("gameMessage", "أدخل اسمَي الفريقين", "error"); return; }
-  if (t1 === t2)  { setMsg("gameMessage", "يجب أن يكون اسم الفريقين مختلفاً", "error"); return; }
+  if (!pendingTeams) { showScreen("gameScreen"); return; }
+  const { t1, t2 } = pendingTeams;
 
-  const startBtn = document.querySelector("#gameSetupArea .btn-start");
+  if (selectedCats.size < MIN_CATS) {
+    setMsg("categoriesMessage", "اختر " + MIN_CATS + " فئات على الأقل", "error");
+    return;
+  }
+  if (selectedCats.size > MAX_CATS) {
+    setMsg("categoriesMessage", "الحد الأقصى " + MAX_CATS + " فئات", "error");
+    return;
+  }
+  // نحافظ على ترتيب الفئات الأصلي
+  activeCategories = CATEGORIES.filter(c => selectedCats.has(c));
+
+  const startBtn = el("btnStartPlay");
   if (startBtn) startBtn.disabled = true;
 
-  setMsg("gameMessage", "جاري تحميل الأسئلة…");
+  setMsg("categoriesMessage", "جاري تحميل الأسئلة…");
   const qResult = await apiRequest({ action: "getAllQuestions" });
   if (!qResult?.success || !Array.isArray(qResult.questions) || !qResult.questions.length) {
-    setMsg("gameMessage", qResult?.message || "لا توجد أسئلة حالياً، تواصل مع المسؤول", "error");
+    setMsg("categoriesMessage", qResult?.message || "لا توجد أسئلة حالياً، تواصل مع المسؤول", "error");
     if (startBtn) startBtn.disabled = false;
     return;
   }
   const pool = qResult.questions;
 
   if (!isAdmin()) {
-    setMsg("gameMessage", "جاري التحقق…");
+    setMsg("categoriesMessage", "جاري التحقق…");
     const result = await apiRequest({ action: "createGame", team1: t1, team2: t2 });
     if (!result?.success) {
-      setMsg("gameMessage", result?.message || "تعذّر البدء", "error");
+      setMsg("categoriesMessage", result?.message || "تعذّر البدء", "error");
       if (startBtn) startBtn.disabled = false;
       return;
     }
@@ -458,7 +536,7 @@ async function startGame() {
   }
 
   if (startBtn) startBtn.disabled = false;
-  setMsg("gameMessage", "");
+  setMsg("categoriesMessage", "");
 
   gameState = { team1Score: 0, team2Score: 0, turn: 1, usedQuestions: [], pool };
   currentQuestion = null;
@@ -480,8 +558,9 @@ async function startGame() {
 function buildBoard() {
   const board = el("categoryBoard"); if (!board) return;
   board.innerHTML = "";
+  board.style.setProperty("--cols", activeCategories.length <= 6 ? activeCategories.length : 5);
 
-  CATEGORIES.forEach((cat, ci) => {
+  activeCategories.forEach((cat, ci) => {
     const col = document.createElement("div");
     col.className = "cat-col";
 
@@ -586,6 +665,22 @@ function answerDisplay(q) {
   return q.answer;
 }
 
+// روابط Google Drive و YouTube تنعرض داخل iframe (أضمن من <video> لروابط Drive)
+function embedUrl(ref) {
+  const r = String(ref || "");
+  const d = r.match(/drive\.google\.com\/file\/d\/([^/?#]+)/) || r.match(/drive\.google\.com\/(?:open|uc)\?[^#]*id=([^&#]+)/);
+  if (d) return "https://drive.google.com/file/d/" + d[1] + "/preview";
+  const y = r.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  if (y) return "https://www.youtube.com/embed/" + y[1];
+  return "";
+}
+function makeFrame(url, cls) {
+  const f = document.createElement("iframe");
+  f.src = url; f.className = cls || "";
+  f.allow = "autoplay; fullscreen"; f.setAttribute("allowfullscreen", "");
+  return f;
+}
+
 function renderQuestion() {
   if (!currentQuestion) return;
   const q       = currentQuestion;
@@ -622,8 +717,10 @@ function renderQuestion() {
       }
     }
     if (q.audioUrl) {
-      const src = resolve(q.audioUrl, "audio");
-      if (src) {
+      const emb = embedUrl(q.audioUrl);
+      const src = emb ? "" : resolve(q.audioUrl, "audio");
+      if (emb) media.appendChild(makeFrame(emb, "frame-audio"));
+      else if (src) {
         const audio = document.createElement("audio");
         audio.controls = true;
         audio.preload  = "auto";
@@ -632,8 +729,10 @@ function renderQuestion() {
       }
     }
     if (q.videoUrl) {
-      const src = resolve(q.videoUrl, "video");
-      if (src) {
+      const emb = embedUrl(q.videoUrl);
+      const src = emb ? "" : resolve(q.videoUrl, "video");
+      if (emb) media.appendChild(makeFrame(emb, "frame-video"));
+      else if (src) {
         const video = document.createElement("video");
         video.controls = true;
         video.setAttribute("playsinline", "");
