@@ -174,7 +174,7 @@
 
         <div class="setup-card glass">
           <div class="setup-head">
-            <span class="step-pill">الخطوة 1 من 2</span>
+            <span class="step-pill">الخطوة 1 من 3</span>
             <h2>تجهيز المباراة</h2>
             <p class="auth-note">سمّوا فريقيكم وخلّ الحماس يبدأ</p>
           </div>
@@ -195,7 +195,7 @@
             <div><b>🛟 4 وسائل</b><span>لكل فريق</span></div>
             <div><b>🎁 مفاجآت</b><span>مخفية باللوحة</span></div>
           </div>
-          <button class="btn-primary btn-start" onclick="goToCategories()">التالي: اختيار الفئات ←</button>
+          <button class="btn-primary btn-start" onclick="goToSpecialty()">التالي: اختيار التخصص ←</button>
           <div id="gameMessage" class="msg"></div>
         </div>
       </div>
@@ -221,6 +221,25 @@
     </div>
   </section>
 
+  <!-- ═══════════ اختيار التخصص ═══════════ -->
+  <section id="specialtyScreen" class="screen">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="logo-orb xs"><span>🩺</span></span>
+        <span class="topbar-title">اختيار التخصص</span>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="backToTeams()">→ الفريقين</button>
+    </header>
+    <div class="game-body">
+      <div class="cats-head">
+        <span class="step-pill">الخطوة 2 من 3</span>
+        <h2>وش تخصصكم؟</h2>
+        <p class="auth-note">كل تخصص له فئاته الخاصة + الفئات المشتركة الحماسية</p>
+      </div>
+      <div id="specialtyGrid" class="spec-grid"></div>
+    </div>
+  </section>
+
   <!-- ═══════════ اختيار الفئات ═══════════ -->
   <section id="categoriesScreen" class="screen">
     <header class="topbar">
@@ -228,13 +247,14 @@
         <span class="logo-orb xs"><span>🗂️</span></span>
         <span class="topbar-title">اختيار الفئات</span>
       </div>
-      <button class="btn-ghost btn-sm" onclick="backToTeams()">→ الفريقين</button>
+      <button class="btn-ghost btn-sm" onclick="backToSpecialty()">→ التخصص</button>
     </header>
     <div class="game-body cats-body">
       <div class="cats-head">
-        <span class="step-pill">الخطوة 2 من 2</span>
+        <span class="step-pill">الخطوة 3 من 3</span>
         <h2>اختر فئات المباراة</h2>
         <div id="catsTeams" class="cats-teams"></div>
+        <button id="catsSpecialty" class="spec-pill" onclick="backToSpecialty()" title="تغيير التخصص"></button>
         <p class="auth-note">اختر عدداً <b>زوجياً</b> من <span id="catsMin">4</span> إلى <span id="catsMax">10</span> فئات — حتى يتساوى عدد الأسئلة للفريقين</p>
         <div class="cats-tools">
           <button class="btn-ghost btn-sm" onclick="pickRandomCats(RANDOM_CATS)">🎲 عشوائي</button>
@@ -243,6 +263,11 @@
         </div>
       </div>
       <div id="catsGroups"></div>
+      <label class="boss-toggle glass">
+        <input type="checkbox" id="bossToggle" checked>
+        <span class="bt-switch"></span>
+        <span class="bt-text"><b>👑 Final Boss — سؤال ختامي بالرهان</b><small>بعد ما تخلص اللوحة، كل فريق يراهن بالسر على سؤال واحد يقلب النتيجة</small></span>
+      </label>
       <div class="cats-bar glass">
         <div id="categoriesMessage" class="msg"></div>
         <button id="btnStartPlay" class="btn-primary btn-start" onclick="startGame()">🚀 ابدأ اللعب</button>
@@ -271,7 +296,7 @@
           <strong id="currentTurn">—</strong>
           <button class="btn-swap" onclick="swapTurn()" title="تبديل الدور">⇄</button>
         </div>
-        <div class="tiles-left"><span id="tilesLeft">0</span> سؤال متبقي</div>
+        <div class="tiles-left"><span id="boardSpecialty" class="board-spec"></span> <span id="tilesLeft">0</span> سؤال متبقي</div>
         <div class="board-tools">
           <button class="tool-btn" id="btnMute" onclick="toggleMute()" title="الصوت (M)">🔊</button>
           <button class="tool-btn" onclick="toggleFullscreen()" title="ملء الشاشة (F)">⛶</button>

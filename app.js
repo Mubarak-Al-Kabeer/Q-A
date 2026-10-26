@@ -10,14 +10,70 @@ const API_URL =
    CATEGORIES & POINTS
 ═══════════════════════════════════════════════════════ */
 
-// 25 فئة مقسمة على 4 مجموعات — الأسماء لازم تطابق عمود category في الشيت حرفياً
-const CATEGORY_GROUPS = [
-  { key: "KNOWLEDGE", title: "🧠 المعرفة",  cats: ["التشريح", "Heart Master", "Blood Lab", "Bone Artist", "Medical Abbreviations"] },
-  { key: "EMS",       title: "🚑 الطوارئ",  cats: ["ER Master", "الأدوات والمعدات", "BLS/CPR", "ACLS", "Trauma", "SAMPLE/OPQRST", "العلامات الحيوية"] },
-  { key: "VISUAL",    title: "👁 بصري",     cats: ["Hospital Detective", "X-Ray Detective", "What's This?", "What's Wrong?", "Medical Memory"] },
-  { key: "FUN",       title: "🎉 تحديات",   cats: ["Real or Myth", "5 Second Challenge", "Speed Round", "Audio Challenge", "Video Challenge", "Battle 1v1", "Wild Card", "Final Boss"] }
+// التخصصات والفئات: السيرفر يرسلها من شيت Categories (getCategories)
+// وهذي القائمة احتياطية إذا السيرفر قديم أو الشيت فاضي — الأسماء لازم تطابق عمود category في الأسئلة حرفياً
+const DEFAULT_SPECIALTIES = [
+  { code: "EMS", name: "إسعاف", icon: "🚑", sub: "طوارئ · إنعاش · إصابات" },
+  { code: "NURSING", name: "تمريض", icon: "🩺", sub: "أدوية · محاليل · رعاية" },
+  { code: "PHARMACY", name: "صيدلة", icon: "💊", sub: "أدوية · تداخلات · سموم" },
+  { code: "LAB", name: "مختبرات", icon: "🧪", sub: "تحاليل · دم · ميكروبات" },
+  { code: "RADIOLOGY", name: "أشعة", icon: "🩻", sub: "X-Ray · CT · MRI" },
+  { code: "MEDICINE", name: "طب", icon: "🎓", sub: "تشريح · أمراض · تشخيص" }
 ];
-const CATEGORIES = CATEGORY_GROUPS.flatMap(g => g.cats);
+
+// [category, label, icon, group, specialties] — نفس شيت Categories (data/categories.tsv)
+const DEFAULT_CATEGORIES = [
+  ["Real or Myth", "حقيقة أم خرافة", "✅", "🎉 فئات مشتركة", "ALL"],
+  ["جسمك عجيب", "جسمك عجيب", "🦠", "🎉 فئات مشتركة", "ALL"],
+  ["إيموجي طبي", "إيموجي طبي", "🧩", "🎉 فئات مشتركة", "ALL"],
+  ["مشهد طبي غلط", "مشهد طبي غلط", "📺", "🎉 فئات مشتركة", "ALL"],
+  ["طب الحيوانات", "طب الحيوانات", "🐾", "🎉 فئات مشتركة", "ALL"],
+  ["مين القاتل؟", "مين القاتل؟", "💀", "🎉 فئات مشتركة", "ALL"],
+  ["5 Second Challenge", "تحدي 5 ثواني", "⏱️", "🎉 فئات مشتركة", "ALL"],
+  ["Speed Round", "الجولة السريعة", "⚡", "🎉 فئات مشتركة", "ALL"],
+  ["Video Challenge", "مثّلها", "🎭", "🎉 فئات مشتركة", "ALL"],
+  ["Battle 1v1", "1 ضد 1", "⚔️", "🎉 فئات مشتركة", "ALL"],
+  ["Medical Memory", "ذاكرة طبية", "🧠", "🎉 فئات مشتركة", "ALL"],
+  ["التشريح", "التشريح", "🫀", "🧠 المعرفة الطبية", "MEDICINE,RADIOLOGY,NURSING,EMS"],
+  ["Bone Artist", "فنان العظام", "🦴", "🧠 المعرفة الطبية", "MEDICINE,RADIOLOGY,EMS"],
+  ["وظائف الأعضاء", "وظائف الأعضاء", "⚙️", "🧠 المعرفة الطبية", "MEDICINE,NURSING,LAB"],
+  ["أمراض شائعة", "أمراض شائعة", "🤒", "🧠 المعرفة الطبية", "MEDICINE,NURSING,PHARMACY"],
+  ["What's Wrong?", "شنو فيه؟", "🕵️", "🧠 المعرفة الطبية", "MEDICINE,NURSING,EMS"],
+  ["Medical Abbreviations", "الاختصارات الطبية", "🔤", "🧠 المعرفة الطبية", "EMS,NURSING,MEDICINE,PHARMACY"],
+  ["Heart Master", "سيد القلب", "💓", "🧠 المعرفة الطبية", "EMS,NURSING,MEDICINE"],
+  ["Blood Lab", "مختبر الدم", "🩸", "🧠 المعرفة الطبية", "LAB,MEDICINE,NURSING,EMS"],
+  ["بلاغ 112", "بلاغ 112", "📞", "🚑 الطوارئ", "EMS,NURSING"],
+  ["ER Master", "سيد الطوارئ", "🚨", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["BLS/CPR", "BLS/CPR", "❤️‍🩹", "🚑 الطوارئ", "ALL"],
+  ["ACLS", "ACLS", "📟", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["Trauma", "الإصابات", "🩹", "🚑 الطوارئ", "EMS,MEDICINE"],
+  ["SAMPLE/OPQRST", "SAMPLE/OPQRST", "📋", "🚑 الطوارئ", "EMS"],
+  ["العلامات الحيوية", "العلامات الحيوية", "📈", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["الأدوات والمعدات", "الأدوات والمعدات", "🧰", "🚑 الطوارئ", "EMS,NURSING"],
+  ["What's This?", "شنو هذا؟", "👀", "🚑 الطوارئ", "EMS,NURSING"],
+  ["Audio Challenge", "تحدي الصوت", "🎧", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["الكوارث والإصابات الجماعية", "الكوارث (MCI)", "🚧", "🚑 الطوارئ", "EMS"],
+  ["الأدوية والجرعات", "الأدوية والجرعات", "💉", "🩺 التمريض", "NURSING,PHARMACY"],
+  ["حسابات المحاليل", "حسابات المحاليل", "🧮", "🩺 التمريض", "NURSING,PHARMACY"],
+  ["IV والكانيولا", "IV والكانيولا", "💧", "🩺 التمريض", "NURSING,EMS"],
+  ["مكافحة العدوى", "مكافحة العدوى", "🧼", "🩺 التمريض", "NURSING,LAB,MEDICINE"],
+  ["العناية بالمريض", "العناية بالمريض", "🛏️", "🩺 التمريض", "NURSING"],
+  ["Hospital Detective", "محقق المستشفى", "🏥", "🩺 التمريض", "NURSING,MEDICINE"],
+  ["الأسماء التجارية", "الأسماء التجارية", "🏷️", "💊 الصيدلة", "PHARMACY,NURSING"],
+  ["عائلات الأدوية", "عائلات الأدوية", "🧬", "💊 الصيدلة", "PHARMACY,MEDICINE"],
+  ["التداخلات الدوائية", "التداخلات الدوائية", "⚠️", "💊 الصيدلة", "PHARMACY"],
+  ["السموم والترياق", "السموم والترياق", "☠️", "💊 الصيدلة", "PHARMACY,EMS,MEDICINE"],
+  ["الأدوية والحمل", "الأدوية والحمل", "🤰", "💊 الصيدلة", "PHARMACY"],
+  ["الميكروبات", "الميكروبات", "🧫", "🧪 المختبرات", "LAB,MEDICINE"],
+  ["فصائل الدم والتبرع", "فصائل الدم والتبرع", "🅰️", "🧪 المختبرات", "LAB,NURSING"],
+  ["قيم التحاليل", "قيم التحاليل", "📊", "🧪 المختبرات", "LAB,NURSING,MEDICINE"],
+  ["أمراض الدم", "أمراض الدم", "🔬", "🧪 المختبرات", "LAB,MEDICINE"],
+  ["X-Ray Detective", "محقق الأشعة", "🩻", "🩻 الأشعة", "RADIOLOGY,MEDICINE,EMS"],
+  ["CT و MRI", "CT و MRI", "🧲", "🩻 الأشعة", "RADIOLOGY"],
+  ["وضعيات التصوير", "وضعيات التصوير", "📐", "🩻 الأشعة", "RADIOLOGY"],
+  ["السلامة الإشعاعية", "السلامة الإشعاعية", "☢️", "🩻 الأشعة", "RADIOLOGY"],
+  ["Final Boss", "السؤال الختامي", "👑", "⭐ خاص", "ALL"]
+].map(([category, label, icon, group, sp]) => ({ category, label, icon, group, specialties: sp.split(",") }));
 
 // حدود اختيار الفئات — العدد لازم يكون زوجي حتى يتساوى عدد الأسئلة للفريقين
 const MIN_CATS    = 4;
@@ -34,7 +90,8 @@ const STEAL_SECONDS     = 20;   // وقت السرقة للخصم
 const FIRE_STREAK       = 3;    // كم إجابة متتالية حتى يصير الفريق 🔥
 const FIRE_BONUS        = 100;  // نقاط إضافية لكل إجابة صح وهو 🔥
 const FINAL_ROUND_TILES = 4;    // آخر كم خانة تصير مضاعفة
-const FINAL_BOSS_CAT    = "Final Boss";
+const FINAL_BOSS_CAT    = "Final Boss";   // السؤال الختامي بالرهان (مو فئة في اللوحة)
+const BOSS_MIN_BET_CAP  = 500;          // أقل حد أقصى للرهان حتى لو رصيد الفريق قليل
 
 const HELPERS = {
   pit:    { icon: "🕳️", name: "الحفرة",        when: "before", desc: "قبل فتح السؤال: إذا جاوبتوا صح تنخصم نفس النقاط من الخصم" },
@@ -58,6 +115,8 @@ let currentGame = null;
 let Q           = null;               // السؤال المفتوح حالياً
 
 let pendingTeams     = null;          // أسماء الفريقين قبل بدء اللعب
+let pendingSpecialty = null;          // التخصص المختار للمباراة
+let catalog          = null;          // { specialties, categories } من السيرفر أو الاحتياطي
 let activeCategories = [];            // الفئات المختارة للمباراة الحالية
 const selectedCats   = new Set();     // اختيار صفحة الفئات
 
@@ -75,7 +134,9 @@ function freshGameState(pool) {
     bestStreak: { 1: 0, 2: 0 },
     stats:      { 1: stats(), 2: stats() },
     surprises:  {},
-    totalTiles: 0
+    totalTiles: 0,
+    finalBoss:  false,                  // فيه سؤال ختامي بالرهان؟
+    bossDone:   false
   };
 }
 
@@ -551,29 +612,115 @@ async function editGames(accountNumber, current) {
    صفحة اختيار الفئات
 ═══════════════════════════════════════════════════════ */
 
-function goToCategories() {
+// ── الفئات من السيرفر (مرة وحدة لكل جلسة) ──
+function normalizeCategory(c) {
+  const sp = Array.isArray(c.specialties) ? c.specialties : String(c.specialties || "ALL").split(/[\s,،]+/);
+  return {
+    category:    String(c.category || "").trim(),
+    label:       String(c.label || c.category || "").trim(),
+    icon:        String(c.icon || ""),
+    group:       String(c.group || "فئات أخرى"),
+    specialties: sp.map(x => String(x).trim().toUpperCase()).filter(Boolean)
+  };
+}
+async function loadCatalog() {
+  if (catalog) return catalog;
+  const r = await apiRequest({ action: "getCategories" });
+  const cats = r?.success && Array.isArray(r.categories) ? r.categories.map(normalizeCategory).filter(c => c.category) : [];
+  catalog = {
+    specialties: r?.success && Array.isArray(r.specialties) && r.specialties.length ? r.specialties : DEFAULT_SPECIALTIES,
+    categories:  cats.length ? cats : DEFAULT_CATEGORIES
+  };
+  return catalog;
+}
+function catInfo(name) {
+  return (catalog?.categories || DEFAULT_CATEGORIES).find(c => c.category === name) || { category: name, label: name, icon: "" };
+}
+function catLabel(name) { const c = catInfo(name); return (c.icon ? c.icon + " " : "") + (c.label || name); }
+function specialtyInfo(code) {
+  return (catalog?.specialties || DEFAULT_SPECIALTIES).find(s => s.code === code) || { code, name: code || "عام", icon: "🩺" };
+}
+function spList(v) {
+  const l = (Array.isArray(v) ? v : String(v ?? "").split(/[\s,،]+/)).map(x => String(x).trim().toUpperCase()).filter(Boolean);
+  return l.length ? l : ["ALL"];
+}
+function matchesSpecialty(v, code) { const l = spList(v); return !code || l.includes("ALL") || l.includes(code); }
+
+// الفئات المتاحة للتخصص (بدون السؤال الختامي — له زر خاص)
+function availableCats() {
+  return (catalog?.categories || DEFAULT_CATEGORIES)
+    .filter(c => c.category !== FINAL_BOSS_CAT && matchesSpecialty(c.specialties, pendingSpecialty));
+}
+
+// ── الخطوة 2: التخصص ──
+async function goToSpecialty() {
   const t1 = el("team1")?.value.trim();
   const t2 = el("team2")?.value.trim();
   if (!t1 || !t2) { setMsg("gameMessage", "أدخل اسمَي الفريقين", "error"); return; }
   if (t1 === t2)  { setMsg("gameMessage", "يجب أن يكون اسم الفريقين مختلفاً", "error"); return; }
-  setMsg("gameMessage", "");
   pendingTeams = { t1, t2 };
+  setMsg("gameMessage", "جاري التحميل…");
+  await loadCatalog();
+  setMsg("gameMessage", "");
+  renderSpecialties();
+  showScreen("specialtyScreen");
+}
 
+function renderSpecialties() {
+  const wrap = el("specialtyGrid"); if (!wrap) return;
+  wrap.innerHTML = "";
+  catalog.specialties.forEach((sp, i) => {
+    const n = (catalog.categories || []).filter(c => c.category !== FINAL_BOSS_CAT && matchesSpecialty(c.specialties, sp.code)).length;
+    const b = document.createElement("button");
+    b.className = "spec-card glass" + (pendingSpecialty === sp.code ? " on" : "");
+    b.style.setProperty("--i", i);
+    b.innerHTML = `<span class="spec-icon">${esc(sp.icon || "🩺")}</span>
+                   <span class="spec-name">${esc(sp.name)}</span>
+                   <span class="spec-sub">${esc(sp.sub || "")}</span>
+                   <span class="spec-count">${n} فئة</span>`;
+    b.onclick = () => pickSpecialty(sp.code);
+    wrap.appendChild(b);
+  });
+}
+
+function pickSpecialty(code) {
+  SFX.play("click");
+  if (pendingSpecialty !== code) selectedCats.clear();
+  pendingSpecialty = code;
+  goToCategories();
+}
+
+// ── الخطوة 3: الفئات ──
+function goToCategories() {
+  if (!pendingTeams || !pendingSpecialty) { showScreen("gameScreen"); return; }
+  const { t1, t2 } = pendingTeams;
+  const sp = specialtyInfo(pendingSpecialty);
   const teamsEl = el("catsTeams");
   if (teamsEl) teamsEl.innerHTML = `<span class="tc t1">${esc(t1)}</span><b>VS</b><span class="tc t2">${esc(t2)}</span>`;
+  const spEl = el("catsSpecialty"); if (spEl) spEl.textContent = sp.icon + " " + sp.name;
   const minEl = el("catsMin"); if (minEl) minEl.textContent = MIN_CATS;
   const maxEl = el("catsMax"); if (maxEl) maxEl.textContent = MAX_CATS;
+  // نشيل أي فئة مختارة ما تتبع هذا التخصص
+  const allowed = new Set(availableCats().map(c => c.category));
+  [...selectedCats].forEach(c => { if (!allowed.has(c)) selectedCats.delete(c); });
   setMsg("categoriesMessage", "");
   renderCategoryPicker();
   showScreen("categoriesScreen");
 }
 
 function backToTeams() { showScreen("gameScreen"); }
+function backToSpecialty() { renderSpecialties(); showScreen("specialtyScreen"); }
 
 function renderCategoryPicker() {
   const wrap = el("catsGroups"); if (!wrap) return;
   wrap.innerHTML = "";
-  CATEGORY_GROUPS.forEach(g => {
+  const groups = [];
+  availableCats().forEach(c => {
+    let g = groups.find(x => x.title === c.group);
+    if (!g) groups.push(g = { title: c.group, cats: [] });
+    g.cats.push(c.category);
+  });
+  groups.forEach(g => {
     const box = document.createElement("div");
     box.className = "cats-group glass";
     const head = document.createElement("div");
@@ -599,8 +746,8 @@ function renderCategoryPicker() {
     grid.className = "cats-grid";
     g.cats.forEach(c => {
       const chip = document.createElement("button");
-      chip.className = "cat-chip" + (selectedCats.has(c) ? " on" : "") + (c === FINAL_BOSS_CAT ? " boss" : "");
-      chip.textContent = c;
+      chip.className = "cat-chip" + (selectedCats.has(c) ? " on" : "");
+      chip.textContent = catLabel(c);
       chip.onclick = () => toggleCat(c);
       grid.appendChild(chip);
     });
@@ -625,7 +772,7 @@ function toggleCat(c) {
 function clearCats() { selectedCats.clear(); setMsg("categoriesMessage", ""); renderCategoryPicker(); }
 function pickRandomCats(n) {
   selectedCats.clear();
-  shuffle(CATEGORIES).slice(0, n).forEach(c => selectedCats.add(c));
+  shuffle(availableCats().map(c => c.category)).slice(0, n).forEach(c => selectedCats.add(c));
   SFX.play("surprise");
   renderCategoryPicker();
 }
@@ -640,8 +787,9 @@ function updateCatsCount() {
 ═══════════════════════════════════════════════════════ */
 
 async function startGame() {
-  if (!pendingTeams) { showScreen("gameScreen"); return; }
+  if (!pendingTeams || !pendingSpecialty) { showScreen("gameScreen"); return; }
   const { t1, t2 } = pendingTeams;
+  const specialty = pendingSpecialty;
 
   if (selectedCats.size < MIN_CATS) {
     setMsg("categoriesMessage", "اختر " + MIN_CATS + " فئات على الأقل", "error");
@@ -655,25 +803,25 @@ async function startGame() {
     setMsg("categoriesMessage", "اختر عدداً زوجياً من الفئات حتى يتساوى عدد الأسئلة للفريقين", "error");
     return;
   }
-  // نحافظ على ترتيب الفئات الأصلي، والـ Final Boss دائماً آخر عمود
-  activeCategories = CATEGORIES.filter(c => selectedCats.has(c) && c !== FINAL_BOSS_CAT);
-  if (selectedCats.has(FINAL_BOSS_CAT)) activeCategories.push(FINAL_BOSS_CAT);
+  // نحافظ على ترتيب الفئات مثل شيت Categories
+  activeCategories = availableCats().map(c => c.category).filter(c => selectedCats.has(c));
 
   const startBtn = el("btnStartPlay");
   if (startBtn) startBtn.disabled = true;
 
   setMsg("categoriesMessage", "جاري تحميل الأسئلة…");
-  const qResult = await apiRequest({ action: "getAllQuestions" });
+  const qResult = await apiRequest({ action: "getAllQuestions", specialty });
   if (!qResult?.success || !Array.isArray(qResult.questions) || !qResult.questions.length) {
     setMsg("categoriesMessage", qResult?.message || "لا توجد أسئلة حالياً، تواصل مع المسؤول", "error");
     if (startBtn) startBtn.disabled = false;
     return;
   }
-  const pool = qResult.questions;
+  // السيرفر الجديد يفلتر على التخصص، وهذا احتياط للسيرفر القديم
+  const pool = qResult.questions.filter(q => matchesSpecialty(q.specialty, specialty));
 
   if (!isAdmin()) {
     setMsg("categoriesMessage", "جاري التحقق…");
-    const result = await apiRequest({ action: "createGame", team1: t1, team2: t2 });
+    const result = await apiRequest({ action: "createGame", team1: t1, team2: t2, specialty });
     if (!result?.success) {
       setMsg("categoriesMessage", result?.message || "تعذّر البدء", "error");
       if (startBtn) startBtn.disabled = false;
@@ -682,9 +830,9 @@ async function startGame() {
     currentUser.gamesRemaining = result.gamesRemaining ?? (currentUser.gamesRemaining - 1);
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
     updateTopbar();
-    currentGame = { gameId: result.gameId, team1: t1, team2: t2 };
+    currentGame = { gameId: result.gameId, team1: t1, team2: t2, specialty };
   } else {
-    currentGame = { gameId: null, team1: t1, team2: t2 };
+    currentGame = { gameId: null, team1: t1, team2: t2, specialty };
   }
 
   if (startBtn) startBtn.disabled = false;
@@ -693,6 +841,7 @@ async function startGame() {
   gameState = freshGameState(pool);
   gameState.totalTiles = activeCategories.length * POINTS.length;
   gameState.surprises  = placeSurprises();
+  gameState.finalBoss  = !!el("bossToggle")?.checked;
   Q = null;
 
   enterBoard();
@@ -701,13 +850,10 @@ async function startGame() {
   toast("🚀 يلا! " + t1 + " يبدأ", "info");
 }
 
-// مفاجآت مخفية: 1 أو 2 حسب حجم اللوحة (مو في Final Boss)
+// مفاجآت مخفية: 1 أو 2 حسب حجم اللوحة
 function placeSurprises() {
   const keys = [];
-  activeCategories.forEach((c, ci) => {
-    if (c === FINAL_BOSS_CAT) return;
-    POINTS.forEach((_, pi) => keys.push(ci + "-" + pi));
-  });
+  activeCategories.forEach((c, ci) => POINTS.forEach((_, pi) => keys.push(ci + "-" + pi)));
   const count = gameState.totalTiles >= 30 ? 2 : 1;
   const types = shuffle(Object.keys(SURPRISES)).slice(0, count);
   const out = {};
@@ -720,6 +866,8 @@ function enterBoard() {
   const bt2 = el("bTeam2"); if (bt2) bt2.textContent = currentGame.team2;
   const s1 = el("score1"); if (s1) s1.textContent = gameState.team1Score;
   const s2 = el("score2"); if (s2) s2.textContent = gameState.team2Score;
+  const sp = el("boardSpecialty");
+  if (sp) { const info = specialtyInfo(currentGame.specialty); sp.textContent = currentGame.specialty ? info.icon + " " + info.name : ""; }
   updateMuteBtn();
   updateScoreboard(false);
   buildBoard();
@@ -735,31 +883,21 @@ function enterBoard() {
 ═══════════════════════════════════════════════════════ */
 
 function tilesLeft() { return gameState.totalTiles - gameState.usedQuestions.length; }
-// الخانات العادية المتبقية (بدون Final Boss) — هي اللي تحدد الجولة الحاسمة
-function normalTilesLeft() {
-  let n = 0;
-  activeCategories.forEach((c, ci) => {
-    if (c === FINAL_BOSS_CAT) return;
-    POINTS.forEach((_, pi) => { if (!gameState.usedQuestions.includes(ci + "-" + pi)) n++; });
-  });
-  return n;
-}
-
 function buildBoard() {
   const board = el("categoryBoard"); if (!board) return;
   board.innerHTML = "";
   const n = activeCategories.length;
   board.style.setProperty("--cols", n <= 6 ? n : Math.ceil(n / 2));
-  const finalRound = normalTilesLeft() <= FINAL_ROUND_TILES;
+  const finalRound = tilesLeft() <= FINAL_ROUND_TILES;
 
   activeCategories.forEach((cat, ci) => {
     const col = document.createElement("div");
-    col.className = "cat-col" + (cat === FINAL_BOSS_CAT ? " boss-col" : "");
+    col.className = "cat-col";
     col.style.setProperty("--i", ci);
 
     const title = document.createElement("div");
     title.className   = "cat-title";
-    title.textContent = cat;
+    title.textContent = catLabel(cat);
     col.appendChild(title);
 
     POINTS.forEach((pts, pi) => {
@@ -769,7 +907,7 @@ function buildBoard() {
       const key = ci + "-" + pi;
       if (gameState.usedQuestions.includes(key)) { btn.classList.add("used"); btn.disabled = true; }
       else {
-        if (finalRound && cat !== FINAL_BOSS_CAT) btn.classList.add("hot");
+        if (finalRound) btn.classList.add("hot");
         btn.onclick = () => openTile(ci, pi, btn);
       }
       col.appendChild(btn);
@@ -778,9 +916,9 @@ function buildBoard() {
     board.appendChild(col);
   });
 
-  const tl = el("tilesLeft"); if (tl) tl.textContent = tilesLeft();
+  const tl = el("tilesLeft"); if (tl) tl.textContent = tilesLeft() + (gameState.finalBoss && !gameState.bossDone ? " + 👑" : "");
   const fb = el("finalRoundBanner");
-  if (fb) fb.style.display = finalRound && normalTilesLeft() > 0 ? "block" : "none";
+  if (fb) fb.style.display = finalRound && tilesLeft() > 0 ? "block" : "none";
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -893,7 +1031,7 @@ function markPlayed(id) {
 
 // يسحب سؤال عشوائي للفئة والنقاط — ويفضّل الأسئلة اللي ما انلعبت قبل على هذا الحساب
 function drawQuestion(cat, pts) {
-  const matches = gameState.pool.filter(q => String(q.category || "").trim() === cat && Number(q.points) === pts);
+  const matches = gameState.pool.filter(q => String(q.category || "").trim() === cat && (pts == null || Number(q.points) === pts));
   if (!matches.length) return null;
   const played = getPlayed();
   const fresh = matches.filter(q => !played.has(String(q.id)));
@@ -911,19 +1049,54 @@ function openTile(ci, pi, btn) {
   const cat    = activeCategories[ci];
   const pts    = POINTS[pi];
   const owner  = gameState.turn;
-  const isBoss = cat === FINAL_BOSS_CAT;
-  const finalRound = !isBoss && normalTilesLeft() <= FINAL_ROUND_TILES;
-  const surprise   = isBoss ? null : (gameState.surprises[key] || null);
+  const finalRound = tilesLeft() <= FINAL_ROUND_TILES;
+  const surprise   = gameState.surprises[key] || null;
 
   btn.classList.add("flipping");
   gameState.usedQuestions.push(key);
 
   const armed = { ...gameState.armed };
   gameState.armed = { pit: false, double: false };
-  if (isBoss || surprise === "gift") refundArmed(owner, armed);
+  if (surprise === "gift") refundArmed(owner, armed);
   else Object.keys(armed).forEach(k => { if (armed[k]) gameState.stats[owner].helpers++; });
 
   const picked = surprise === "gift" ? null : drawQuestion(cat, pts);
+  const base = questionFromRow(picked, cat, pts);
+
+  Q = {
+    ...base, key, category: cat, points: pts, owner,
+    isBoss: false, finalRound, surprise,
+    armed: surprise === "gift" ? { pit: false, double: false } : armed,
+    mult: (surprise === "emergency" ? 2 : 1) * (finalRound ? 2 : 1),
+    phase: "splash", answerShown: false,
+    diag: false, fifty: false, picks: [], gone: [], wrongPicks: [],
+    bets: null, bossJudge: { 1: false, 2: false }, deltas: null
+  };
+
+  renderHelpers();
+  saveGame();
+  playSplash();
+}
+
+// السؤال الختامي بالرهان — ينفتح بعد ما تخلص اللوحة
+function openFinalBoss() {
+  if (Q) return;
+  const picked = drawQuestion(FINAL_BOSS_CAT, null);
+  Q = {
+    ...questionFromRow(picked, FINAL_BOSS_CAT, null), key: "boss", category: FINAL_BOSS_CAT, points: 0,
+    owner: gameState.turn, isBoss: true, finalRound: false, surprise: null,
+    armed: { pit: false, double: false }, mult: 1,
+    phase: "splash", answerShown: false,
+    diag: false, fifty: false, picks: [], gone: [], wrongPicks: [],
+    bets: null, bossJudge: { 1: false, 2: false }, deltas: null
+  };
+  Q.hasChoices = false;   // الرهان يتحكّم فيه الحكم للفريقين
+  renderHelpers();
+  saveGame();
+  playSplash();
+}
+
+function questionFromRow(picked, cat, pts) {
   const base = picked ? {
     id:         picked.id,
     text:       picked.question || "—",
@@ -938,7 +1111,7 @@ function openTile(ci, pi, btn) {
     choiceD:    str(picked.choiceD ?? picked.choice_d)
   } : {
     id: null,
-    text:       `[ سؤال ${cat} — ${pts} نقطة ] — لم يُضَف بعد`,
+    text:       pts ? `[ سؤال ${catInfo(cat).label} — ${pts} نقطة ] — لم يُضَف بعد` : `[ ${catInfo(cat).label} ] — لم يُضَف بعد`,
     answer:     "الإجابة غير مضافة",
     imageUrl: "", audioUrl: "", videoUrl: "",
     hasChoices: false, choiceA: "", choiceB: "", choiceC: "", choiceD: ""
@@ -949,28 +1122,15 @@ function openTile(ci, pi, btn) {
     const letters = ["A", "B", "C", "D"].filter(l => base["choice" + l]);
     if (!letters.includes(base.answer) || letters.length < 2) base.hasChoices = false;
   }
-
-  Q = {
-    ...base, key, category: cat, points: pts, owner,
-    isBoss, finalRound, surprise,
-    armed: isBoss || surprise === "gift" ? { pit: false, double: false } : armed,
-    mult: (surprise === "emergency" ? 2 : 1) * (finalRound ? 2 : 1),
-    phase: "splash", answerShown: false,
-    diag: false, fifty: false, picks: [], gone: [], wrongPicks: [],
-    bets: null, bossJudge: { 1: false, 2: false }, deltas: null
-  };
-
-  renderHelpers();
-  saveGame();
-  playSplash();
+  return base;
 }
 
 function playSplash() {
   const q = Q;
   const sur = q.surprise ? SURPRISES[q.surprise] : null;
   el("splashTag").textContent  = sur ? sur.icon + " " + sur.title : q.isBoss ? "👑 السؤال الأخير" : "دور " + teamName(q.owner);
-  el("splashCat").textContent  = sur ? sur.sub : q.category;
-  el("splashPts").textContent  = (q.points * q.mult) + " نقطة";
+  el("splashCat").textContent  = sur ? sur.sub : q.isBoss ? "Final Boss" : catLabel(q.category);
+  el("splashPts").textContent  = q.isBoss ? "الرهان الكبير" : (q.points * q.mult) + " نقطة";
   el("splashBadges").innerHTML = badgesHtml(q);
   const splash = el("qSplash");
   splash.className = "q-splash show" + (sur ? " surprise s-" + q.surprise : "") + (q.isBoss ? " boss" : "") + " team-" + q.owner;
@@ -1002,7 +1162,6 @@ function badgesHtml(q) {
   if (q.armed?.double)         b.push('<span class="badge gold">2× دبل</span>');
   if (q.diag)                  b.push('<span class="badge cyan">🩺 إجابتين</span>');
   if (q.fifty)                 b.push('<span class="badge cyan">✂️ حذف خيارين</span>');
-  if (q.bets)                  b.push('<span class="badge gold">👑 رهان</span>');
   return b.join("");
 }
 function renderBadges() { const b = el("qBadges"); if (b && Q) b.innerHTML = badgesHtml(Q); }
@@ -1092,8 +1251,8 @@ function renderMedia(q) {
 
 function showQuestionCard() {
   const q = Q;
-  el("qCategory").textContent = q.category;
-  el("qPoints").textContent   = q.isBoss ? "رهان" : (q.points * q.mult) + " نقطة";
+  el("qCategory").textContent = q.isBoss ? "👑 Final Boss" : catLabel(q.category);
+  el("qPoints").textContent   = q.isBoss && q.bets ? `رهان ${q.bets[1]} · ${q.bets[2]}` : (q.points * q.mult) + " نقطة";
   el("qText").textContent     = q.text;
   el("answerText").textContent = answerDisplay(q);
   el("answerArea").style.display = q.answerShown ? "block" : "none";
@@ -1370,24 +1529,36 @@ function closeQuestion() {
 
   const prev = { 1: gameState.team1Score - (q.deltas?.[1] || 0), 2: gameState.team2Score - (q.deltas?.[2] || 0) };
   Q = null;
-  gameState.turn = other(gameState.turn);
+  if (q.isBoss) gameState.bossDone = true;
+  else gameState.turn = other(gameState.turn);
   updateScoreboard(true, prev, q.deltas);
   buildBoard();
   saveGame();
 
-  if (tilesLeft() <= 0) { setTimeout(showWinner, 1300); return; }
-  if (!q.isBoss && normalTilesLeft() === FINAL_ROUND_TILES) {
+  if (q.isBoss || tilesLeft() <= 0) { setTimeout(boardFinished, 1300); return; }
+  if (tilesLeft() === FINAL_ROUND_TILES) {
     setTimeout(() => { SFX.play("fire"); toast("🔥 الجولة الحاسمة بدأت — كل النقاط ×2!", "fire"); }, 600);
   }
 }
 
 /* ═══════════════════════════════════════════════════════
-   FINAL BOSS — الرهان
+   FINAL BOSS — سؤال ختامي واحد بالرهان
 ═══════════════════════════════════════════════════════ */
+
+// بعد آخر خانة: السؤال الختامي (إذا مفعّل وما انلعب) وإلا الفائز
+function boardFinished() {
+  if (gameState.finalBoss && !gameState.bossDone) {
+    SFX.play("fire");
+    toast("👑 خلصت اللوحة… جا وقت السؤال الختامي!", "gold");
+    setTimeout(openFinalBoss, 900);
+    return;
+  }
+  showWinner();
+}
 
 function betMax(team) {
   const s = team === 1 ? gameState.team1Score : gameState.team2Score;
-  return Math.max(s, Q?.points || 0);
+  return Math.max(s, BOSS_MIN_BET_CAP);
 }
 
 function openBets() {
@@ -1523,6 +1694,11 @@ function swapTurn() {
 
 function confirmEndGame() {
   if (Q) return;
+  if (gameState.finalBoss && !gameState.bossDone) {
+    if (!confirm("إنهاء اللوحة والانتقال للسؤال الختامي 👑؟")) return;
+    openFinalBoss();
+    return;
+  }
   if (!confirm("إنهاء المباراة الآن وإعلان النتيجة؟")) return;
   showWinner();
 }
@@ -1669,9 +1845,10 @@ function renderResumeCard() {
   card.style.display = "flex";
 }
 
-function resumeSavedGame() {
+async function resumeSavedGame() {
   const s = loadSavedGame();
   if (!s) { renderResumeCard(); return; }
+  await loadCatalog();   // عشان أسماء وأيقونات الفئات
   currentGame      = s.currentGame;
   activeCategories = s.activeCategories;
   gameState        = s.gameState;
@@ -1774,6 +1951,8 @@ function logout() {
   stopConfetti();
   ["questionOverlay", "betOverlay", "keysOverlay", "winnerOverlay"].forEach(id => showOverlay(id, false));
   currentUser = currentGame = Q = null;
+  catalog = null;
+  pendingSpecialty = null;
   gameState = freshGameState([]);
   localStorage.removeItem("currentUser");
   ["loginAccount", "loginCode"].forEach(id => { const i = el(id); if (i) i.value = ""; });

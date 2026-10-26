@@ -358,9 +358,6 @@ input::placeholder { color: var(--dim); }
   width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
   font-size: .75rem; color: #04121c; background: var(--cyan);
 }
-.cat-chip.boss { border-color: rgba(251, 191, 36, .35); }
-.cat-chip.boss.on { border-color: var(--gold); background: rgba(251, 191, 36, .12); box-shadow: 0 0 0 1px var(--gold) inset, 0 8px 24px rgba(251, 191, 36, .25); }
-.cat-chip.boss.on::after { background: var(--gold); }
 @keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
 .cats-bar {
   position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
@@ -498,8 +495,6 @@ input::placeholder { color: var(--dim); }
   border: 1px solid rgba(34, 211, 238, .3);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
 }
-.boss-col .cat-title { background: linear-gradient(160deg, rgba(251, 191, 36, .22), rgba(251, 191, 36, .05)); border-color: rgba(251, 191, 36, .5); color: #fde68a; }
-.boss-col .cat-title::before { content: "👑 "; }
 
 .pts-btn {
   --c1: #0e7490; --c2: #22d3ee;
@@ -858,3 +853,39 @@ input::placeholder { color: var(--dim); }
 
 /* أسماء الفئات الإنجليزية تنعرض باتجاهها الصحيح (What's Wrong? بدل ?What's Wrong) */
 .cat-chip, .cat-title, .q-cat-tag, .splash-cat, .team-name, .tc, #currentTurn { unicode-bidi: plaintext; }
+
+/* ═══ اختيار التخصص ═══ */
+.spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; max-width: 900px; margin: 0 auto; }
+.spec-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  padding: 26px 16px; border-radius: var(--r-lg);
+  animation: colIn .5s var(--ease) backwards; animation-delay: calc(var(--i) * 60ms);
+  transition: transform .25s var(--ease), border-color .25s, box-shadow .25s;
+}
+.spec-card:hover { transform: translateY(-6px); border-color: var(--cyan); box-shadow: 0 20px 50px rgba(34, 211, 238, .3); }
+.spec-card.on { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan) inset, 0 16px 40px rgba(34, 211, 238, .3); }
+.spec-icon { font-size: 3rem; line-height: 1.1; filter: drop-shadow(0 0 16px rgba(34, 211, 238, .35)); }
+.spec-name { font-size: 1.35rem; font-weight: 900; }
+.spec-sub { color: var(--muted); font-size: .85rem; unicode-bidi: plaintext; }
+.spec-count { margin-top: 6px; padding: 2px 12px; border-radius: 999px; font-size: .75rem; font-weight: 800; color: var(--cyan); background: rgba(34, 211, 238, .1); border: 1px solid rgba(34, 211, 238, .3); }
+.spec-pill {
+  margin: 4px 0 8px; padding: 5px 16px; border-radius: 999px; font-weight: 900;
+  background: rgba(34, 211, 238, .12); border: 1px solid rgba(34, 211, 238, .45); color: #a5f3fc;
+}
+.spec-pill:hover { background: rgba(34, 211, 238, .2); }
+.board-spec { color: #a5f3fc; font-weight: 800; }
+
+/* زر السؤال الختامي */
+.boss-toggle {
+  display: flex; align-items: center; gap: 14px; margin: 4px 0 16px; padding: 16px 18px;
+  border-radius: var(--r-lg); cursor: pointer; border-color: rgba(251, 191, 36, .4); box-shadow: none;
+}
+.boss-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.bt-switch { position: relative; flex-shrink: 0; width: 52px; height: 30px; border-radius: 999px; background: rgba(255, 255, 255, .12); transition: background .25s; }
+.bt-switch::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .25s var(--ease); }
+.boss-toggle input:checked + .bt-switch { background: linear-gradient(90deg, #b45309, var(--gold)); box-shadow: 0 0 16px rgba(251, 191, 36, .5); }
+.boss-toggle input:checked + .bt-switch::after { transform: translateX(-22px); }
+.boss-toggle input:focus-visible + .bt-switch { outline: 2px solid var(--gold); outline-offset: 2px; }
+.bt-text { display: flex; flex-direction: column; }
+.bt-text b { color: #fde68a; }
+.bt-text small { color: var(--muted); font-size: .82rem; }
