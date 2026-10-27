@@ -1,0 +1,751 @@
+id	category	points	question	answer	active	hasChoices	choiceA	choiceB	choiceC	choiceD	imageUrl	audioUrl	videoUrl	specialty
+Q001	التشريح	100	🧩 واحد دخيل! ثلاثة منهم عظام في اليد… منو الغريب؟	C	TRUE	TRUE	Lunate	Trapezium	Talus	Scaphoid				ALL
+Q002	التشريح	200	🕵️ 3 أدلة: (1) أكبر عضو داخلي صلب (2) يصنع العصارة الصفراوية (3) تحت الحجاب الحاجز يمين. منو هو؟	الكبد (Liver)	TRUE	FALSE								ALL
+Q003	التشريح	300	⏱️ ارسم طريق الدم بصوت عالي: يبدأ من الأذين الأيمن… ولين يطلع للجسم. كل غلطة = خسارة!	RA ← Tricuspid ← RV ← Pulmonary valve ← Pulmonary artery ← الرئة ← Pulmonary veins ← LA ← Mitral ← LV ← Aortic valve ← Aorta	TRUE	FALSE								ALL
+Q004	التشريح	400	🔥 عصب واحد لو انقطع فوق C5 المريض يوقف تنفسه… منو؟	A	TRUE	TRUE	Phrenic nerve	Vagus nerve	Accessory nerve	Intercostal nerves				ALL
+Q005	التشريح	500	💡 عظمة وحدة في جسمك ما تتمفصل مع أي عظمة ثانية أبداً… وين هي؟	Hyoid bone (العظم اللامي) في الرقبة — معلّقة بالعضلات والأربطة بس	TRUE	FALSE								ALL
+Q006	Heart Master	100	👀 ركّز في الشاشة… هالقلب مرتاح ولا فيه مشكلة؟	A	TRUE	TRUE	Normal Sinus Rhythm	Ventricular Tachycardia	Asystole	Atrial Fibrillation	gen:ecg_normal			ALL
+Q007	Heart Master	200	🫀 إيقاع ما له نظام… وما فيه موجة P واضحة. شنو اسمه؟	A	TRUE	TRUE	Atrial Fibrillation	Sinus Bradycardia	Ventricular Fibrillation	SVT	gen:ecg_afib			ALL
+Q008	Heart Master	300	🚨 مريض ألم صدر وهذا تخطيطه… ارتفاع واضح بعد الـ QRS. شنو التشخيص؟	B	TRUE	TRUE	Hypokalemia	STEMI	Normal ECG	1st degree AV block	gen:ecg_stelev			ALL
+Q009	Heart Master	400	⚡ نبض 190 منتظم وQRS ضيق، المريض واعي وضغطه زين. أول تدخل؟	C	TRUE	TRUE	Start CPR	Atropine 1 mg	Vagal maneuvers	Defibrillation	gen:ecg_svt			ALL
+Q010	Heart Master	500	🕵️ لغز: صوت القلب Lub-Dub… الـ Lub (S1) هو إغلاق أي صمامين؟	S1 = إغلاق الصمامين الأذينيين البطينيين: Mitral + Tricuspid (و S2 = Aortic + Pulmonary)	TRUE	FALSE								ALL
+Q011	Blood Lab	100	🩸 سحبت CBC… أي لون أنبوب تاخذ في أغلب المستشفيات؟	B	TRUE	TRUE	أحمر	بنفسجي / Lavender (EDTA)	أزرق فاتح	رمادي				ALL
+Q012	Blood Lab	200	🍬 سكر المريض 45 mg/dL، يعرق ومتلخبط بس يقدر يبلع… شنو الحالة؟ وشنو تعطيه أول؟	Hypoglycemia — سكر بالفم (Oral glucose) لأنه واعي ويقدر يبلع. لو ما يقدر يبلع: Dextrose IV أو Glucagon IM	TRUE	FALSE								ALL
+Q013	Blood Lab	300	🧩 دخيل! واحد من هذول مو من كريات الدم البيضاء:	D	TRUE	TRUE	Lymphocyte	Neutrophil	Monocyte	Platelet				ALL
+Q014	Blood Lab	400	🧪 بوتاسيوم 7.0 والـ ECG فيه موجات T عالية مدببة… أول دوا يحمي القلب فوراً؟	D	TRUE	TRUE	Sodium bicarbonate	Salbutamol	Insulin + Dextrose	Calcium (gluconate/chloride)				ALL
+Q015	Blood Lab	500	💡 فصيلة تعطي كريات حمراء لأي أحد، وفصيلة تقدر تاخذ من أي أحد. اذكر الثنتين!	O سالب = المعطي العام 🩸 | AB موجب = المستقبل العام	TRUE	FALSE								ALL
+Q016	Bone Artist	100	🦴 كم عظمة في جسم الإنسان البالغ؟	B	TRUE	TRUE	300	206	212	198				ALL
+Q017	Bone Artist	200	🕵️ أطول وأقوى عظمة في الجسم… وكسرها ممكن ينزّف أكثر من لتر دم. منو؟	Femur (عظم الفخذ)	TRUE	FALSE								ALL
+Q018	Bone Artist	300	🤕 طاح على يده وهو فاتحها (FOOSH)، وفي ألم بالـ Snuffbox… أي عظمة نشك فيها؟	A	TRUE	TRUE	Scaphoid	Ulna	Radius	Hamate				ALL
+Q019	Bone Artist	400	🧩 دخيل! واحد من هذول مو من عظام الجمجمة:	A	TRUE	TRUE	Calcaneus	Temporal	Ethmoid	Parietal				ALL
+Q020	Bone Artist	500	💡 الرضفة (Patella) عظمة من نوع خاص… تنمو داخل وتر. شنو اسم هالنوع؟	Sesamoid bone (عظم سمسماني)	TRUE	FALSE								ALL
+Q021	Medical Abbreviations	100	🔐 فك الشفرة: NPO	Nil Per Os — ممنوع أي شي بالفم	TRUE	FALSE								ALL
+Q022	Medical Abbreviations	200	🔐 PRN و STAT… شنو الفرق بينهم؟	PRN = عند الحاجة | STAT = فوراً	TRUE	FALSE								ALL
+Q023	Medical Abbreviations	300	😅 لقيت في ملف المريض: SOB… لا تفكر غلط! شنو معناها؟	Shortness Of Breath — ضيق تنفس 😂	TRUE	FALSE								ALL
+Q024	Medical Abbreviations	400	🗣️ HEENT… قول الخمس كلمات بدون ما توقف!	Head, Eyes, Ears, Nose, Throat	TRUE	FALSE								ALL
+Q025	Medical Abbreviations	500	🔥 MONA كانت تنعطى لكل ألم صدر زمان… اذكر الأربعة، وأي حرف ما عاد روتيني للكل اليوم؟	Morphine – Oxygen – Nitroglycerin – Aspirin | الـ Oxygen ما يُعطى إلا إذا SpO2 أقل من 90% تقريباً	TRUE	FALSE								ALL
+Q026	ER Master	100	🚨 وصلك مريضين: واحد يصرخ من الألم، والثاني ساكت ومزرق في الزاوية… منو تشوف أول؟ وليش؟	الساكت المزرق! اللي يصرخ مجرى الهوا عنده مفتوح ويتنفس — الساكت ممكن ما يتنفس	TRUE	FALSE								ALL
+Q027	ER Master	200	🥜 أكل مكسرات: شفايفه متورمة، صفير بالصدر، وضغطه نازل… الدواء الأول؟ ووين تعطيه؟	Epinephrine IM في الفخذ الخارجي (0.3–0.5 mg للبالغ من تركيز 1 mg/mL)	TRUE	FALSE								ALL
+Q028	ER Master	300	🏷️ START Triage: مريض يمشي ويتكلم وعنده جرح بسيط… شنو لونه؟	A	TRUE	TRUE	أخضر	أصفر	أحمر	أسود				ALL
+Q029	ER Master	400	🕵️ 3 أدلة: (1) نفس سريع وعميق (2) ريحة فواكه في النفس (3) سكر 480. شنو التشخيص؟	DKA (Diabetic Ketoacidosis) — والنفس اسمه Kussmaul	TRUE	FALSE								ALL
+Q030	ER Master	500	🔥 مريض ألم صدر، بغيت تعطيه Nitroglycerin… بس قال إنه أخذ Viagra أمس! شنو الخطر؟	هبوط ضغط شديد وخطير — النترات ممنوعة خلال 24 ساعة من Sildenafil (و48 ساعة من Tadalafil)	TRUE	FALSE								ALL
+Q031	الأدوات والمعدات	100	🔧 هالجهاز يقيس شنو؟	B	TRUE	TRUE	ضغط الدم	الأكسجين في الدم + النبض	السكر	الحرارة	gen:img_pulseox			ALL
+Q032	الأدوات والمعدات	200	🫁 شنو اسم هالجهاز؟ وكل كم ثانية تعطي نفس لبالغ عنده نبض بس ما يتنفس؟	BVM (Bag-Valve-Mask) — نفس كل 6 ثواني (10 بالدقيقة)	TRUE	FALSE					gen:img_bvm			ALL
+Q033	الأدوات والمعدات	300	📏 الـ OPA (الأنبوب الفموي)… شلون تختار المقاس الصح؟ ولمنو ممنوع؟	من زاوية الفم إلى شحمة الأذن (أو زاوية الفك) — ممنوع إذا عنده Gag reflex (يعني واعي)	TRUE	FALSE								ALL
+Q034	الأدوات والمعدات	400	😷 قناع NRB… كم لتر بالدقيقة؟ وتقريباً كم نسبة الأكسجين اللي يوصل؟	10–15 لتر/دقيقة — يوصل لحد 90% تقريباً (والكيس لازم يكون منفوخ)	TRUE	FALSE								ALL
+Q035	الأدوات والمعدات	500	⚡ الـ AED قال: No shock advised… والمريض ما عنده نبض! شنو تسوي؟	ترجع للضغطات فوراً لمدة دقيقتين — الإيقاع غالباً Asystole أو PEA (غير قابل للصدمة)	TRUE	FALSE								ALL
+Q036	BLS/CPR	100	💪 عمق الضغطات للبالغ؟	D	TRUE	TRUE	2 سم	10 سم	3 سم	5–6 سم				ALL
+Q037	BLS/CPR	200	🎵 كم ضغطة بالدقيقة؟ واذكر أغنية مشهورة على نفس الإيقاع!	100–120 بالدقيقة — Stayin' Alive 🕺	TRUE	FALSE								ALL
+Q038	BLS/CPR	300	👶 منقذ واحد ينعش رضيع… كم ضغطة مقابل كم نفس؟	C	TRUE	TRUE	15:2	5:1	30:2	3:1				ALL
+Q039	BLS/CPR	400	🔥 شخص طاح قدامك ويطلع منه نفس متقطع مثل الشهقة (Gasping)… يعني يتنفس؟	لا! هذا Agonal breathing = توقف قلب → ابدأ CPR فوراً	TRUE	FALSE								ALL
+Q040	BLS/CPR	500	🧠 رتّبها صح قبل الوقت: (أ) ابدأ الضغطات (ب) تأكد من أمان المكان (ج) اطلب مساعدة و AED (د) افحص النبض والتنفس (هـ) ربّت على كتفه وناديه	ب ← هـ ← ج ← د (10 ثواني بالكثير) ← أ	TRUE	FALSE								ALL
+Q041	ACLS	100	💀 المريض بدون نبض وهذا الإيقاع… شنو تسوي؟	B	TRUE	TRUE	Atropine	صدمة فوراً (Shockable)	تنتظر وتراقب	Pacing	gen:ecg_vfib			ALL
+Q042	ACLS	200	📉 خط شبه مستقيم والمريض بدون نبض… تصدمه؟	لا! Asystole غير قابل للصدمة: CPR + Epinephrine 1 mg كل 3–5 دقايق، وتأكد من الأسلاك والـ gain	TRUE	FALSE					gen:ecg_asystole			ALL
+Q043	ACLS	300	💉 جرعة Amiodarone الأولى في VF/pVT؟	D	TRUE	TRUE	1 mg	0.5 mg	150 mg	300 mg				ALL
+Q044	ACLS	400	🐢 نبض 38، المريض دايخ وضغطه 80/50… أول دوا؟	Atropine 1 mg IV (تتكرر كل 3–5 دقايق لحد 3 mg) — لو ما نفع: Pacing أو Epinephrine/Dopamine drip	TRUE	FALSE					gen:ecg_brady			ALL
+Q045	ACLS	500	🧠 الـ Hs & Ts: اذكر 6 منهم قبل ما يخلص الوقت!	Hypovolemia, Hypoxia, H+ (Acidosis), Hypo/Hyperkalemia, Hypothermia | Tension pneumothorax, Tamponade, Toxins, Thrombosis (pulmonary), Thrombosis (coronary)	TRUE	FALSE								ALL
+Q046	Trauma	100	🩸 نزيف شرياني من الفخذ والضغط المباشر ما نفع… الخطوة الجاية؟	Tourniquet فوق الجرح بـ 5–7 سم، تشد لين يوقف النزيف، وتكتب الوقت	TRUE	FALSE								ALL
+Q047	Trauma	200	☠️ ثالوث الموت في الإصابات (Trauma Triad of Death)… اذكر الثلاثة	Hypothermia + Acidosis + Coagulopathy	TRUE	FALSE								ALL
+Q048	Trauma	300	🕵️ بعد حادث: ضيق نفس شديد، القصبة مايلة، ما في أصوات تنفس بجهة، عروق الرقبة منتفخة، والضغط نازل… شنو؟ وشنو العلاج؟	Tension Pneumothorax — Needle decompression فوراً	TRUE	FALSE								ALL
+Q049	Trauma	400	🫀 Beck's Triad: ضغط نازل + عروق رقبة منتفخة + أصوات قلب مكتومة… شنو تدل؟	C	TRUE	TRUE	Hemothorax	Tension Pneumothorax	Cardiac Tamponade	Flail Chest				ALL
+Q050	Trauma	500	🔥 Rule of Nines: بالغ احترقت ذراعه اليمنى كاملة + الجذع الأمامي كامل (صدر وبطن)… كم %؟	27% (الذراع 9% + الجذع الأمامي 18%)	TRUE	FALSE								ALL
+Q051	SAMPLE/OPQRST	100	🔤 في SAMPLE… حرف S وحرف A شنو يعنون؟	S = Signs & Symptoms | A = Allergies	TRUE	FALSE								ALL
+Q052	SAMPLE/OPQRST	200	🔤 في OPQRST… حرف R يعني؟	Radiation — وين ينتشر الألم	TRUE	FALSE								ALL
+Q053	SAMPLE/OPQRST	300	🎭 لعب أدوار! لاعب يصير مريض ألم بطن (الحكم يهمس له القصة)، ولاعب ثاني ياخذ SAMPLE كامل خلال 60 ثانية	الحكم يعطي النقاط إذا سأل الـ 6: Signs/Symptoms, Allergies, Medications, Past history, Last oral intake, Events	TRUE	FALSE								ALL
+Q054	SAMPLE/OPQRST	400	🤔 المريض قال: 'الألم يزيد لما أتنفس بعمق'… هذي المعلومة تحت أي حرف من OPQRST؟	P — Provocation / Palliation (شنو يزيده أو يخففه)	TRUE	FALSE								ALL
+Q055	SAMPLE/OPQRST	500	🕵️ اكتشف الناقص: المسعف سأل: متى بدأ؟ وين ينتشر؟ من 10 كم؟ شنو يزيده؟ شلون تحس فيه؟… نسي حرف واحد من OPQRST. أي حرف؟	T — Time (من متى مستمر / تغيّر مع الوقت؟)	TRUE	FALSE								ALL
+Q056	العلامات الحيوية	100	❤️ النبض الطبيعي للبالغ وهو مرتاح؟	60–100 بالدقيقة	TRUE	FALSE								ALL
+Q057	العلامات الحيوية	200	🫁 التنفس الطبيعي للبالغ بالدقيقة؟	D	TRUE	TRUE	40–60	25–35	4–8	12–20				ALL
+Q058	العلامات الحيوية	300	🧮 حساب سريع: ضغط 120/80… كم الـ Pulse Pressure؟	40 mmHg (120 − 80)	TRUE	FALSE								ALL
+Q059	العلامات الحيوية	400	🕵️ بعد ضربة راس: الضغط يرتفع، النبض ينزل، والتنفس غير منتظم… اسم هالثلاثي؟ وشنو يعني؟	Cushing's Triad — ارتفاع الضغط داخل الجمجمة (ICP) 🚨	TRUE	FALSE								ALL
+Q060	العلامات الحيوية	500	🧮 احسبها بالراس: MAP لضغط 120/60؟	80 mmHg — (120 + 60×2) ÷ 3	TRUE	FALSE								ALL
+Q061	Hospital Detective	100	🕵️ مكان الـ IV متورم، بارد، وشاحب حول الإبرة… شنو صار؟	Infiltration — المحلول طلع برا الوريد. وقف المحلول وشيل الكانيولا	TRUE	FALSE								ALL
+Q062	Hospital Detective	200	🕵️ مريض بعد عملية بيومين: ساق وحدة منتفخة وحمرا ومؤلمة… وفجأة ضيق نفس! شنو تشك؟	DVT تحولت إلى Pulmonary Embolism (جلطة رئوية) 🚨	TRUE	FALSE								ALL
+Q063	Hospital Detective	300	🕵️ مريض سكري أخذ الأنسولين الصبح وما فطر… الساعة 11 يعرق ويرجف ومتلخبط. شنو صار؟	Hypoglycemia — أخذ أنسولين بدون أكل	TRUE	FALSE								ALL
+Q064	Hospital Detective	400	💊 مريض على Warfarin، الـ INR = 8 وما في نزيف… شنو المضاد؟	D	TRUE	TRUE	Protamine	Naloxone	Flumazenil	Vitamin K				ALL
+Q065	Hospital Detective	500	🕵️ 3 أشخاص بنفس الغرفة عندهم صداع ودوخة وغثيان… والأعراض تخف لما يطلعون برا! شنو السبب؟	تسمم أول أكسيد الكربون (CO) 🏠 — وجهاز الـ SpO2 ممكن يقرا طبيعي ويخدعك!	TRUE	FALSE								ALL
+Q066	X-Ray Detective	100	🩻 في الأشعة العادية… شنو اللي يطلع أسود؟	C	TRUE	TRUE	العظم	مادة الصبغة	الهوا	المعدن				ALL
+Q067	X-Ray Detective	200	🩻 أشعة صدر واقف: هلال هوا تحت الحجاب الحاجز… شنو يعني؟	Free air = ثقب في الأمعاء أو المعدة (Perforation) — طوارئ جراحية	TRUE	FALSE								ALL
+Q068	X-Ray Detective	300	🩻 طفل عنده كحة مثل نباح الكلب، وبأشعة الرقبة تضيّق مثل برج الكنيسة… اسم العلامة؟	Steeple Sign — يدل على Croup	TRUE	FALSE								ALL
+Q069	X-Ray Detective	400	🩻 أشعة صدر: جهة كاملة سودا بدون خطوط رئة، والرئة منكمشة على الوسط… شنو؟	Pneumothorax	TRUE	FALSE								ALL
+Q070	X-Ray Detective	500	🪙 طفل بلع عملة: بالأشعة الأمامية تطلع دائرة كاملة، وبالجانبية خط رفيع… وين هي غالباً؟	C	TRUE	TRUE	الرئة	القصبة الهوائية	المريء	المعدة				ALL
+Q071	What's This?	100	👀 شنو هذا؟	Thermometer — مقياس الحرارة 🌡️	TRUE	FALSE					gen:img_thermometer			ALL
+Q072	What's This?	200	👀 شنو هذا؟ وشنو اسم الجزء اللي تدفه بإبهامك؟	Syringe (إبرة) — والجزء اسمه Plunger	TRUE	FALSE					gen:img_syringe			ALL
+Q073	What's This?	300	👀 شنو الجهاز؟ وسؤال إضافي: لو الكفّة صغيرة على الذراع، القراءة تطلع أعلى ولا أقل؟	جهاز الضغط (Sphygmomanometer) — الكفّة الصغيرة تعطي قراءة أعلى من الحقيقية	TRUE	FALSE					gen:img_bpcuff			ALL
+Q074	What's This?	400	👀 شنو هذا؟ وأي واحد من هذول Isotonic: NS 0.9% ولا 3% Saline ولا 0.45% Saline؟	IV fluid bag — الـ Isotonic هو Normal Saline 0.9%	TRUE	FALSE					gen:img_ivbag			ALL
+Q075	What's This?	500	👀 تعرفه أكيد… بس وين تحط الـ Pads للبالغ بالضبط؟	AED — Pad تحت الترقوة اليمنى، وPad على الجنب الأيسر تحت الإبط (Anterolateral)	TRUE	FALSE					gen:img_aed			ALL
+Q076	What's Wrong?	100	🕵️ دليل 1: الوجه مايل من جهة. دليل 2: يد وحدة ضعيفة. دليل 3: كلامه ثقيل. شنو عنده؟	Stroke (جلطة دماغية) — BE-FAST ⏰	TRUE	FALSE								ALL
+Q077	What's Wrong?	200	🕵️ دليل 1: عطش شديد. دليل 2: يبول وايد. دليل 3: نزل وزنه بدون سبب. شنو؟	السكري (Hyperglycemia) — الثلاثي: Polydipsia, Polyuria, Weight loss	TRUE	FALSE								ALL
+Q078	What's Wrong?	300	🕵️ دليل 1: ألم بدأ حول السرة. دليل 2: انتقل لأسفل يمين. دليل 3: ما يقدر يمشي من الألم. شنو؟	Appendicitis (الزايدة) — نقطة McBurney	TRUE	FALSE								ALL
+Q079	What's Wrong?	400	🕵️ دليل 1: حدقات صغيرة جداً (Pinpoint). دليل 2: تنفس 6 بالدقيقة. دليل 3: فاقد الوعي. شنو؟ وشنو الدواء؟	Opioid overdose — Naloxone (Narcan)	TRUE	FALSE								ALL
+Q080	What's Wrong?	500	🕵️ دليل 1: 'أسوأ صداع بحياتي'. دليل 2: بدأ فجأة في ثواني. دليل 3: رقبة متيبسة. شنو؟	Subarachnoid Hemorrhage (نزيف تحت العنكبوتية) 🚨	TRUE	FALSE								ALL
+Q081	Medical Memory	100	🧠 تحدي ذاكرة: الحكم يقرا الأرقام مرة وحدة بس ويغطي الشاشة: 7 – 3 – 9 – 1 – 6 … الفريق يقولها بالعكس!	6 – 1 – 9 – 3 – 7	TRUE	FALSE								ALL
+Q082	Medical Memory	200	🧠 APGAR للمولود… اذكر الخمس كلمات بالترتيب	Appearance – Pulse – Grimace – Activity – Respiration	TRUE	FALSE								ALL
+Q083	Medical Memory	300	🧠 الحكم يقرا مرة وحدة ويغطي الشاشة: Aspirin – Adrenaline – Atropine – Amiodarone – Adenosine … السؤال: أي دوا جا ثالث؟ وأي واحد جا الأخير؟	الثالث: Atropine | الأخير: Adenosine	TRUE	FALSE								ALL
+Q084	Medical Memory	400	🧠 GCS: كم أعلى درجة للعين؟ وللكلام؟ وللحركة؟	العين 4 – الكلام 5 – الحركة 6 = المجموع 15	TRUE	FALSE								ALL
+Q085	Medical Memory	500	🧠 BE-FAST: قول الستة… بدون ما تغلط!	Balance – Eyes – Face – Arms – Speech – Time	TRUE	FALSE								ALL
+Q086	Real or Myth	100	✅ أو ❌ ؟ لازم تحط شي في فم المريض اللي يتشنج عشان ما يبلع لسانه	❌ خرافة! ممنوع تحط أي شي بفمه — بس احمي راسه وخله على جنبه بعد التشنج	TRUE	FALSE								ALL
+Q087	Real or Myth	200	✅ أو ❌ ؟ القلب عنده كهرباء خاصة فيه تخليه ينبض حتى لو انفصل عن الجسم لفترة	✅ حقيقة — اسمها Automaticity (عن طريق الـ SA node)	TRUE	FALSE								ALL
+Q088	Real or Myth	300	✅ أو ❌ ؟ صدمة الـ AED ترجّع القلب اللي واقف تماماً (Flatline)	❌ خرافة! الـ Asystole ما ينصدم — العلاج CPR + Epinephrine	TRUE	FALSE								ALL
+Q089	Real or Myth	400	✅ أو ❌ ؟ الثلج على الحرق أحسن من الماي البارد	❌ خرافة! ماي بارد (مو ثلج) يجري على الحرق لمدة 20 دقيقة	TRUE	FALSE								ALL
+Q090	Real or Myth	500	✅ أو ❌ ؟ إذا أحد نزف من خشمه لازم يرجّع راسه لورا	❌ خرافة! يميل لقدام ويقرص الجزء الطري من الخشم 10–15 دقيقة	TRUE	FALSE								ALL
+Q091	5 Second Challenge	100	⏱️ الحكم يعد 5 ثواني بصوت عالي! اذكر 3 عظام في الرجل	أي 3: Femur, Tibia, Fibula, Patella, Calcaneus, Talus…	TRUE	FALSE								ALL
+Q092	5 Second Challenge	200	⏱️ 5 ثواني! 3 أعراض للجلطة القلبية	أي 3: ألم صدر ضاغط، عرق، ضيق نفس، غثيان، ألم ينتشر للذراع أو الفك	TRUE	FALSE								ALL
+Q093	5 Second Challenge	300	⏱️ 5 ثواني! 3 أسباب لفقدان الوعي	أي 3: هبوط سكر، جلطة دماغية، إغماء، تشنج، جرعة زايدة، إصابة راس، نقص أكسجين	TRUE	FALSE								ALL
+Q094	5 Second Challenge	400	⏱️ 5 ثواني! 3 أدوية موجودة في الـ Crash Cart	أي 3: Epinephrine, Amiodarone, Atropine, Adenosine, Lidocaine, Calcium, Bicarbonate, Dextrose	TRUE	FALSE								ALL
+Q095	5 Second Challenge	500	⏱️ 5 ثواني! 3 أسباب للـ Tachycardia	أي 3: حرارة، ألم، خوف، نزيف/جفاف، نقص أكسجين، SVT، فرط الغدة الدرقية، كافيين	TRUE	FALSE								ALL
+Q096	Speed Round	100	⚡ 5 أسئلة ورا بعض — النقاط إذا جاوبتوا 4 من 5: (1) CPR؟ (2) ECG؟ (3) BP؟ (4) كم رئة عندك؟ (5) شنو العضو اللي يضخ الدم؟	(1) Cardiopulmonary Resuscitation (2) Electrocardiogram (3) Blood Pressure (4) 2 (5) القلب	TRUE	FALSE								ALL
+Q097	Speed Round	200	⚡ يلا بسرعة (4 من 5): (1) كم غرفة بالقلب؟ (2) أكبر شريان؟ (3) أكبر عضو بالجسم؟ (4) حرارة الجسم الطبيعية؟ (5) وين تنصنع خلايا الدم؟	(1) 4 (2) Aorta (3) الجلد (4) حوالي 37° (5) نخاع العظم	TRUE	FALSE								ALL
+Q098	Speed Round	300	⚡ طرق إعطاء الدواء (4 من 5): IV – IM – PO – SL – PR	وريدي – عضلي – بالفم – تحت اللسان – شرجي	TRUE	FALSE								ALL
+Q099	Speed Round	400	⚡ أرقام لازم تعرفها (4 من 5): (1) سكر صايم طبيعي؟ (2) SpO2 طبيعي؟ (3) أقل GCS؟ (4) كم لتر دم في البالغ تقريباً؟ (5) نبض الرضيع الطبيعي تقريباً؟	(1) 70–100 mg/dL (2) 95–100% (3) 3 (4) حوالي 5 لتر (5) 100–160	TRUE	FALSE								ALL
+Q100	Speed Round	500	⚡ المضادات! (4 من 5): عكس الأفيون؟ عكس البنزو؟ عكس الهيبارين؟ عكس الوارفارين؟ دواء SVT المستقر بعد ما فشل الـ Vagal؟	Naloxone – Flumazenil – Protamine – Vitamin K – Adenosine 6 mg	TRUE	FALSE								ALL
+Q101	Audio Challenge	100	🎧 شغّل الصوت واسمع… النبض بطيء، طبيعي، ولا سريع؟	B	TRUE	TRUE	ما في نبض	طبيعي	سريع	بطيء		gen:aud_beep_75		ALL
+Q102	Audio Challenge	200	🎧 هالصوت طالع من شاشة المريض… شنو يعني؟ وشنو أول شي تسويه؟	Flatline — تأكد من المريض والأسلاك فوراً، ولو بدون نبض ابدأ CPR	TRUE	FALSE						gen:aud_flatline		ALL
+Q103	Audio Challenge	300	🎧 هذا صوت تنفس المريض… شنو اسم الصوت؟ وأشهر مرض يسببه؟	Wheezing (صفير) — الربو Asthma	TRUE	FALSE						gen:aud_wheeze		ALL
+Q104	Audio Challenge	400	🎧 النبض هذا ما له أي نظام… أشهر إيقاع يسوي جذي؟	Atrial Fibrillation (AFib)	TRUE	FALSE						gen:aud_beep_irregular		ALL
+Q105	Audio Challenge	500	🎧 بين الـ Lub والـ Dub في صوت زيادة… شنو اسمه؟	Murmur (لغط قلبي) — وهذا Systolic لأنه بين S1 و S2	TRUE	FALSE						gen:aud_murmur		ALL
+Q106	Video Challenge	100	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: غسل اليدين الصحيح	غسل اليدين 🧼	TRUE	FALSE								ALL
+Q107	Video Challenge	200	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: مناورة هيمليك (Heimlich)	Heimlich maneuver	TRUE	FALSE								ALL
+Q108	Video Challenge	300	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: وضعية الإفاقة (Recovery position)	Recovery position	TRUE	FALSE								ALL
+Q109	Video Challenge	400	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: تقليب المريض كقطعة وحدة (Log roll)	Log roll	TRUE	FALSE								ALL
+Q110	Video Challenge	500	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: ربط Tourniquet ثم كتابة الوقت عليه	Tourniquet + كتابة الوقت ⏱️	TRUE	FALSE								ALL
+Q111	Battle 1v1	100	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم ضلع في جسم الإنسان؟	24 ضلع (12 زوج)	TRUE	FALSE								ALL
+Q112	Battle 1v1	200	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: أصغر عظمة في الجسم؟	Stapes (الركابي) في الأذن	TRUE	FALSE								ALL
+Q113	Battle 1v1	300	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: الهرمون اللي ينزّل السكر؟	Insulin	TRUE	FALSE								ALL
+Q114	Battle 1v1	400	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم فقرة عنقية؟	7	TRUE	FALSE								ALL
+Q115	Battle 1v1	500	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: اسم الصمام بين الأذين الأيسر والبطين الأيسر؟	Mitral (Bicuspid)	TRUE	FALSE								ALL
+Q116	Wild Card	100	🎲 بطاقة الحظ… مبروك! 100 نقطة هدية لفريقك بدون سؤال 🎁 (الحكم يضغط على اسم الفريق)	هدية 🎁 — اضغط اسم الفريق صاحب الدور	FALSE	FALSE								ALL
+Q117	Wild Card	200	🎲 بطاقة السرقة! جاوب صح وخذ 200… وإذا غلطت، الفريق الثاني يسرقها: كم ثانية بالكثير تفحص النبض في الـ CPR؟	10 ثواني	FALSE	FALSE								ALL
+Q118	Wild Card	300	🎲 قلبت الطاولة! هالسؤال مو لكم… الفريق الثاني هو اللي يجاوب، وإذا جاوب صح ياخذ النقاط: شنو أول حرف في الـ ABC؟	A — Airway (مجرى الهواء)	FALSE	FALSE								ALL
+Q119	Wild Card	400	🎲 الكل يلعب! أول فريق يذكر 4 ألوان أنابيب دم وشنو تحليل كل واحد ياخذ الـ 400	مثلاً: بنفسجي CBC – أزرق فاتح Coagulation (PT/INR) – أحمر/أصفر Chemistry – رمادي Glucose/Lactate – أخضر Heparin tests	FALSE	FALSE								ALL
+Q120	Wild Card	500	🎲 مخاطرة كبيرة! صح = 500 لكم… غلط = 500 للفريق الثاني 😈: منقذين اثنين ينعشون طفل عمره سنة… نسبة الضغطات للنفخات؟	15:2	FALSE	FALSE								ALL
+Q121	Final Boss	100	👑 السؤال الأخير! مريض 60 سنة، ألم صدر ضاغط ينتشر للفك، يعرق. اذكر 3 تدخلات قبل المستشفى	مثلاً: 12-lead ECG، Aspirin يمضغه (إذا ما عنده حساسية)، Nitroglycerin إذا الضغط فوق 90 وما أخذ Viagra، أكسجين إذا SpO2 أقل من 90%، نقل سريع	TRUE	FALSE								ALL
+Q122	Final Boss	200	👑 السؤال الأخير! حامل 34 أسبوع، ضغط 170/110، صداع… وفجأة تشنجت! التشخيص؟ والدواء؟	Eclampsia — Magnesium Sulfate	TRUE	FALSE								ALL
+Q123	Final Boss	300	👑 السؤال الأخير! طفل 3 سنين، حرارة عالية، لعابه يسيل، جالس مايل لقدام (Tripod)، وصوته مكتوم… التشخيص؟ وشنو أكبر غلط ممكن تسويه؟	Epiglottitis — لا تفحص حلقه ولا تخليه يبكي أو تبطحه! خله بوضعيته ونقل سريع	TRUE	FALSE								ALL
+Q124	Final Boss	400	👑 السؤال الأخير! لقوه في سيارة شغالة داخل كراج مسكّر. الـ SpO2 يقرا 99% بس هو مشوش… ليش القراءة تخدعك؟ وشنو العلاج؟	تسمم CO — الجهاز ما يفرّق بين الأكسجين وأول أكسيد الكربون على الهيموجلوبين. العلاج: 100% أكسجين بالـ NRB (وممكن Hyperbaric)	TRUE	FALSE								ALL
+Q125	Final Boss	500	👑 السؤال الأخير! إنت لحالك و3 مرضى: (1) يصرخ من كسر مفتوح بالساق (2) ما يتنفس حتى بعد فتح مجرى الهوا (3) يتنفس 34 بالدقيقة ونبض الرسغ ما يحس. بـ START Triage: لون كل واحد؟	(1) أصفر 🟡 (2) أسود ⚫ (3) أحمر 🔴	TRUE	FALSE								ALL
+Q126	جسمك عجيب	100	✅ أو ❌؟ معدتك تجدد بطانتها كل 3–5 أيام عشان لا تهضم نفسها	✅ حقيقة — الطبقة المبطنة تتجدد باستمرار وتحمي جدار المعدة من الحمض	TRUE	FALSE								ALL
+Q127	جسمك عجيب	200	🤯 العضو الوحيد اللي يقدر يرجع ينمو حتى لو انشال منه أكثر من نصفه… منو؟	B	TRUE	TRUE	القلب	الكبد	الكلية	البنكرياس				ALL
+Q128	جسمك عجيب	300	✅ أو ❌؟ إنت أطول بحوالي 1 سم الصبح مقارنة بالليل	✅ حقيقة — الأقراص بين الفقرات تنضغط خلال اليوم وترجع تتمدد وإنت نايم	TRUE	FALSE								ALL
+Q129	جسمك عجيب	400	🔢 لو صفّينا كل الأوعية الدموية في جسم البالغ ورا بعض… تقريباً كم طولها؟	C	TRUE	TRUE	1,000 كم	10,000 كم	100,000 كم	1,000,000 كم				ALL
+Q130	جسمك عجيب	500	✅ أو ❌؟ القرنية (Cornea) ما فيها أوعية دموية أبداً وتاخذ الأكسجين مباشرة من الهوا	✅ حقيقة — وعشان كذا تقدر تكون شفافة تماماً	TRUE	FALSE								ALL
+Q131	إيموجي طبي	100	🧩 خمّن الحالة: 🐝 + 🎈 + 😮‍💨	Anaphylaxis — حساسية شديدة (لسعة ← تورّم ← ضيق نفس)	TRUE	FALSE								ALL
+Q132	إيموجي طبي	200	🧩 خمّن الحالة: 🍬 + 🚽 + 💧 + 😩	السكري — سكر عالي + كثرة تبول + عطش + تعب	TRUE	FALSE								ALL
+Q133	إيموجي طبي	300	🧩 خمّن الحالة: 🧠 + ⚡ + 🫨 + 😵	نوبة صرع (Seizure)	TRUE	FALSE								ALL
+Q134	إيموجي طبي	400	🧩 خمّن الحالة: 🍔🍟 + 🔥 + ⬆️ + 😖	ارتجاع المريء (GERD) — حرقة بعد الأكل ترتفع للصدر	TRUE	FALSE								ALL
+Q135	إيموجي طبي	500	🧩 خمّن الحالة: 🦵 + ✈️ (رحلة 12 ساعة) + 🎈 + 😮‍💨	DVT في الساق تحولت لجلطة رئوية (Pulmonary Embolism)	TRUE	FALSE								ALL
+Q136	مشهد طبي غلط	100	🎬 في الفلم: الشاشة Flatline والدكتور يصرخ: صدمة!! يصعقون المريض فيرجع ينبض. شنو الغلط؟	الـ Flatline (Asystole) ما ينصدم — العلاج CPR + Epinephrine	TRUE	FALSE								ALL
+Q137	مشهد طبي غلط	200	🎬 شخص انطعن بسكين بالبطن، وصاحبه سحب السكين بسرعة عشان يساعده. صح ولا غلط؟	❌ غلط! لا تسحب الجسم المغروز — ثبّته مكانه لأنه ممكن يكون ساد النزيف	TRUE	FALSE								ALL
+Q138	مشهد طبي غلط	300	🎬 في المسلسل: يحطون كيس ورق على فم مريض يتنفس بسرعة وشفايفه زرقا. شنو الخطأ؟	الزرقة = نقص أكسجين مو قلق! الكيس يزيد الخطر — يحتاج أكسجين وتقييم فوري	TRUE	FALSE								ALL
+Q139	مشهد طبي غلط	400	🎬 شخص فاقد الوعي، يسكبون ماي بحلقه عشان يصحى. شنو الغلط؟	ممنوع تعطي فاقد الوعي أي شي بالفم — خطر الشرقة (Aspiration). خله على جنبه وتأكد من التنفس	TRUE	FALSE								ALL
+Q140	مشهد طبي غلط	500	🎬 مشهد CPR: الممثل يضغط بيد وحدة على بطن المريض ببطء وذراعه مثنية. طلّع أكبر عدد أغلاط!	1) المكان منتصف الصدر مو البطن 2) اليدين فوق بعض 3) الذراع مستقيمة 4) السرعة 100–120/دقيقة 5) العمق 5–6 سم	TRUE	FALSE								ALL
+Q141	طب الحيوانات	100	🐙 كم قلب عند الأخطبوط؟	C	TRUE	TRUE	1	2	3	8				ALL
+Q142	طب الحيوانات	200	🦒 الزرافة رقبتها طويلة جداً… كم فقرة عنقية عندها؟ (الإنسان عنده 7)	A	TRUE	TRUE	7	14	21	3				ALL
+Q143	طب الحيوانات	300	🐄 كم حجرة في معدة البقرة؟	4 حجرات: Rumen, Reticulum, Omasum, Abomasum	TRUE	FALSE								ALL
+Q144	طب الحيوانات	400	🦈 ✅ أو ❌؟ أسنان القرش تطيح وتطلع غيرها طول حياته، ويستهلك آلاف الأسنان	✅ حقيقة — تتبدل باستمرار طول عمره	TRUE	FALSE								ALL
+Q145	طب الحيوانات	500	🦀 حيوان دمه أزرق، ويستخدمونه لفحص سلامة الأدوية واللقاحات من سموم البكتيريا… منو؟	سلطعون حدوة الحصان (Horseshoe crab) — اختبار LAL	TRUE	FALSE								ALL
+Q146	مين القاتل؟	100	💀 3 بغرفة مسكّرة: صداع ونعاس، الشبابيك مسكرة والدفاية شغالة طول الليل… منو القاتل؟	أول أكسيد الكربون (CO) من الدفاية	TRUE	FALSE								ALL
+Q147	مين القاتل؟	200	💀 شاب بالبر الظهر بالصيف: حرارته 41، متلخبط، وجلده حار ونشف عرقه… منو القاتل؟	ضربة الشمس (Heat stroke) — تبريد فوري ونقل سريع	TRUE	FALSE								ALL
+Q148	مين القاتل؟	300	💀 مزارع: حدقات صغيرة، لعاب وعرق كثير، إسهال، ونبض بطيء… وجنبه علبة مبيد. منو القاتل؟ والترياق؟	تسمم مبيدات فسفورية (Organophosphate) — الترياق Atropine (+ Pralidoxime)	TRUE	FALSE								ALL
+Q149	مين القاتل؟	400	💀 عامل بمصنع طاح فجأة: ضيق نفس شديد، ريحة لوز مر، ودمه الوريدي أحمر فاتح غريب… منو القاتل؟	السيانيد (Cyanide) — يمنع الخلايا تستخدم الأكسجين. الترياق Hydroxocobalamin	TRUE	FALSE								ALL
+Q150	مين القاتل؟	500	💀 بنت أخذت حبوب كثيرة أمس وتقول 'أنا زينة'… بعد يومين صفار والكبد ينهار. منو القاتل؟ والترياق؟	جرعة Paracetamol زايدة — الأعراض تتأخر! الترياق N-Acetylcysteine (NAC)	TRUE	FALSE								ALL
+Q151	وظائف الأعضاء	100	⚙️ منو منظّم ضربات القلب الطبيعي (Pacemaker)؟	B	TRUE	TRUE	AV node	SA node	Bundle of His	Purkinje fibers				ALL
+Q152	وظائف الأعضاء	200	⚙️ وين يصير تبادل الأكسجين وثاني أكسيد الكربون في الرئة؟	الحويصلات الهوائية (Alveoli)	TRUE	FALSE								ALL
+Q153	وظائف الأعضاء	300	⚙️ الهرمون اللي يخلي الكلية تحتفظ بالماي (يقل البول)؟	B	TRUE	TRUE	Insulin	ADH	Glucagon	Thyroxine				ALL
+Q154	وظائف الأعضاء	400	⚙️ الكلية تفرز هرمون يحفّز نخاع العظم يصنع كريات حمراء… شنو اسمه؟ وليش مرضى الفشل الكلوي عندهم أنيميا؟	Erythropoietin (EPO) — الكلية التعبانة تفرز EPO أقل فيقل تصنيع الدم	TRUE	FALSE								ALL
+Q155	وظائف الأعضاء	500	⚙️ Frank-Starling: كل ما زاد امتلاء البطين بالدم قبل الانقباض… شنو يصير لقوة الانقباض؟	تزيد (لحد معين) — كل ما تمدد عضل القلب أكثر صار الضخ أقوى	TRUE	FALSE								ALL
+Q156	أمراض شائعة	100	🤒 مرض مناعي يوقف فيه البنكرياس إفراز الأنسولين، وغالباً يبدأ بالصغر… شنو هو؟	السكري النوع الأول (Type 1 DM)	TRUE	FALSE								ALL
+Q157	أمراض شائعة	200	🤒 'القاتل الصامت': غالباً بدون أعراض بس يسبب جلطات وفشل كلوي… شنو هو؟	ارتفاع ضغط الدم (Hypertension)	TRUE	FALSE								ALL
+Q158	أمراض شائعة	300	🤒 نقص هذا العنصر هو أشهر سبب للأنيميا في العالم:	B	TRUE	TRUE	فيتامين B12	الحديد	حمض الفوليك	الكالسيوم				ALL
+Q159	أمراض شائعة	400	🤒 ألم مفاجئ شديد بإصبع القدم الكبير بالليل، أحمر ومتورم، بعد عزيمة لحم… شنو؟	النقرس (Gout) — ترسب حمض اليوريك	TRUE	FALSE								ALL
+Q160	أمراض شائعة	500	🤒 الربو والـ COPD… اذكر فرقين رئيسيين	الربو: غالباً من الصغر، نوبات، والانسداد يرجع طبيعي | COPD: كبار ومدخنين، تدريجي، والانسداد ما يرجع كامل	TRUE	FALSE								ALL
+Q161	بلاغ 112	100	📞 'ولدي (6 سنين) بلع شي وما يقدر يتكلم ولا يكح!' — عندكم 10 ثواني: أول شي؟	Heimlich (ضغطات بطنية) فوراً لين يطلع الجسم أو يفقد الوعي	TRUE	FALSE								ALL
+Q162	بلاغ 112	200	📞 'أبوي طاح وما يرد ولا يتنفس!' — أول شي تقوله للمتصل؟	ابدأ ضغطات الصدر الحين (CPR بالتوجيه)، شغّل السبيكر، وإذا فيه AED قريب خلهم يجيبونه	TRUE	FALSE								ALL
+Q163	بلاغ 112	300	📞 'أختي تتشنج الحين!' — شنو تقولون لهم يسوون؟	يبعدون الأشياء الخطيرة، يحمون راسها، لا يمسكونها ولا يحطون شي بفمها، يوقّتون النوبة، وبعدها على جنبها. أكثر من 5 دقائق = خطر	TRUE	FALSE								ALL
+Q164	بلاغ 112	400	📞 'ريال ثيابه تشتعل بالمطبخ!' — أول شي؟	Stop, Drop, Roll — يوقف ويطيح ويتدحرج (أو غطوه ببطانية)، بعدها ماي بارد على الحرق 20 دقيقة	TRUE	FALSE								ALL
+Q165	بلاغ 112	500	📞 'ولدي طاح بالمسبح وطلعناه، ما يتنفس!' — شنو اللي يختلف هنا عن الإنعاش العادي؟	الغرق: ابدأ بـ 5 أنفاس إنقاذ أولاً (المشكلة نقص أكسجين) وبعدها CPR	TRUE	FALSE								ALL
+Q166	الكوارث والإصابات الجماعية	100	🚧 شنو يعني MCI؟	Mass Casualty Incident — حادث عدد المصابين فيه أكثر من الإمكانيات المتوفرة	TRUE	FALSE								ALL
+Q167	الكوارث والإصابات الجماعية	200	🚧 START Triage: مصاب ما يتنفس حتى بعد فتح مجرى الهوا… شنو لونه؟	D	TRUE	TRUE	أحمر	أصفر	أخضر	أسود				ALL
+Q168	الكوارث والإصابات الجماعية	300	🚧 أول مسعف يوصل لحادث كبير… يبدأ يعالج أول مصاب يشوفه؟	لا! أول شي: أمان الموقع، تقييم الموقف (Size-up)، طلب دعم، وبعدها الفرز (Triage) — مو العلاج	TRUE	FALSE								ALL
+Q169	الكوارث والإصابات الجماعية	400	🚧 START Triage بعد التنفس: 3 أشياء تقيّمها بسرعة (RPM)… شنو هي؟	R: التنفس (فوق 30 = أحمر) — P: الدورة الدموية (Capillary refill أكثر من 2 ث أو ما في نبض رسغ = أحمر) — M: الوعي (ما ينفذ أوامر بسيطة = أحمر)	TRUE	FALSE								ALL
+Q170	الكوارث والإصابات الجماعية	500	🚧 نظام فرز الأطفال في الحوادث الجماعية اسمه؟ وشنو أهم فرق عن START؟	JumpSTART — الطفل اللي ما يتنفس بعد فتح مجرى الهوا وعنده نبض: تعطيه 5 أنفاس قبل ما تصنّفه أسود	TRUE	FALSE								ALL
+Q171	الأدوية والجرعات	100	💉 الـ Rights في إعطاء الدواء… اذكر أول 5	المريض الصح، الدواء الصح، الجرعة الصح، الطريق الصح، الوقت الصح (ومعها: التوثيق، السبب، الاستجابة…)	TRUE	FALSE								ALL
+Q172	الأدوية والجرعات	200	💉 أأمن موقع لحقن العضل (IM) لأغلب البالغين؟	B	TRUE	TRUE	Dorsogluteal	Ventrogluteal	الساعد	البطن				ALL
+Q173	الأدوية والجرعات	300	💉 مكتوب: Paracetamol 1 g PO q6h PRN… شنو معناها؟ وكم أقصى جرعة باليوم للبالغ؟	1 جرام بالفم كل 6 ساعات عند الحاجة — الأقصى 4 جرام باليوم (أقل لمرضى الكبد)	TRUE	FALSE								ALL
+Q174	الأدوية والجرعات	400	💉 قبل ما تعطي Digoxin لازم تقيس شي… شنو؟ ومتى توقف؟	النبض القمي (Apical pulse) دقيقة كاملة — إذا أقل من 60 للبالغ لا تعطيه وبلّغ الطبيب	TRUE	FALSE								ALL
+Q175	الأدوية والجرعات	500	💉 أي نوع أنسولين تقدر تعطيه IV؟	C	TRUE	TRUE	Glargine	NPH	Regular	Detemir				ALL
+Q176	حسابات المحاليل	100	🧮 1 لتر محلول على 8 ساعات… كم mL بالساعة؟	125 mL/hr (1000 ÷ 8)	TRUE	FALSE								ALL
+Q177	حسابات المحاليل	200	🧮 المطلوب 500 mg والمتوفر 250 mg في 5 mL… كم mL تعطي؟	C	TRUE	TRUE	2.5 mL	5 mL	10 mL	20 mL				ALL
+Q178	حسابات المحاليل	300	🧮 1000 mL على 8 ساعات، والـ Drop factor = 20 قطرة/mL… كم قطرة بالدقيقة؟	حوالي 42 قطرة/دقيقة — (1000 × 20) ÷ 480 دقيقة = 41.7	TRUE	FALSE								ALL
+Q179	حسابات المحاليل	400	🧮 طفل وزنه 20 كجم والجرعة 15 mg/kg… كم mg؟ ولو الشراب 120 mg في 5 mL كم mL؟	300 mg — يعني 12.5 mL	TRUE	FALSE								ALL
+Q180	حسابات المحاليل	500	🧮 Dopamine 400 mg في 250 mL، المطلوب 5 mcg/kg/min لمريض 80 كجم… كم mL/hr؟	15 mL/hr — (5 × 80 × 60 = 24 mg/hr) ÷ 1.6 mg/mL	TRUE	FALSE								ALL
+Q181	IV والكانيولا	100	💧 أي كانيولا أكبر (للنزيف والإنعاش)؟	C	TRUE	TRUE	وردي 20G	أخضر 18G	رمادي 16G	أزرق 22G				ALL
+Q182	IV والكانيولا	200	💧 مكان الكانيولا أحمر، حار، مؤلم، وفيه خط أحمر على مسار الوريد… شنو؟	Phlebitis (التهاب الوريد) — شيل الكانيولا وركّبها بمكان ثاني	TRUE	FALSE								ALL
+Q183	IV والكانيولا	300	💧 هوا دخل من خط الـ IV، وفجأة ضيق نفس وألم صدر… شنو؟ وشلون تخلي المريض؟	Air embolism — سكّر الخط، على جنبه الأيسر وراسه لتحت، أكسجين، وبلّغ فوراً	TRUE	FALSE								ALL
+Q184	IV والكانيولا	400	💧 ليش ما نركب كانيولا بذراع جهة عملية استئصال الثدي (Mastectomy)؟	خطر الوذمة اللمفاوية (Lymphedema) والالتهاب لأن العقد اللمفاوية انشالت	TRUE	FALSE								ALL
+Q185	IV والكانيولا	500	💧 حالة طارئة وما لقيتوا وريد بعد محاولتين… شنو البديل السريع؟	IO (Intraosseous) — داخل العظم، غالباً أعلى الساق (Proximal tibia) أو الكتف (Humeral head)	TRUE	FALSE								ALL
+Q186	مكافحة العدوى	100	🧼 مدة غسل اليدين بالماي والصابون حسب WHO؟	C	TRUE	TRUE	5 ثواني	10 ثواني	40–60 ثانية	5 دقائق				ALL
+Q187	مكافحة العدوى	200	🧼 الـ 5 لحظات لنظافة اليدين (WHO)… اذكرها	قبل لمس المريض، قبل الإجراء المعقم، بعد التعرض لسوائل الجسم، بعد لمس المريض، بعد لمس محيط المريض	TRUE	FALSE								ALL
+Q188	مكافحة العدوى	300	🧼 مريض عنده C. diff… المعقم الكحولي يكفي لليدين؟	لا! الكحول ما يقتل الأبواغ — لازم ماي وصابون + Contact precautions	TRUE	FALSE								ALL
+Q189	مكافحة العدوى	400	🧼 السل (TB) يحتاج أي نوع عزل؟ وأي كمام؟	Airborne isolation — غرفة ضغط سلبي + كمام N95	TRUE	FALSE								ALL
+Q190	مكافحة العدوى	500	🧼 ترتيب لبس معدات الحماية (Donning) الصح؟	Gown ← Mask/N95 ← Goggles ← Gloves (والخلع: Gloves ← Goggles ← Gown ← Mask)	TRUE	FALSE								ALL
+Q191	العناية بالمريض	100	🛏️ مريض طريح الفراش… كل كم تقلّبه عشان تمنع قرح الفراش؟	B	TRUE	TRUE	كل 30 دقيقة	كل ساعتين	كل 8 ساعات	مرة باليوم				ALL
+Q192	العناية بالمريض	200	🛏️ أكثر مكان تطلع فيه قرحة الفراش للمريض النايم على ظهره؟	منطقة العجز (Sacrum) — وبعدها الكعبين	TRUE	FALSE								ALL
+Q193	العناية بالمريض	300	🛏️ مريض بعد جلطة دماغية… قبل ما تعطيه أكل شنو لازم يصير؟	تقييم البلع (Swallow screen) أولاً — وإلى ما يخلص: NPO لتجنب الشرقة	TRUE	FALSE								ALL
+Q194	العناية بالمريض	400	🛏️ وضعية Fowler… كم درجة رفع الراس؟ ولمنو تفيد؟	45–60° (High Fowler 60–90°) — لضيق التنفس والأكل وتقليل الشرقة	TRUE	FALSE								ALL
+Q195	العناية بالمريض	500	🛏️ مقياس Braden… شنو يقيس؟ والدرجة الأقل تعني شنو؟	خطر قرح الفراش — كل ما قلّت الدرجة زاد الخطر (18 أو أقل = خطر)	TRUE	FALSE								ALL
+Q196	الأسماء التجارية	100	🏷️ Panadol اسمه العلمي؟	B	TRUE	TRUE	Ibuprofen	Paracetamol	Aspirin	Diclofenac				ALL
+Q197	الأسماء التجارية	200	🏷️ Brufen اسمه العلمي؟	Ibuprofen	TRUE	FALSE								ALL
+Q198	الأسماء التجارية	300	🏷️ Augmentin عبارة عن دواءين… شنو هم؟	Amoxicillin + Clavulanic acid	TRUE	FALSE								ALL
+Q199	الأسماء التجارية	400	🏷️ Lipitor اسمه العلمي؟ ولأي شي؟	Atorvastatin — لخفض الكوليسترول	TRUE	FALSE								ALL
+Q200	الأسماء التجارية	500	🏷️ Glucophage اسمه العلمي؟ وأشهر عرض جانبي له؟	Metformin — اضطرابات الجهاز الهضمي (إسهال وغثيان)، ونادراً Lactic acidosis	TRUE	FALSE								ALL
+Q201	عائلات الأدوية	100	🧬 الأدوية اللي ينتهي اسمها بـ (olol) مثل Atenolol… من أي عائلة؟	A	TRUE	TRUE	Beta blockers	ACE inhibitors	Statins	PPIs				ALL
+Q202	عائلات الأدوية	200	🧬 اللي ينتهي بـ (pril) مثل Enalapril… عائلتها؟ وأشهر عرض جانبي؟	ACE inhibitors — كحة ناشفة (وممكن Angioedema)	TRUE	FALSE								ALL
+Q203	عائلات الأدوية	300	🧬 اللي ينتهي بـ (prazole) مثل Omeprazole… عائلتها وشنو تسوي؟	PPIs — تقلل حمض المعدة	TRUE	FALSE								ALL
+Q204	عائلات الأدوية	400	🧬 (statin) و (sartan)… كل وحدة لأي شي؟	Statins = كوليسترول | Sartans (ARBs) = ضغط	TRUE	FALSE								ALL
+Q205	عائلات الأدوية	500	🧬 (azepam / azolam) مثل Diazepam و Midazolam… عائلتها؟ والترياق؟	Benzodiazepines — الترياق Flumazenil	TRUE	FALSE								ALL
+Q206	التداخلات الدوائية	100	⚠️ Warfarin + Aspirin… شنو الخطر؟	زيادة خطر النزيف	TRUE	FALSE								ALL
+Q207	التداخلات الدوائية	200	⚠️ ليش ما ينشرب المضاد الحيوي Tetracycline مع الحليب؟	الكالسيوم يرتبط فيه ويقلل امتصاصه	TRUE	FALSE								ALL
+Q208	التداخلات الدوائية	300	⚠️ عصير الجريب فروت مع Simvastatin… شنو يسوي؟	يثبط إنزيم CYP3A4 فيرتفع مستوى الدواء ← خطر تكسر العضلات (Rhabdomyolysis)	TRUE	FALSE								ALL
+Q209	التداخلات الدوائية	400	⚠️ Metronidazole + كحول… شنو يصير؟	تفاعل يشبه Disulfiram: غثيان وترجيع شديد، احمرار، وخفقان	TRUE	FALSE								ALL
+Q210	التداخلات الدوائية	500	⚠️ مريض على SSRI (مثل Fluoxetine) أخذ Tramadol: حرارة، رجفة، تعرق، وتشنج عضلي… شنو المتلازمة؟	Serotonin syndrome	TRUE	FALSE								ALL
+Q211	السموم والترياق	100	☠️ ترياق الأفيون (Opioids)؟	A	TRUE	TRUE	Naloxone	Flumazenil	Atropine	Vitamin K				ALL
+Q212	السموم والترياق	200	☠️ طفل أكل حبوب الحديد مال أمه… شنو الترياق؟	Deferoxamine	TRUE	FALSE								ALL
+Q213	السموم والترياق	300	☠️ حدقات واسعة، جلد ناشف حار، احمرار، احتباس بول، وهلوسة… شنو نوع التسمم؟	Anticholinergic toxicity — 'Hot as a hare, dry as a bone, red as a beet, mad as a hatter'	TRUE	FALSE								ALL
+Q214	السموم والترياق	400	☠️ الفحم النشط (Activated charcoal) ما ينفع مع أي سموم؟ اذكر 2	الحديد، الليثيوم، الكحول، الأحماض والقلويات، الهيدروكربونات	TRUE	FALSE								ALL
+Q215	السموم والترياق	500	☠️ تسمم Beta blocker: نبض بطيء وضغط نازل وما استجاب لـ Atropine… أي ترياق مميز؟	Glucagon (وأيضاً High-dose insulin)	TRUE	FALSE								ALL
+Q216	الأدوية والحمل	100	🤰 ✅ أو ❌؟ Paracetamol من أأمن المسكنات في الحمل	✅ حقيقة — بالجرعات المعتادة	TRUE	FALSE								ALL
+Q217	الأدوية والحمل	200	🤰 أي فيتامين ينعطى قبل وبداية الحمل لمنع تشوهات الأنبوب العصبي؟	B	TRUE	TRUE	فيتامين C	حمض الفوليك	فيتامين A	فيتامين K				ALL
+Q218	الأدوية والحمل	300	🤰 ليش ما ننصح بـ Ibuprofen في الثلث الأخير من الحمل؟	ممكن يسكّر القناة الشريانية (Ductus arteriosus) عند الجنين مبكراً ويقلل السائل الأمنيوسي	TRUE	FALSE								ALL
+Q219	الأدوية والحمل	400	🤰 دواء حب الشباب Isotretinoin (Roaccutane)… ليش يحتاج تحليل حمل ومنع حمل؟	يسبب تشوهات قوية للجنين (Teratogenic)	TRUE	FALSE								ALL
+Q220	الأدوية والحمل	500	🤰 Warfarin ممنوع غالباً في الحمل… شنو البديل الآمن؟	Heparin (خصوصاً LMWH مثل Enoxaparin) لأنه ما يعبر المشيمة	TRUE	FALSE								ALL
+Q221	الميكروبات	100	🧫 البكتيريا اللي تطلع بنفسجية بصبغة جرام اسمها؟	A	TRUE	TRUE	Gram positive	Gram negative	Acid-fast	Spirochete				ALL
+Q222	الميكروبات	200	🧫 ✅ أو ❌؟ المضاد الحيوي يعالج الزكام	❌ خرافة — الزكام فيروسي والمضاد الحيوي للبكتيريا بس	TRUE	FALSE								ALL
+Q223	الميكروبات	300	🧫 بكتيريا مشهورة بالمستشفيات مقاومة للـ Methicillin… شنو اسمها؟	MRSA — Methicillin-resistant Staphylococcus aureus	TRUE	FALSE								ALL
+Q224	الميكروبات	400	🧫 صبغة Ziehl-Neelsen (Acid-fast) نستخدمها أكثر شي للكشف عن أي بكتيريا؟	Mycobacterium tuberculosis (السل)	TRUE	FALSE								ALL
+Q225	الميكروبات	500	🧫 بكتيريا تسبب قرحة المعدة، واللي اكتشفها شرب مزرعتها عشان يثبت كلامه وأخذ نوبل! منو هي؟	Helicobacter pylori — Barry Marshall	TRUE	FALSE								ALL
+Q226	فصائل الدم والتبرع	100	🅰️ كم فصيلة رئيسية في نظام ABO؟ اذكرها	4: A, B, AB, O	TRUE	FALSE								ALL
+Q227	فصائل الدم والتبرع	200	🅰️ مريض فصيلته A موجب… أي كريات حمراء يقدر يستقبل؟	A	TRUE	TRUE	A+ و A- و O+ و O-	A+ بس	AB+ بس	كل الفصائل				ALL
+Q228	فصائل الدم والتبرع	300	🅰️ أخطر مضاعفة فورية لنقل دم غلط؟ وأول شي تسويه؟	Acute hemolytic transfusion reaction — وقّف النقل فوراً، خل الخط مفتوح بمحلول ملحي بخط جديد، وبلّغ وراقب	TRUE	FALSE								ALL
+Q229	فصائل الدم والتبرع	400	🅰️ أم دمها Rh سالب وجنينها موجب… شنو الإبرة اللي تحميها؟ ومن شنو؟	Anti-D (RhoGAM) — تمنع جسمها يصنع أجسام مضادة تهاجم الجنين بالحمل الجاي	TRUE	FALSE								ALL
+Q230	فصائل الدم والتبرع	500	🅰️ كم يوم تقريباً تنحفظ صفائح الدم (Platelets)؟ وبأي حرارة؟	حوالي 5 أيام — بحرارة الغرفة 20–24° مع تحريك مستمر	TRUE	FALSE								ALL
+Q231	قيم التحاليل	100	📊 الهيموجلوبين الطبيعي للرجل البالغ تقريباً؟	B	TRUE	TRUE	5–7 g/dL	13.5–17.5 g/dL	25–30 g/dL	1–2 g/dL				ALL
+Q232	قيم التحاليل	200	📊 الصوديوم الطبيعي بالدم؟	135–145 mEq/L	TRUE	FALSE								ALL
+Q233	قيم التحاليل	300	📊 تحليل HbA1c… شنو يقيس؟ ومن كم يعتبر سكري؟	متوسط السكر آخر 2–3 شهور — 6.5% أو أكثر = سكري	TRUE	FALSE								ALL
+Q234	قيم التحاليل	400	📊 Troponin مرتفع… شنو يدل؟	تلف بعضلة القلب — أهم تحليل لتشخيص الجلطة القلبية	TRUE	FALSE								ALL
+Q235	قيم التحاليل	500	📊 غازات الدم: pH 7.25، PaCO2 60، HCO3 26… شنو التفسير؟	Respiratory acidosis غير معاوض — مثلاً من نقص التنفس أو جرعة أفيون زايدة	TRUE	FALSE								ALL
+Q236	أمراض الدم	100	🔬 مرض وراثي تصير فيه كريات الدم الحمراء على شكل هلال (منجل)… شنو؟	الأنيميا المنجلية (Sickle cell anemia)	TRUE	FALSE								ALL
+Q237	أمراض الدم	200	🔬 الهيموفيليا A ناقص فيها أي عامل تخثر؟	A	TRUE	TRUE	Factor VIII	Factor IX	Factor X	Factor VII				ALL
+Q238	أمراض الدم	300	🔬 نقص G6PD (أنيميا الفول)… شنو يصير لو أكل فول أو أخذ بعض الأدوية؟	تكسر كريات الدم الحمراء (Hemolysis) ← أنيميا وصفار	TRUE	FALSE								ALL
+Q239	أمراض الدم	400	🔬 كريات حمراء صغيرة وباهتة (Microcytic hypochromic)… أشهر سببين؟	نقص الحديد والثلاسيميا	TRUE	FALSE								ALL
+Q240	أمراض الدم	500	🔬 أشهر نوع سرطان دم عند الأطفال؟	A	TRUE	TRUE	ALL	CML	CLL	AML				ALL
+Q241	CT و MRI	100	🧲 أي جهاز يستخدم مغناطيس قوي بدل الأشعة السينية؟	B	TRUE	TRUE	CT	MRI	X-Ray	Fluoroscopy				ALL
+Q242	CT و MRI	200	🧲 مريض عنده منظم ضربات قلب قديم (Pacemaker)… يدخل MRI عادي؟	لا ❌ إلا إذا الجهاز MRI-conditional وبتنسيق — المغناطيس ممكن يخرب الجهاز ويسخّن الأسلاك	TRUE	FALSE								ALL
+Q243	CT و MRI	300	🧲 مريض جلطة دماغية… أول تصوير نسويه؟ وليش؟	CT بدون صبغة — يستبعد النزيف بسرعة قبل إعطاء مذيب الجلطات	TRUE	FALSE								ALL
+Q244	CT و MRI	400	🧲 قبل صبغة الـ CT (Iodinated contrast) شنو تحليل لازم نشيك عليه؟	وظائف الكلى (Creatinine / eGFR) — وأحياناً نوقف Metformin حسب حالة الكلية	TRUE	FALSE								ALL
+Q245	CT و MRI	500	🧲 في MRI: الماي (CSF) يطلع أبيض بأي نوع صور، وأسود بأي نوع؟	أبيض في T2 — أسود في T1 (احفظها: World War 2 = Water White in T2)	TRUE	FALSE								ALL
+Q246	وضعيات التصوير	100	📐 أشعة الصدر الروتينية للمريض الواقف… أي وضعية أفضل؟	A	TRUE	TRUE	PA	AP	Lateral decubitus	Lordotic				ALL
+Q247	وضعيات التصوير	200	📐 ليش PA أحسن من AP في أشعة الصدر؟	القلب أقرب للمستقبِل فما يتكبّر (Magnification أقل) والصورة أدق	TRUE	FALSE								ALL
+Q248	وضعيات التصوير	300	📐 'Decubitus' يعني المريض شلون؟	مستلقي على جنبه والأشعة أفقية — مثلاً لكشف سوائل أو هوا حر	TRUE	FALSE								ALL
+Q249	وضعيات التصوير	400	📐 أشعة Waters view لأي منطقة؟	B	TRUE	TRUE	الركبة	الجيوب الأنفية	الحوض	الكتف				ALL
+Q250	وضعيات التصوير	500	📐 كسر الـ Scaphoid أحياناً ما يبان بالأشعة العادية… أي View نطلب؟ وإذا ما بان؟	Scaphoid view (مع ميلان اليد Ulnar deviation) — وإذا الشك قائم: جبيرة وإعادة أشعة بعد 10–14 يوم أو MRI	TRUE	FALSE								ALL
+Q251	السلامة الإشعاعية	100	☢️ مبدأ ALARA شنو يعني؟	As Low As Reasonably Achievable — أقل جرعة ممكنة	TRUE	FALSE								ALL
+Q252	السلامة الإشعاعية	200	☢️ الثلاث قواعد للحماية من الإشعاع؟	A	TRUE	TRUE	الوقت والمسافة والحماية (Shielding)	الحرارة والضغط والرطوبة	اللون والحجم والوزن	السرعة والاتجاه والزاوية				ALL
+Q253	السلامة الإشعاعية	300	☢️ لو ضاعفت المسافة عن مصدر الإشعاع… الجرعة تقل كم؟	تصير الربع (Inverse square law)	TRUE	FALSE								ALL
+Q254	السلامة الإشعاعية	400	☢️ أكثر أعضاء نحرص نحميها من الإشعاع خصوصاً عند الأطفال؟	الغدد التناسلية والغدة الدرقية وعدسة العين ونخاع العظم	TRUE	FALSE								ALL
+Q255	السلامة الإشعاعية	500	☢️ وحدة قياس الجرعة الفعالة؟ وكم تقريباً جرعة أشعة صدر وحدة؟	Sievert (mSv) — أشعة الصدر حوالي 0.02–0.1 mSv (تساوي أيام من الإشعاع الطبيعي)	TRUE	FALSE								ALL
+Q256	Real or Myth	100	✅ أو ❌؟ الأكل قبل السباحة بساعة يسبب تشنج ويغرّقك	❌ خرافة — ما فيه دليل علمي قوي، بس الأكل الثقيل ممكن يضايقك	TRUE	FALSE								ALL
+Q257	Real or Myth	100	✅ أو ❌؟ طقطقة الأصابع تسبب خشونة المفاصل	❌ خرافة — الصوت من فقاعات غاز بسائل المفصل، والدراسات ما ربطتها بالخشونة	TRUE	FALSE								ALL
+Q258	Real or Myth	200	✅ أو ❌؟ نستخدم 10% بس من دماغنا	❌ خرافة — التصوير يبين نشاط بكل أجزاء الدماغ تقريباً	TRUE	FALSE								ALL
+Q259	Real or Myth	200	✅ أو ❌؟ الجزر يخليك تشوف بالظلام	❌ مبالغة — فيه فيتامين A المهم للعين، بس ما يحسن النظر للي ما عنده نقص	TRUE	FALSE								ALL
+Q260	Real or Myth	300	✅ أو ❌؟ الشعر والأظافر تستمر تطول بعد الموت	❌ خرافة — الجلد ينكمش من الجفاف فيبين كأنها طالت	TRUE	FALSE								ALL
+Q261	Real or Myth	300	✅ أو ❌؟ لسعة قنديل البحر علاجها إنك تبول عليها	❌ خرافة! ممكن تزيد الألم — الصح: خل (Vinegar) لبعض الأنواع أو ماي بحر ثم ماي حار	TRUE	FALSE								ALL
+Q262	Real or Myth	400	✅ أو ❌؟ المصاب بالشارع ما يتحرك أبداً لين يوصل الإسعاف… حتى لو السيارة تحترق	❌ — إذا المكان خطر حرّكه بأمان مع تثبيت الرقبة قدر الإمكان	TRUE	FALSE								ALL
+Q263	Real or Myth	400	✅ أو ❌؟ أغلب حرارة الجسم تطلع من الراس	❌ خرافة — الراس يفقد حرارة تقريباً بنسبة مساحته (حوالي 10%)	TRUE	FALSE								ALL
+Q264	Real or Myth	500	✅ أو ❌؟ بعد ضربة راس لازم تمنع المصاب من النوم نهائياً	❌ مبالغة — المهم التقييم الطبي؛ إذا مستقر يقدر ينام مع مراقبة علامات الخطر (ترجيع، تشوش، صعوبة صحيان)	TRUE	FALSE								ALL
+Q265	Real or Myth	500	✅ أو ❌؟ ممكن تصير جلطة قلبية بدون أي ألم صدر	✅ حقيقة — Silent MI شائعة عند السكريين وكبار السن والنساء (تعب، ضيق نفس، غثيان)	TRUE	FALSE								ALL
+Q266	جسمك عجيب	100	🤯 أقوى عضلة بالنسبة لحجمها في جسمك؟	B	TRUE	TRUE	القلب	الماضغة (Masseter)	الفخذ	اللسان				ALL
+Q267	جسمك عجيب	100	✅ أو ❌؟ المولود عنده عظام أكثر من البالغ	✅ حقيقة — حوالي 270–300 عظمة، وتلتحم مع الوقت لين تصير 206	TRUE	FALSE								ALL
+Q268	جسمك عجيب	200	🤯 كم مرة تقريباً ينبض قلبك باليوم؟	B	TRUE	TRUE	10,000	100,000	1,000,000	10 مليون				ALL
+Q269	جسمك عجيب	200	✅ أو ❌؟ ما تقدر تعطس وعيونك مفتوحة	✅ غالباً — رد فعل لا إرادي يسكّر العيون (ممكن بصعوبة شديدة)	TRUE	FALSE								ALL
+Q270	جسمك عجيب	300	🤯 أنسجة هذا العضو نفسها ما تحس بالألم… عشان كذا فيه عمليات والمريض صاحي!	A	TRUE	TRUE	الدماغ	الجلد	الأسنان	القلب				ALL
+Q271	جسمك عجيب	300	✅ أو ❌؟ جسمك يفقد عشرات الآلاف من خلايا الجلد كل دقيقة	✅ حقيقة — وجزء كبير من غبار البيت خلايا جلد ميتة	TRUE	FALSE								ALL
+Q272	جسمك عجيب	400	🔢 كم لتر هوا تقريباً يتنفس البالغ باليوم؟	C	TRUE	TRUE	100	1,000	11,000	100,000				ALL
+Q273	جسمك عجيب	400	🤯 ليش بصمات الأصابع ما تتطابق حتى عند التوأم المتطابق؟	تتشكل في الرحم بتأثير الضغط ووضعية الجنين وتدفق السائل — مو بس الجينات	TRUE	FALSE								ALL
+Q274	جسمك عجيب	500	✅ أو ❌؟ الدماغ يستهلك حوالي 20% من طاقة الجسم مع إن وزنه 2% بس	✅ حقيقة	TRUE	FALSE								ALL
+Q275	جسمك عجيب	500	🤯 شنو الحمض اللي بمعدتك؟ وكم تقريباً الـ pH؟	Hydrochloric acid (HCl) — pH تقريباً 1.5–3.5	TRUE	FALSE								ALL
+Q276	إيموجي طبي	100	🧩 خمّن الحالة: 🤧 + 🌸 + 👀💧	حساسية الأنف الموسمية (Allergic rhinitis)	TRUE	FALSE								ALL
+Q277	إيموجي طبي	100	🧩 خمّن الحالة: 🦟 + 🌡️🔥 + 🥶	الملاريا — حرارة ورجفة بعد لدغة بعوض	TRUE	FALSE								ALL
+Q278	إيموجي طبي	200	🧩 خمّن الحالة: 🍺 + 🟡 + 🫄 (بطن منتفخ)	تليف الكبد (Cirrhosis) — صفار واستسقاء	TRUE	FALSE								ALL
+Q279	إيموجي طبي	200	🧩 خمّن الحالة: 👴 + 🤲🫨 + 🚶‍♂️🐢	باركنسون (Parkinson's) — رجفة وبطء حركة	TRUE	FALSE								ALL
+Q280	إيموجي طبي	300	🧩 خمّن الحالة: 👵 + 🧠 + 🔄 + 🗝️❓	الزهايمر — ينسى وين حط المفتاح ويعيد نفس السؤال	TRUE	FALSE								ALL
+Q281	إيموجي طبي	300	🧩 خمّن الحالة: 🦋 (بالرقبة) + ⚡ + 😰 + ⚖️⬇️	فرط نشاط الغدة الدرقية (Hyperthyroidism)	TRUE	FALSE								ALL
+Q282	إيموجي طبي	400	🧩 خمّن الحالة: 👵 + 🦴🕳️ + 💥 (كسر من طيحة بسيطة)	هشاشة العظام (Osteoporosis)	TRUE	FALSE								ALL
+Q283	إيموجي طبي	400	🧩 خمّن الحالة: 🍞 + 😖💨 + 🚽	الداء البطني / حساسية القمح (Celiac disease)	TRUE	FALSE								ALL
+Q284	إيموجي طبي	500	🧩 خمّن الحالة: 🌙 + 😴 + 📢 (شخير) + 🫁⛔	انقطاع النفس الانسدادي أثناء النوم (Obstructive sleep apnea)	TRUE	FALSE								ALL
+Q285	إيموجي طبي	500	🧩 خمّن الحالة: 🦠 + 🧠 + 🤕 + 🦒 (رقبة متيبسة) + 💡😣	التهاب السحايا (Meningitis)	TRUE	FALSE								ALL
+Q286	مشهد طبي غلط	100	🎬 البطل انجرح ويصب كحول على الجرح المفتوح وهو يصارخ. هذا الأفضل؟	❌ — الكحول يأذي الأنسجة. الأفضل غسل بماي نظيف أو محلول ملحي وتغطية	TRUE	FALSE								ALL
+Q287	مشهد طبي غلط	100	🎬 شخص يتشنج، وصاحبه يمسكه بقوة عشان يوقف الرجفة. صح؟	❌ — لا تمسكه؛ احمي راسه وأبعد الأشياء ووقّت النوبة	TRUE	FALSE								ALL
+Q288	مشهد طبي غلط	200	🎬 مصاب بحادث سيارة، يسحبونه بسرعة ويقعدونه، والسيارة ما فيها خطر. شنو الغلط؟	تحريك بدون تثبيت الرقبة والعمود الفقري — إلا إذا فيه خطر مثل حريق	TRUE	FALSE								ALL
+Q289	مشهد طبي غلط	200	🎬 لدغة ثعبان: البطل يجرح مكان اللدغة ويمص السم بفمه. صح؟	❌ — لا تجرح ولا تمص ولا تربط تورنيكيه. ثبّت الطرف، خله هادئ، ونقل سريع	TRUE	FALSE								ALL
+Q290	مشهد طبي غلط	300	🎬 مريض حساسية شديدة، يعطونه حبة مضاد هيستامين ويقولون 'بيصير زين'. شنو الغلط؟	Anaphylaxis علاجها الأول Epinephrine IM فوراً — مضاد الهيستامين مساعد بس	TRUE	FALSE								ALL
+Q291	مشهد طبي غلط	300	🎬 شخص يشرق ويكح بقوة، وصاحبه يسوي له Heimlich فوراً. شنو الغلط؟	إذا يكح بقوة = انسداد جزئي؛ شجّعه يكح وراقبه. Heimlich لما ما يقدر يكح ولا يتكلم	TRUE	FALSE								ALL
+Q292	مشهد طبي غلط	400	🎬 الممثل ينعش شخص ويوقف كل شوي يسمع قلبه بأذنه دقيقة كاملة. شنو الغلط؟	فحص النبض ما يزيد عن 10 ثواني، ولازم أقل انقطاع ممكن بالضغطات	TRUE	FALSE								ALL
+Q293	مشهد طبي غلط	400	🎬 حرق كبير، يحطون عليه زبدة ومعجون أسنان. شنو الغلط؟	يحبس الحرارة ويزيد الالتهاب — ماي بارد جاري 20 دقيقة ثم غطاء نظيف	TRUE	FALSE								ALL
+Q294	مشهد طبي غلط	500	🎬 في مسلسل: الدكتور يغرز إبرة أدرينالين مباشرة بالقلب أول شي بالإنعاش. شنو الواقع؟	ما يُستخدم اليوم — الأدرينالين IV أو IO، والأولوية للضغطات والصدمة إذا الإيقاع قابل	TRUE	FALSE								ALL
+Q295	مشهد طبي غلط	500	🎬 شخص فاقد الوعي بعد ما شرب كحول كثير، يخلونه ينام على ظهره يرتاح. شنو الخطر؟	يترجّع ويشرق (Aspiration) — لازم وضعية الإفاقة على الجنب ومراقبة التنفس	TRUE	FALSE								ALL
+Q296	طب الحيوانات	100	🐋 أكبر قلب في العالم عند أي حيوان؟	C	TRUE	TRUE	الفيل	الزرافة	الحوت الأزرق	وحيد القرن				ALL
+Q297	طب الحيوانات	100	🐌 ✅ أو ❌؟ الحلزون عنده آلاف الأسنان	✅ حقيقة — آلاف الأسنان الصغيرة على شي اسمه Radula	TRUE	FALSE								ALL
+Q298	طب الحيوانات	200	🐟 سمكة دمها شفاف بدون هيموجلوبين… وين تعيش؟	سمك الجليد (Icefish) بالقطب الجنوبي	TRUE	FALSE								ALL
+Q299	طب الحيوانات	200	🦇 الخفاش… شلون يشوف بالظلام؟	تحديد الموقع بالصدى (Echolocation) — يطلق أصوات ويسمع ارتدادها	TRUE	FALSE								ALL
+Q300	طب الحيوانات	300	🐝 منتج من النحل يستخدم طبياً بضمادات الحروق والجروح؟	العسل الطبي (Medical-grade honey) — مضاد للبكتيريا	TRUE	FALSE								ALL
+Q301	طب الحيوانات	300	🐍 أول دواء ضغط من عائلة ACE inhibitors اكتشفوه من سم أفعى… شنو اسمه؟	A	TRUE	TRUE	Captopril	Amlodipine	Atenolol	Furosemide				ALL
+Q302	طب الحيوانات	400	🦎 حيوان يقدر يرجّع ينمّي أطرافه وحتى أجزاء من قلبه ودماغه! منو؟	Axolotl (السمندل المكسيكي) — يدرسونه لأبحاث التجدد	TRUE	FALSE								ALL
+Q303	طب الحيوانات	400	🐑 أول حيوان ثديي مستنسخ اسمه؟ وسنة كم؟	النعجة دوللي — 1996	TRUE	FALSE								ALL
+Q304	طب الحيوانات	500	🐕 ✅ أو ❌؟ فيه كلاب مدربة تنبّه مرضى السكري لهبوط السكر بالشم	✅ حقيقة — وفيه أبحاث على كشف بعض السرطانات بالشم	TRUE	FALSE								ALL
+Q305	طب الحيوانات	500	🪱 العلق (Leeches) للحين يُستخدم بالطب… لأي شي؟	بعد عمليات إعادة زراعة الأصابع والأذن — يمص الدم المحتقن ولعابه فيه مضاد تخثر (Hirudin)	TRUE	FALSE								ALL
+Q306	مين القاتل؟	100	💀 طفل جنب علبة منظف تحت المغسلة: حرقان بالفم، لعاب، وما يقدر يبلع… منو القاتل؟ وشنو ما نسوي؟	مادة كاوية (Corrosive) — لا تجبره يترجّع! اتصل بالطوارئ وخذ العلبة	TRUE	FALSE								ALL
+Q307	مين القاتل؟	100	💀 رجل بالبر وقت المطر تحت شجرة، لقوه طايح وعلى جلده حروق شكلها مثل أغصان الشجر… منو القاتل؟	الصاعقة (Lightning) — أخطر شي توقف القلب، ابدأ CPR	TRUE	FALSE								ALL
+Q308	مين القاتل؟	200	💀 غواص طلع بسرعة من العمق: ألم مفاصل، حكة، ودوخة… منو القاتل؟	مرض تخفيف الضغط (Decompression sickness) — أكسجين 100% وغرفة ضغط	TRUE	FALSE								ALL
+Q309	مين القاتل؟	200	💀 متسلق جبل على ارتفاع عالي: صداع شديد، تخبط، ومشي غير متوازن… منو القاتل؟ وأهم علاج؟	وذمة دماغية من المرتفعات (HACE) — النزول فوراً + أكسجين (و Dexamethasone)	TRUE	FALSE								ALL
+Q310	مين القاتل؟	300	💀 شاب رياضي طاح فجأة بالملعب بدون أي ضربة… منو القاتل؟ وشنو ينقذه؟	توقف قلب مفاجئ (مثلاً Hypertrophic cardiomyopathy) — CPR + AED بأسرع وقت	TRUE	FALSE								ALL
+Q311	مين القاتل؟	300	💀 عدّاء بعد ماراثون شرب ماي كثير جداً بدون أملاح: تشوش، صداع، وتشنج… منو القاتل؟	نقص الصوديوم (Hyponatremia)	TRUE	FALSE								ALL
+Q312	مين القاتل؟	400	💀 مزارع جرح رجله بمسمار صدي من أسبوع: الحين فكه ما ينفتح وعضلاته متشنجة… منو القاتل؟	التيتانوس (Tetanus)	TRUE	FALSE								ALL
+Q313	مين القاتل؟	400	💀 عائلة أكلت معلبات منفوخة: بعد يوم رؤية مزدوجة، جفون نازلة، وصعوبة بلع وتنفس… منو القاتل؟	التسمم السجقي (Botulism) — سم يشل العضلات	TRUE	FALSE								ALL
+Q314	مين القاتل؟	500	💀 سكري أخذ جرعة الأنسولين مرتين بالغلط، لقوه الصبح ما يصحى وعرقان وبارد… منو القاتل؟ وأول شي؟	هبوط سكر شديد — قيس السكر، Dextrose IV أو Glucagon IM (لا شي بالفم وهو مو واعي)	TRUE	FALSE								ALL
+Q315	مين القاتل؟	500	💀 مريض انعطى بوتاسيوم IV بسرعة كبيرة… فجأة موجات عريضة على الشاشة ثم توقف. منو القاتل؟	Hyperkalemia حادة — البوتاسيوم ممنوع يُعطى Push، والعلاج Calcium + إنعاش	TRUE	FALSE								ALL
+Q316	5 Second Challenge	100	⏱️ 5 ثواني! اذكر 3 أعضاء داخل البطن	أي 3: الكبد، المعدة، الطحال، البنكرياس، الأمعاء، الكلى، المرارة…	TRUE	FALSE								ALL
+Q317	5 Second Challenge	100	⏱️ 5 ثواني! 3 أشياء بشنطة الإسعافات الأولية	أي 3: شاش، لاصق، قفازات، مقص، رباط ضاغط، معقم…	TRUE	FALSE								ALL
+Q318	5 Second Challenge	200	⏱️ 5 ثواني! 3 علامات للجلطة الدماغية	أي 3: ميلان الوجه، ضعف يد أو رجل، ثقل الكلام، فقد توازن، تغيّر بالرؤية	TRUE	FALSE								ALL
+Q319	5 Second Challenge	200	⏱️ 5 ثواني! 3 فيتامينات	أي 3: A, B, C, D, E, K	TRUE	FALSE								ALL
+Q320	5 Second Challenge	300	⏱️ 5 ثواني! 3 أسباب لألم الصدر غير القلب	أي 3: ارتجاع، التهاب الغضاريف، شد عضلي، جلطة رئوية، Pneumothorax، قلق…	TRUE	FALSE								ALL
+Q321	5 Second Challenge	300	⏱️ 5 ثواني! 3 أعراض لهبوط السكر	أي 3: عرق، رجفة، جوع، دوخة، تشوش، خفقان، عصبية	TRUE	FALSE								ALL
+Q322	5 Second Challenge	400	⏱️ 5 ثواني! 3 أنواع صدمة (Shock)	أي 3: Hypovolemic, Cardiogenic, Septic, Anaphylactic, Neurogenic, Obstructive	TRUE	FALSE								ALL
+Q323	5 Second Challenge	400	⏱️ 5 ثواني! 3 أدوية مسكّنة	أي 3: Paracetamol, Ibuprofen, Diclofenac, Morphine, Tramadol, Aspirin…	TRUE	FALSE								ALL
+Q324	5 Second Challenge	500	⏱️ 5 ثواني! 3 من الـ Rights في إعطاء الدواء	أي 3: المريض، الدواء، الجرعة، الطريق، الوقت، التوثيق	TRUE	FALSE								ALL
+Q325	5 Second Challenge	500	⏱️ 5 ثواني! 3 أسباب لنزيف الأنف	أي 3: جفاف الجو، حك الأنف، ضربة، ضغط عالي، مميعات، حساسية	TRUE	FALSE								ALL
+Q326	Speed Round	100	⚡ (4 من 5): (1) أكبر عضو داخلي؟ (2) كم سن عند البالغ؟ (3) العضو اللي ينقي الدم ويطلع البول؟ (4) العظمة اللي تحمي الدماغ؟ (5) كم لتر ماي تقريباً تحتاج باليوم؟	(1) الكبد (2) 32 (3) الكلية (4) الجمجمة (5) حوالي 2–3 لتر	TRUE	FALSE								ALL
+Q327	Speed Round	100	⚡ (4 من 5) فك الاختصار: (1) ICU (2) ER (3) IV (4) BP (5) HR	(1) Intensive Care Unit (2) Emergency Room (3) Intravenous (4) Blood Pressure (5) Heart Rate	TRUE	FALSE								ALL
+Q328	Speed Round	200	⚡ (4 من 5): (1) فصيلة المعطي العام؟ (2) كم غرفة بالقلب؟ (3) لون أنبوب الـ CBC؟ (4) السكر الصايم الطبيعي؟ (5) الحرارة الطبيعية؟	(1) O سالب (2) 4 (3) بنفسجي (4) 70–100 mg/dL (5) حوالي 37°	TRUE	FALSE								ALL
+Q329	Speed Round	200	⚡ (4 من 5) الأضداد: (1) Tachycardia (2) Hypertension (3) Hyperglycemia (4) Hypothermia (5) Tachypnea	(1) Bradycardia (2) Hypotension (3) Hypoglycemia (4) Hyperthermia (5) Bradypnea	TRUE	FALSE								ALL
+Q330	Speed Round	300	⚡ (4 من 5) يمين ولا يسار؟ (1) الطحال (2) الزايدة (3) الكبد (4) القلب مايل لأي جهة (5) المرارة	(1) يسار (2) يمين (3) يمين (4) يسار (5) يمين	TRUE	FALSE								ALL
+Q331	Speed Round	300	⚡ (4 من 5) المقاطع الطبية: (1) Cardio (2) Neuro (3) Hepato (4) Nephro (5) Gastro	(1) القلب (2) الأعصاب (3) الكبد (4) الكلى (5) المعدة والجهاز الهضمي	TRUE	FALSE								ALL
+Q332	Speed Round	400	⚡ (4 من 5) GCS: (1) أعلى درجة؟ (2) أقل درجة؟ (3) من كم وتحت نفكر بـ Intubation؟ (4) أعلى درجة للحركة؟ (5) أعلى درجة للعين؟	(1) 15 (2) 3 (3) 8 وأقل (4) 6 (5) 4	TRUE	FALSE								ALL
+Q333	Speed Round	400	⚡ (4 من 5) أرقام الإنعاش: (1) نسبة الضغطات للبالغ؟ (2) العمق؟ (3) السرعة؟ (4) كل كم نبدل الضاغط؟ (5) جرعة Epinephrine؟	(1) 30:2 (2) 5–6 سم (3) 100–120 (4) كل 2 دقيقة (5) 1 mg كل 3–5 دقايق	TRUE	FALSE								ALL
+Q334	Speed Round	500	⚡ (4 من 5) الأعصاب القحفية: (1) العصب الأول؟ (2) الثاني؟ (3) العاشر؟ (4) السابع؟ (5) كم عددها؟	(1) Olfactory (2) Optic (3) Vagus (4) Facial (5) 12 زوج	TRUE	FALSE								ALL
+Q335	Speed Round	500	⚡ (4 من 5) القيم الطبيعية: (1) البوتاسيوم (2) الصوديوم (3) الكالسيوم (4) الماغنيسيوم (5) الكلورايد	(1) 3.5–5.0 (2) 135–145 (3) 8.5–10.5 mg/dL (4) 1.7–2.2 mg/dL (5) 96–106 mEq/L	TRUE	FALSE								ALL
+Q336	Video Challenge	100	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: قياس الحرارة	قياس الحرارة 🌡️	TRUE	FALSE								ALL
+Q337	Video Challenge	100	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: الكحة والعطسة الصحيحة بالكوع	الكحة/العطسة بالكوع 🤧	TRUE	FALSE								ALL
+Q338	Video Challenge	200	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: قياس ضغط الدم	قياس ضغط الدم	TRUE	FALSE								ALL
+Q339	Video Challenge	200	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: لبس الكمام والقفازات والروب	لبس معدات الحماية (PPE)	TRUE	FALSE								ALL
+Q340	Video Challenge	300	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: إسعاف رضيع مختنق (ضربات ظهر وضغطات صدر)	Back blows + Chest thrusts للرضيع	TRUE	FALSE								ALL
+Q341	Video Challenge	300	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: تثبيت رقبة المصاب يدوياً	تثبيت الرقبة يدوياً (Manual C-spine)	TRUE	FALSE								ALL
+Q342	Video Challenge	400	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: إعطاء إبرة EpiPen	EpiPen بالفخذ الخارجي	TRUE	FALSE								ALL
+Q343	Video Challenge	400	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: تجبير كسر الذراع	تجبير كسر الذراع (Splint)	TRUE	FALSE								ALL
+Q344	Video Challenge	500	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: حمل المصاب على الكتف (Fireman's carry)	Fireman's carry	TRUE	FALSE								ALL
+Q345	Video Challenge	500	🎬 تحدي تمثيل! لاعب واحد يشوف الكلمة، وباقي الفريق يعطي ظهره للشاشة. يمثّل بدون كلام ولا أصوات خلال 60 ثانية: تهوية BVM بشخصين	تهوية BVM بشخصين — واحد يثبت القناع وواحد يعصر	TRUE	FALSE								ALL
+Q346	Battle 1v1	100	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم لون في فرز START؟ واذكرها	4: أحمر، أصفر، أخضر، أسود	TRUE	FALSE								ALL
+Q347	Battle 1v1	100	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: أكبر عضو في جسم الإنسان؟	الجلد	TRUE	FALSE								ALL
+Q348	Battle 1v1	200	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم فقرة قطنية (Lumbar)؟	5	TRUE	FALSE								ALL
+Q349	Battle 1v1	200	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: اسم العظمة بين الكتف والكوع؟	Humerus (العضد)	TRUE	FALSE								ALL
+Q350	Battle 1v1	300	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم عظمة تقريباً في جمجمة البالغ؟	22	TRUE	FALSE								ALL
+Q351	Battle 1v1	300	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: الهرمون اللي يرفع السكر من البنكرياس؟	Glucagon	TRUE	FALSE								ALL
+Q352	Battle 1v1	400	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: الصمام بين البطين الأيمن والشريان الرئوي؟	Pulmonary valve	TRUE	FALSE								ALL
+Q353	Battle 1v1	400	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: أي فيتامين يحتاجه الجسم للتخثر؟	Vitamin K	TRUE	FALSE								ALL
+Q354	Battle 1v1	500	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: كم لتر دم يضخ القلب بالدقيقة تقريباً (Cardiac output)؟	حوالي 5 لتر/دقيقة	TRUE	FALSE								ALL
+Q355	Battle 1v1	500	⚔️ 1 ضد 1! لاعب من كل فريق قدام بعض، اليدين ورا الظهر… أول واحد يضرب الطاولة يجاوب. لو غلط، الثاني يسرق! السؤال: أطول عصب بالجسم؟	Sciatic nerve (العصب الوركي)	TRUE	FALSE								ALL
+Q356	Medical Memory	100	🧠 الحكم يقرا مرة وحدة ويغطي الشاشة: أحمر – أخضر – أصفر – أسود … الفريق يقولها بالعكس!	أسود – أصفر – أخضر – أحمر	TRUE	FALSE								ALL
+Q357	Medical Memory	100	🧠 ABCDE في التقييم الأولي… اذكرها بالترتيب	Airway – Breathing – Circulation – Disability – Exposure	TRUE	FALSE								ALL
+Q358	Medical Memory	200	🧠 الحكم يقرا مرة وحدة ويغطي الشاشة: 4 – 8 – 1 – 9 – 2 – 7 … الفريق يعيدها بنفس الترتيب	4 – 8 – 1 – 9 – 2 – 7	TRUE	FALSE								ALL
+Q359	Medical Memory	200	🧠 AVPU… اذكر الأربعة	Alert – Voice – Pain – Unresponsive	TRUE	FALSE								ALL
+Q360	Medical Memory	300	🧠 الحكم يقرا مرة: Femur – Tibia – Radius – Ulna – Patella – Humerus … كم وحدة منهم بالرجل؟ واذكرها	3: Femur, Tibia, Patella	TRUE	FALSE								ALL
+Q361	Medical Memory	300	🧠 SLUDGE (أعراض التسمم الفسفوري)… اذكرها	Salivation – Lacrimation – Urination – Defecation – GI upset – Emesis	TRUE	FALSE								ALL
+Q362	Medical Memory	400	🧠 الحكم يقرا مرة: نبض 110، ضغط 90/60، تنفس 24، حرارة 38.5، سكر 140، SpO2 93% … السؤال: كم التنفس؟ وكم الأكسجين؟	التنفس 24 — SpO2 93%	TRUE	FALSE								ALL
+Q363	Medical Memory	400	🧠 DCAP-BTLS (فحص الإصابات)… اذكر الثمانية	Deformities, Contusions, Abrasions, Punctures, Burns, Tenderness, Lacerations, Swelling	TRUE	FALSE								ALL
+Q364	Medical Memory	500	🧠 AEIOU-TIPS (أسباب فقدان الوعي)… اذكر أكبر عدد	Alcohol, Epilepsy/Electrolytes, Insulin, Opiates/Overdose, Uremia | Trauma, Infection, Psychiatric/Poisoning, Stroke/Shock	TRUE	FALSE								ALL
+Q365	Medical Memory	500	🧠 الحكم يقرا مرة: Aspirin 324 – Nitro 0.4 – Epi 0.3 – Atropine 1 – Adenosine 6 … كم جرعة الأتروبين؟ ومنو جرعته 0.4؟	Atropine 1 mg — Nitroglycerin 0.4 mg	TRUE	FALSE								ALL
+Q366	التشريح	100	🫀 كم غرفة في القلب؟ وشنو أسماؤها؟	4: أذين أيمن، أذين أيسر، بطين أيمن، بطين أيسر	TRUE	FALSE								ALL
+Q367	التشريح	100	🧩 أكبر غدة في الجسم؟	A	TRUE	TRUE	الكبد	البنكرياس	الغدة الدرقية	الطحال				ALL
+Q368	التشريح	200	🫁 أي رئة فيها 3 فصوص؟	A	TRUE	TRUE	اليمين	اليسار	الثنتين	ولا وحدة				ALL
+Q369	التشريح	200	🧠 الجزء من الدماغ المسؤول عن التوازن والتناسق؟	المخيخ (Cerebellum)	TRUE	FALSE								ALL
+Q370	التشريح	300	🦴 النخاع الشوكي يمر داخل شنو؟	القناة الفقرية (Vertebral canal) داخل العمود الفقري	TRUE	FALSE								ALL
+Q371	التشريح	300	🫀 أول شرايين تطلع من الأبهر وتغذي القلب نفسه؟	الشرايين التاجية (Coronary arteries)	TRUE	FALSE								ALL
+Q372	التشريح	400	🧠 أي فص بالدماغ مسؤول عن الرؤية؟	D	TRUE	TRUE	Frontal	Parietal	Temporal	Occipital				ALL
+Q373	التشريح	400	🩸 الوريد اللي ينقل الدم من الأمعاء للكبد؟	الوريد البابي الكبدي (Hepatic portal vein)	TRUE	FALSE								ALL
+Q374	التشريح	500	🫁 الجسم الغريب لما ينشرق… غالباً يروح لأي قصبة؟ وليش؟	اليمنى — أعرض وأقصر وأكثر استقامة	TRUE	FALSE								ALL
+Q375	التشريح	500	💪 Rotator cuff… اذكر العضلات الأربع (SITS)	Supraspinatus, Infraspinatus, Teres minor, Subscapularis	TRUE	FALSE								ALL
+Q376	Bone Artist	100	🦴 عظمة الترقوة بالإنجليزي؟	B	TRUE	TRUE	Scapula	Clavicle	Sternum	Patella				ALL
+Q377	Bone Artist	100	🦴 كم ضلع عائم (Floating ribs)؟	زوجين (4 أضلاع): رقم 11 و 12	TRUE	FALSE								ALL
+Q378	Bone Artist	200	🦴 عظمة الكعب اسمها؟	B	TRUE	TRUE	Talus	Calcaneus	Cuboid	Navicular				ALL
+Q379	Bone Artist	200	🦴 العظمة اللي شكلها مثل فراشة بقاعدة الجمجمة؟	Sphenoid	TRUE	FALSE								ALL
+Q380	Bone Artist	300	🦴 كسر Colles' fracture يصير وين؟	نهاية عظمة الكعبرة (Distal radius) — من الطيحة على اليد ممدودة	TRUE	FALSE								ALL
+Q381	Bone Artist	300	🦴 العظمة اللي بين عظمي الحوض من ورا؟	العجز (Sacrum)	TRUE	FALSE								ALL
+Q382	Bone Artist	400	🦴 كسر الحوض ممكن يسبب نزيف داخلي قد شنو؟	C	TRUE	TRUE	100 mL	500 mL	أكثر من لتر وممكن لترين وأكثر	ما ينزف				ALL
+Q383	Bone Artist	400	🦴 الفقرة C1 والفقرة C2 لهم أسماء خاصة… شنو هي؟	C1 = Atlas — C2 = Axis	TRUE	FALSE								ALL
+Q384	Bone Artist	500	🦴 الخلايا اللي تبني العظم والخلايا اللي تهدمه؟	Osteoblasts تبني — Osteoclasts تهدم	TRUE	FALSE								ALL
+Q385	Bone Artist	500	🦴 كسر عنق الفخذ (Hip fracture) عند الكبار… شنو شكل الرجل الكلاسيكي؟	أقصر ومايلة للخارج (Shortened & externally rotated)	TRUE	FALSE								ALL
+Q386	وظائف الأعضاء	100	⚙️ شنو وظيفة كريات الدم الحمراء؟	تنقل الأكسجين عن طريق الهيموجلوبين	TRUE	FALSE								ALL
+Q387	وظائف الأعضاء	100	⚙️ العضلة الرئيسية للتنفس؟	A	TRUE	TRUE	الحجاب الحاجز	عضلات البطن	الصدرية الكبيرة	عضلات الرقبة				ALL
+Q388	وظائف الأعضاء	200	⚙️ وين ينهضم الأكل وينمتص أغلبه؟	الأمعاء الدقيقة (Small intestine)	TRUE	FALSE								ALL
+Q389	وظائف الأعضاء	200	⚙️ الأنسولين تفرزه أي خلايا بالبنكرياس؟	خلايا Beta في جزر لانجرهانز	TRUE	FALSE								ALL
+Q390	وظائف الأعضاء	300	⚙️ الصفراء (Bile): منو ينتجها، وين تنخزن، وشنو تهضم؟	ينتجها الكبد، تنخزن بالمرارة، وتساعد بهضم الدهون	TRUE	FALSE								ALL
+Q391	وظائف الأعضاء	300	⚙️ الجهاز العصبي اللي يشتغل بحالات 'القتال أو الهروب'؟	A	TRUE	TRUE	Sympathetic	Parasympathetic	Somatic	Enteric				ALL
+Q392	وظائف الأعضاء	400	⚙️ شنو الـ Cardiac output؟ ومعادلته؟	كمية الدم اللي يضخها القلب بالدقيقة = Heart rate × Stroke volume	TRUE	FALSE								ALL
+Q393	وظائف الأعضاء	400	⚙️ نظام هرموني تنظم فيه الكلية الضغط… اسمه؟	Renin-Angiotensin-Aldosterone System (RAAS)	TRUE	FALSE								ALL
+Q394	وظائف الأعضاء	500	⚙️ منحنى تفكك الأكسجين يتحرك لليمين في أي حالات؟ اذكر 2	ارتفاع الحرارة، الحموضة أو CO2 عالي، ارتفاع 2,3-DPG، الرياضة	TRUE	FALSE								ALL
+Q395	وظائف الأعضاء	500	⚙️ هرمون من النخامية الخلفية يسبب انقباض الرحم ونزول الحليب؟	Oxytocin	TRUE	FALSE								ALL
+Q396	أمراض شائعة	100	🤒 حرقان بالبول وكثرة تبول… أشهر اختصار للحالة؟	UTI — التهاب المسالك البولية	TRUE	FALSE								ALL
+Q397	أمراض شائعة	100	🤒 الصداع النصفي بالإنجليزي؟ وشنو العلامة اللي تجي قبله عند البعض؟	Migraine — Aura (أضواء أو تشوش بالنظر)	TRUE	FALSE								ALL
+Q398	أمراض شائعة	200	🤒 السكري النوع الثاني… السبب الرئيسي؟	B	TRUE	TRUE	نقص كامل بالأنسولين	مقاومة الأنسولين	فيروس	نقص الحديد				ALL
+Q399	أمراض شائعة	200	🤒 حصوة الكلى… شلون الألم الكلاسيكي؟	ألم شديد بالخاصرة ينتشر للحوض والفخذ، يجي ويروح، والمريض ما يقدر يقعد مرتاح	TRUE	FALSE								ALL
+Q400	أمراض شائعة	300	🤒 ألم وتورم بمفاصل اليدين بالجهتين وتيبّس الصبح أكثر من ساعة… شنو؟	الروماتويد (Rheumatoid arthritis)	TRUE	FALSE								ALL
+Q401	أمراض شائعة	300	🤒 قصور الغدة الدرقية… اذكر 3 أعراض	تعب، زيادة وزن، يحس ببرد، إمساك، جفاف جلد، تساقط شعر، نبض بطيء	TRUE	FALSE								ALL
+Q402	أمراض شائعة	400	🤒 بعد أكل دسم: ألم أعلى يمين البطن ينتشر للكتف اليمين… شنو تشك؟	التهاب المرارة أو حصوات المرارة (Cholecystitis)	TRUE	FALSE								ALL
+Q403	أمراض شائعة	400	🤒 الارتجاع المزمن ممكن يغيّر بطانة المريء… اسم الحالة؟	Barrett's esophagus	TRUE	FALSE								ALL
+Q404	أمراض شائعة	500	🤒 ألم بطن شديد ينتشر للظهر، بعد كحول أو حصوات مرارة، والـ Lipase عالي… شنو؟	التهاب البنكرياس الحاد (Acute pancreatitis)	TRUE	FALSE								ALL
+Q405	أمراض شائعة	500	🤒 الذئبة الحمراء (SLE)… أشهر علامة بالوجه؟	طفح الفراشة (Malar rash) على الخدود والأنف	TRUE	FALSE								ALL
+Q406	What's Wrong?	100	🕵️ دليل 1: حرارة خفيفة. دليل 2: سيلان أنف وعطاس. دليل 3: ألم حلق خفيف. شنو؟	زكام / نزلة برد (Common cold)	TRUE	FALSE								ALL
+Q407	What's Wrong?	100	🕵️ دليل 1: جلد شاحب وبارد. دليل 2: نبض سريع ضعيف. دليل 3: بعد نزيف كبير. شنو؟	صدمة نزفية (Hypovolemic shock)	TRUE	FALSE								ALL
+Q408	What's Wrong?	200	🕵️ دليل 1: صفير بالصدر. دليل 2: ضيق نفس بعد غبار. دليل 3: يستخدم بخاخ أزرق. شنو؟	نوبة ربو (Asthma)	TRUE	FALSE								ALL
+Q409	What's Wrong?	200	🕵️ دليل 1: عيون صفرا. دليل 2: بول غامق. دليل 3: براز فاتح. شنو؟	يرقان انسدادي — مثلاً حصوة سادة القناة المرارية	TRUE	FALSE								ALL
+Q410	What's Wrong?	300	🕵️ دليل 1: ألم صدر حاد يزيد مع النفس والانسداح. دليل 2: يخف إذا مال لقدام. دليل 3: بعد فيروس. شنو؟	التهاب غشاء القلب (Pericarditis)	TRUE	FALSE								ALL
+Q411	What's Wrong?	300	🕵️ دليل 1: حرارة عالية. دليل 2: كحة ببلغم أخضر. دليل 3: طقطقة (Crackles) بجهة وحدة. شنو؟	التهاب رئوي (Pneumonia)	TRUE	FALSE								ALL
+Q412	What's Wrong?	400	🕵️ دليل 1: ألم صدر يمزّق ينتشر للظهر. دليل 2: فرق ضغط بين الذراعين. دليل 3: ضغط عالي مزمن. شنو؟	تسلخ الأبهر (Aortic dissection) 🚨	TRUE	FALSE								ALL
+Q413	What's Wrong?	400	🕵️ دليل 1: حرارة. دليل 2: نبض سريع وضغط نازل. دليل 3: التهاب بول من أيام. شنو؟	الإنتان / الصدمة الإنتانية (Sepsis)	TRUE	FALSE								ALL
+Q414	What's Wrong?	500	🕵️ دليل 1: ضعف يبدأ من الرجلين ويطلع لفوق. دليل 2: بعد إسهال من أسبوعين. دليل 3: ردود الفعل مختفية. شنو؟	Guillain-Barré syndrome	TRUE	FALSE								ALL
+Q415	What's Wrong?	500	🕵️ دليل 1: صداع وحرارة. دليل 2: طفح بنفسجي ما يختفي بالضغط. دليل 3: تدهور سريع. شنو؟	تسمم الدم بالمكورات السحائية / التهاب السحايا 🚨	TRUE	FALSE								ALL
+Q416	Medical Abbreviations	100	🔐 BID و TID… شنو معناهم؟	BID = مرتين باليوم | TID = 3 مرات باليوم	TRUE	FALSE								ALL
+Q417	Medical Abbreviations	100	🔐 PO و IM… شنو معناهم؟	PO = بالفم | IM = بالعضل	TRUE	FALSE								ALL
+Q418	Medical Abbreviations	200	🔐 Hx و Dx و Tx… فكها!	History (التاريخ المرضي) – Diagnosis (التشخيص) – Treatment (العلاج)	TRUE	FALSE								ALL
+Q419	Medical Abbreviations	200	🔐 c/o بملف المريض شنو تعني؟	Complaining of — يشتكي من	TRUE	FALSE								ALL
+Q420	Medical Abbreviations	300	🔐 DNR شنو يعني؟	Do Not Resuscitate — لا يتم إنعاشه	TRUE	FALSE								ALL
+Q421	Medical Abbreviations	300	🔐 LOC… شنو معناها بالطوارئ؟	Loss of Consciousness (أو Level of Consciousness حسب السياق)	TRUE	FALSE								ALL
+Q422	Medical Abbreviations	400	🔐 COPD… فكها كاملة	Chronic Obstructive Pulmonary Disease	TRUE	FALSE								ALL
+Q423	Medical Abbreviations	400	🔐 HS و AC و PC… شنو معناهم؟	HS = قبل النوم | AC = قبل الأكل | PC = بعد الأكل	TRUE	FALSE								ALL
+Q424	Medical Abbreviations	500	🔐 PERRLA… فكها!	Pupils Equal, Round, Reactive to Light and Accommodation	TRUE	FALSE								ALL
+Q425	Medical Abbreviations	500	🔐 ROSC شنو معناها؟ ومتى نقولها؟	Return Of Spontaneous Circulation — لما يرجع النبض بعد الإنعاش	TRUE	FALSE								ALL
+Q426	Heart Master	100	💓 الشاشة: إيقاع منتظم والنبض 45… شنو اسمه؟	A	TRUE	TRUE	Sinus Bradycardia	SVT	Ventricular Tachycardia	Atrial Fibrillation	gen:ecg_brady			ALL
+Q427	Heart Master	100	💓 الـ ECG الطبيعي… اذكر الموجات بالترتيب	P – QRS – T	TRUE	FALSE								ALL
+Q428	Heart Master	200	💓 QRS عريض وسريع ومنتظم… شنو؟	A	TRUE	TRUE	Ventricular Tachycardia	SVT	Sinus Tachycardia	Atrial Fibrillation	gen:ecg_vtach			ALL
+Q429	Heart Master	200	💓 الـ 12-lead ECG… كم قطب (Electrode) تحط فعلاً؟	10 أقطاب تعطي 12 Lead	TRUE	FALSE								ALL
+Q430	Heart Master	300	💓 مريض صاحي، هذا إيقاعه، ضغطه 70/40 ومتعرق ومتلخبط… شنو العلاج؟	Synchronized cardioversion فوراً (VT مع نبض وغير مستقر)	TRUE	FALSE					gen:ecg_vtach			ALL
+Q431	Heart Master	300	💓 موجات P ماشية لحالها و QRS لحاله وما بينهم أي علاقة… أي Block؟	D	TRUE	TRUE	1st degree	2nd degree Type I	2nd degree Type II	3rd degree (Complete)				ALL
+Q432	Heart Master	400	💓 PR يطول شوي شوي لين تطيح QRS وحدة، وبعدين يعيد… اسمه؟	Second-degree AV block Type I (Wenckebach)	TRUE	FALSE								ALL
+Q433	Heart Master	400	💓 ارتفاع ST في II و III و aVF… أي جدار بالقلب متضرر؟	C	TRUE	TRUE	Anterior	Lateral	Inferior	Septal				ALL
+Q434	Heart Master	500	💓 ST مرتفع في Inferior… ليش لازم نحذر من النيترو؟	ممكن يكون فيه احتشاء البطين الأيمن — المريض يعتمد على الـ Preload والنيترو ينزّل الضغط بقوة. سوّ Right-sided ECG (V4R)	TRUE	FALSE								ALL
+Q435	Heart Master	500	💓 هذا الإيقاع والمريض بدون نبض… أول طاقة صدمة بجهاز Biphasic؟	حسب توصية الشركة (غالباً 120–200 J)، وإذا ما تعرف استخدم أعلى طاقة متاحة	TRUE	FALSE					gen:ecg_vfib			ALL
+Q436	Blood Lab	100	🩸 أنبوب PT/INR لونه؟	B	TRUE	TRUE	بنفسجي	أزرق فاتح	أحمر	رمادي				ALL
+Q437	Blood Lab	100	🩸 تحليل السكر الصايم… كم ساعة صيام؟	8 ساعات على الأقل	TRUE	FALSE								ALL
+Q438	Blood Lab	200	🩸 الأنبوب الرمادي فيه مادة تمنع الخلايا تستهلك السكر… شنو هي؟ ولأي تحليل؟	Sodium fluoride — للسكر واللاكتيت	TRUE	FALSE								ALL
+Q439	Blood Lab	200	🩸 ليش الأنبوب الأزرق (Citrate) لازم يتعبّى للخط بالضبط؟	نسبة الدم للمادة المانعة للتخثر 9:1 — لو ناقص تطلع نتيجة التخثر غلط	TRUE	FALSE								ALL
+Q440	Blood Lab	300	🩸 ترتيب سحب الأنابيب (Order of draw) يبدأ بأي واحد؟	A	TRUE	TRUE	Blood culture	Lavender	Gray	Red				ALL
+Q441	Blood Lab	300	🩸 عينة انسحبت بقوة من إبرة صغيرة وتكسرت الكريات… شنو اسمها؟ وأي تحليل يتأثر أكثر؟	Hemolysis — يرفع البوتاسيوم بشكل كاذب	TRUE	FALSE								ALL
+Q442	Blood Lab	400	🩸 الصفائح (Platelets) الطبيعي كم؟	B	TRUE	TRUE	15–45 ألف	150–450 ألف	1.5–4.5 مليون	500–900 ألف				ALL
+Q443	Blood Lab	400	🩸 WBC عالي مع Neutrophils عالية… أشهر سبب؟	التهاب بكتيري	TRUE	FALSE								ALL
+Q444	Blood Lab	500	🩸 Anion gap… معادلته؟ وليش مهم؟	Na − (Cl + HCO3) — يفرّق أسباب الحموضة الأيضية (مثل DKA واللاكتيت)	TRUE	FALSE								ALL
+Q445	Blood Lab	500	🩸 D-dimer سلبي عند مريض احتماله قليل… شنو يفيدنا؟	يستبعد الجلطات (DVT/PE) بدرجة كبيرة — بس الإيجابي غير محدد	TRUE	FALSE								ALL
+Q446	بلاغ 112	100	📞 'أمي طاحت ورجلها مايلة وما تقدر توقف!' — شنو تقولون لهم؟	لا تحركونها، خلوها مرتاحة ودافية، لا أكل ولا شرب، وانتظروا الإسعاف (احتمال كسر حوض أو فخذ)	TRUE	FALSE								ALL
+Q447	بلاغ 112	100	📞 'ولدي انجرح وينزف وايد من يده!' — أول شي؟	ضغط مباشر قوي على الجرح بقماش نظيف ولا تشيلونه، ورفع اليد	TRUE	FALSE								ALL
+Q448	بلاغ 112	200	📞 'أبوي يقول صدره يعصره ويعرق' — شنو يسوون لين نوصل؟	يقعد ويرتاح، يفكون الملابس الضيقة، Aspirin يمضغه إذا ما عنده حساسية أو نزيف، ويفتحون الباب للإسعاف	TRUE	FALSE								ALL
+Q449	بلاغ 112	200	📞 'أختي شربت كلوركس بالغلط!' — شنو؟	لا تخلونها تترجّع، اشطفوا الفم، وإذا تقدر تبلع رشفات ماي قليلة، وخذوا العلبة معاكم	TRUE	FALSE								ALL
+Q450	بلاغ 112	300	📞 'ريال ضربته سيارة وهو صاحي ويبي يقوم!' — شنو تقولون؟	خلوه ما يتحرك، ثبتوا راسه ورقبته باليدين، وأمّنوا المكان من السيارات	TRUE	FALSE								ALL
+Q451	بلاغ 112	300	📞 'جدي سكري وصار يتكلم غريب ويعرق' — وهو صاحي ويبلع. شنو؟	سكر أو عصير فوراً (15–20 جرام سكر)، يقيسون السكر إذا عندهم جهاز، وبعدها أكل	TRUE	FALSE								ALL
+Q452	بلاغ 112	400	📞 'زوجتي حامل وتقول الولد طالع الحين!' — أهم التعليمات؟	تنسدح بمكان نظيف، يغسلون أيديهم ويجهزون فوط، يسندون راس الطفل بلطف بدون سحب، ينشفونه ويحطونه على صدر أمه دافي، ولا يقصون الحبل	TRUE	FALSE								ALL
+Q453	بلاغ 112	400	📞 'ولدنا عمره سنتين حرارته 40 وصار يرجف ويتشنج!' — شنو؟	غالباً تشنج حراري: على جنبه، أبعدوا الأشياء، لا شي بفمه، لا تحطونه بماي بارد، ووقّتوا النوبة	TRUE	FALSE								ALL
+Q454	بلاغ 112	500	📞 'لقيت شخص بالشارع ما يتنفس، وأنا لحالي ومعي جوال' — شنو الترتيب الصح؟	اتصل 112 وشغّل السبيكر وأنت جنبه، ابدأ CPR فوراً، وإذا فيه AED قريب وأحد يجيبه خله يجيبه	TRUE	FALSE								ALL
+Q455	بلاغ 112	500	📞 'خوي عنده نوبة ربو وبخاخه ما نفع وصار ما يقدر يتكلم!' — شنو علامات الخطر وشنو يسوون؟	ما يقدر يتكلم، زرقة، تعب ونعاس = خطر شديد. يقعد مايل لقدام، ويكرر البخاخ (مع Spacer لو موجود) لين يوصل الإسعاف	TRUE	FALSE								ALL
+Q456	ER Master	100	🚨 المريض صاحي ويتكلم معك عادي… هذا يدل على شنو بالـ ABC؟	مجرى الهوا مفتوح، يتنفس، والدماغ ياخذ دم — مؤشر مطمئن مبدئياً	TRUE	FALSE								ALL
+Q457	ER Master	100	🚨 مريض ضربة شمس… أهم علاج؟	B	TRUE	TRUE	ماي بارد بالفم بس	تبريد سريع (ماي، ثلج، مراوح)	بنادول	تغطيته ببطانية				ALL
+Q458	ER Master	200	🚨 حرارة 39، نبض 125، تنفس 24، ومصدر التهاب واضح… شنو تشك؟	Sepsis — سوائل ومضاد حيوي بسرعة بعد أخذ المزرعة	TRUE	FALSE								ALL
+Q459	ER Master	200	🚨 مريض ألم صدر عمره 55، وقبله مريض التواء كاحل من ساعة… منو أول؟	ألم الصدر — ECG خلال 10 دقايق من الوصول	TRUE	FALSE								ALL
+Q460	ER Master	300	🚨 تشنج مستمر أكثر من 5 دقايق… أول دوا؟	B	TRUE	TRUE	Paracetamol	Benzodiazepine (Midazolam أو Lorazepam)	Insulin	Adenosine				ALL
+Q461	ER Master	300	🚨 سكر 600 وجفاف شديد وتشوش… بس بدون حموضة ولا كيتونات. شنو؟	HHS — Hyperosmolar Hyperglycemic State	TRUE	FALSE								ALL
+Q462	ER Master	400	🚨 Anaphylaxis ما تحسنت بعد أول Epinephrine IM… بعد كم تعيدها؟	بعد 5–15 دقيقة إذا ما تحسن	TRUE	FALSE								ALL
+Q463	ER Master	400	🚨 جلطة دماغية… شنو النافذة الزمنية المشهورة لمذيب الجلطات (tPA)؟	خلال 4.5 ساعات من آخر وقت كان فيه طبيعي (Last known well)	TRUE	FALSE								ALL
+Q464	ER Master	500	🚨 مريض يترجّع دم أحمر وعنده تليف كبد… شنو تشك؟	دوالي المريء النازفة — سوائل ودم، Octreotide، ومنظار عاجل	TRUE	FALSE								ALL
+Q465	ER Master	500	🚨 qSOFA للإنتان… اذكر المعايير الثلاثة	تنفس 22 أو أكثر، ضغط انقباضي 100 أو أقل، وتغيّر بالوعي	TRUE	FALSE								ALL
+Q466	BLS/CPR	100	❤️‍🩹 أول شي تسويه قبل ما تقرب من شخص طايح؟	B	TRUE	TRUE	تبدأ ضغطات	تتأكد من أمان المكان	تعطيه ماي	تقعده				ALL
+Q467	BLS/CPR	100	❤️‍🩹 وين تحط يدك للضغطات عند البالغ؟	منتصف الصدر — النصف السفلي من عظمة القص	TRUE	FALSE								ALL
+Q468	BLS/CPR	200	❤️‍🩹 كل كم دقيقة يتبدل الضاغط؟	كل 2 دقيقة تقريباً لتجنب التعب	TRUE	FALSE								ALL
+Q469	BLS/CPR	200	❤️‍🩹 الرضيع… شلون تضغط؟	بالإبهامين مع لف اليدين حول الصدر (أو كعب يد وحدة) على منتصف الصدر — العمق حوالي 4 سم	TRUE	FALSE								ALL
+Q470	BLS/CPR	300	❤️‍🩹 عمق الضغطات للطفل (من سنة لين البلوغ)؟	B	TRUE	TRUE	1 سم	حوالي 5 سم (ثلث عمق الصدر)	8 سم	2 سم				ALL
+Q471	BLS/CPR	300	❤️‍🩹 شخص مختنق وفقد الوعي… شنو تسوي؟	تنزله للأرض بهدوء وتبدأ CPR، وكل ما تفتح مجرى الهوا تشوف إذا الجسم ظاهر وتشيله (بدون تمشيط أعمى)	TRUE	FALSE								ALL
+Q472	BLS/CPR	400	❤️‍🩹 الـ AED وصل وأنت تضغط… شنو تسوي؟	تشغّله فوراً وتتبع الأوامر، تلصق الـ Pads وزميلك يكمل الضغطات لين الجهاز يقول يحلل	TRUE	FALSE								ALL
+Q473	BLS/CPR	400	❤️‍🩹 حامل بطنها فوق السرة توقف قلبها… شنو الشي الإضافي؟	إزاحة الرحم يدوياً لليسار أثناء الضغطات	TRUE	FALSE								ALL
+Q474	BLS/CPR	500	❤️‍🩹 صدر المريض مبلول وعليه شعر كثيف والـ Pads ما تلصق… شنو تسوي؟	تنشف الصدر، وتشيل الشعر بسرعة (حلاقة أو تلصق Pad وتنزعه بقوة) ثم Pads جديدة	TRUE	FALSE								ALL
+Q475	BLS/CPR	500	❤️‍🩹 High-quality CPR… اذكر 5 عناصر	عمق صحيح، سرعة 100–120، رجوع الصدر كامل، أقل انقطاع ممكن، وتجنب التهوية الزايدة	TRUE	FALSE								ALL
+Q476	ACLS	100	📟 أي إيقاعين قابلين للصدمة (Shockable)؟	VF و Pulseless VT	TRUE	FALSE								ALL
+Q477	ACLS	100	📟 جرعة Epinephrine بالإنعاش للبالغ؟	B	TRUE	TRUE	0.1 mg	1 mg كل 3–5 دقايق	10 mg	0.3 mg IM				ALL
+Q478	ACLS	200	📟 PEA يعني شنو؟	Pulseless Electrical Activity — نشاط كهربائي على الشاشة بس ما فيه نبض	TRUE	FALSE								ALL
+Q479	ACLS	200	📟 Adenosine أول جرعة للـ SVT المستقر؟ وشلون تنعطى؟	6 mg IV push سريع جداً مع Flush 20 mL	TRUE	FALSE								ALL
+Q480	ACLS	300	📟 جرعة Amiodarone الثانية في VF؟	B	TRUE	TRUE	300 mg	150 mg	50 mg	1 mg				ALL
+Q481	ACLS	300	📟 EtCO2 أقل من 10 أثناء الإنعاش… شنو يعني؟	الضغطات ضعيفة — حسّنها. وإذا قفز فجأة فوق 40 ممكن رجع النبض	TRUE	FALSE								ALL
+Q482	ACLS	400	📟 Torsades de Pointes… العلاج الدوائي الأول؟	Magnesium sulfate	TRUE	FALSE								ALL
+Q483	ACLS	400	📟 بعد رجوع النبض (ROSC)… كم الضغط الانقباضي المستهدف؟	90 mmHg أو أكثر (أو MAP 65 أو أكثر)	TRUE	FALSE								ALL
+Q484	ACLS	500	📟 Bradycardia غير مستقر وما نفع Atropine… اذكر بديلين	Transcutaneous pacing، أو Epinephrine drip، أو Dopamine drip	TRUE	FALSE								ALL
+Q485	ACLS	500	📟 Wide-complex tachycardia منتظم والمريض مستقر… أي دواء نجرب؟	Amiodarone 150 mg IV على 10 دقايق (و Adenosine فقط إذا منتظم وأحادي الشكل)	TRUE	FALSE								ALL
+Q486	Trauma	100	🩹 أول خطوة لنزيف خارجي؟	B	TRUE	TRUE	تورنيكيه فوراً	ضغط مباشر	ماي بارد	ترفعه بس				ALL
+Q487	Trauma	100	🩹 كسر واضح بالساق… قبل التجبير شنو لازم تفحص؟	النبض والإحساس والحركة تحت الكسر — قبل وبعد التجبير	TRUE	FALSE								ALL
+Q488	Trauma	200	🩹 جرح بالصدر يطلع منه فقاعات مع النفس… شنو تحط عليه؟	ضماد محكم (Occlusive dressing)، ويفضل Vented chest seal	TRUE	FALSE								ALL
+Q489	Trauma	200	🩹 إصبع انقطع… شلون تحفظه؟	شاش رطب بمحلول ملحي، داخل كيس محكم، والكيس على ماي وثلج — لا يلمس الثلج مباشرة	TRUE	FALSE								ALL
+Q490	Trauma	300	🩹 Flail chest يعني شنو؟	كسر 3 أضلاع أو أكثر بأكثر من مكان — جزء من الصدر يتحرك عكس النفس	TRUE	FALSE								ALL
+Q491	Trauma	300	🩹 Rule of Nines للبالغ: الرجل كاملة كم %؟	B	TRUE	TRUE	9%	18%	27%	1%				ALL
+Q492	Trauma	400	🩹 حرق كهربائي شكله صغير بالجلد… ليش لازم يروح المستشفى؟	الضرر الداخلي أكبر من الظاهر، وخطر اضطراب نظم القلب وتكسر العضلات	TRUE	FALSE								ALL
+Q493	Trauma	400	🩹 إصابة بالراس: حدقة وحدة واسعة وما تستجيب، ونبض بطيء… شنو تدل؟	ضغط عالي داخل الجمجمة وبداية انفتاق الدماغ (Herniation) 🚨	TRUE	FALSE								ALL
+Q494	Trauma	500	🩹 Parkland formula للحروق… المعادلة؟	4 mL × الوزن × نسبة الحرق — النص أول 8 ساعات والباقي على 16 ساعة	TRUE	FALSE								ALL
+Q495	Trauma	500	🩹 Neurogenic shock… شنو يميزه عن صدمة النزيف؟	ضغط نازل مع نبض بطيء وجلد دافي (بدل نبض سريع وجلد بارد)	TRUE	FALSE								ALL
+Q496	SAMPLE/OPQRST	100	📋 في SAMPLE… حرف M يعني؟	Medications — الأدوية	TRUE	FALSE								ALL
+Q497	SAMPLE/OPQRST	100	📋 في OPQRST… حرف O يعني؟	Onset — متى وشلون بدأ	TRUE	FALSE								ALL
+Q498	SAMPLE/OPQRST	200	📋 في SAMPLE… حرف L يعني؟	Last oral intake — آخر أكل أو شرب	TRUE	FALSE								ALL
+Q499	SAMPLE/OPQRST	200	📋 المريض قال 'الألم مثل الطعنة' — أي حرف من OPQRST؟	C	TRUE	TRUE	O	P	Q	R				ALL
+Q500	SAMPLE/OPQRST	300	📋 في SAMPLE… حرف E يعني؟	Events — اللي صار قبل الحادث أو المرض	TRUE	FALSE								ALL
+Q501	SAMPLE/OPQRST	300	📋 'من 10 كم تعطي الألم؟' — أي حرف؟	S — Severity	TRUE	FALSE								ALL
+Q502	SAMPLE/OPQRST	400	📋 في SAMPLE… حرف P يعني؟	Past medical history — التاريخ المرضي	TRUE	FALSE								ALL
+Q503	SAMPLE/OPQRST	400	📋 'الألم بدأ فجأة وأنا أشيل شي ثقيل' — أي حرف؟	O — Onset	TRUE	FALSE								ALL
+Q504	SAMPLE/OPQRST	500	🎭 لعب أدوار: الحكم مريض ألم صدر، والفريق ياخذ OPQRST كامل خلال 45 ثانية	النقاط إذا سألوا الستة: Onset, Provocation, Quality, Radiation, Severity, Time	TRUE	FALSE								ALL
+Q505	SAMPLE/OPQRST	500	📋 شنو الفرق بين Sign و Symptom؟ مع مثال لكل واحد	Sign = شي تشوفه أو تقيسه (ضغط، نزيف) | Symptom = شي يحس فيه المريض (ألم، دوخة)	TRUE	FALSE								ALL
+Q506	العلامات الحيوية	100	📈 الحرارة الطبيعية تقريباً؟	B	TRUE	TRUE	34°	37°	39°	41°				ALL
+Q507	العلامات الحيوية	100	📈 SpO2 الطبيعي؟	95–100%	TRUE	FALSE								ALL
+Q508	العلامات الحيوية	200	📈 نبض الرضيع الطبيعي تقريباً؟	B	TRUE	TRUE	60–100	100–160	40–60	180–220				ALL
+Q509	العلامات الحيوية	200	📈 Capillary refill الطبيعي أقل من كم ثانية؟	2 ثانية	TRUE	FALSE								ALL
+Q510	العلامات الحيوية	300	📈 ضغط 180/120 مع صداع وتشوش رؤية… شنو اسمها؟	Hypertensive emergency (إذا فيه ضرر بالأعضاء)	TRUE	FALSE								ALL
+Q511	العلامات الحيوية	300	📈 تنفس طفل عمره سنة الطبيعي تقريباً؟	حوالي 30–40 بالدقيقة	TRUE	FALSE								ALL
+Q512	العلامات الحيوية	400	📈 Orthostatic hypotension… شلون تقيسها؟	الضغط والنبض وهو منسدح ثم واقف — نزول الانقباضي 20 أو الانبساطي 10 = إيجابي	TRUE	FALSE								ALL
+Q513	العلامات الحيوية	400	📈 Shock index… معادلته؟ وكم يعتبر خطر؟	النبض ÷ الضغط الانقباضي — أكثر من حوالي 0.9–1 = خطر صدمة	TRUE	FALSE								ALL
+Q514	العلامات الحيوية	500	📈 Pulsus paradoxus… شنو هو؟ ومتى نشوفه؟	نزول الضغط الانقباضي أكثر من 10 مع الشهيق — Cardiac tamponade والربو الشديد	TRUE	FALSE								ALL
+Q515	العلامات الحيوية	500	📈 Kussmaul و Cheyne-Stokes… الفرق؟	Kussmaul: عميق وسريع ومنتظم (DKA) | Cheyne-Stokes: يزيد وينقص ثم يوقف (إصابات دماغ أو فشل قلب)	TRUE	FALSE								ALL
+Q516	الأدوات والمعدات	100	🧰 شنو اسم هالأداة؟	Stethoscope (سماعة طبية)	TRUE	FALSE					gen:img_stethoscope			ALL
+Q517	الأدوات والمعدات	100	🧰 الجهاز اللي يقيس السكر بنقطة دم من الإصبع؟	Glucometer	TRUE	FALSE								ALL
+Q518	الأدوات والمعدات	200	🧰 Nasal cannula… كم لتر بالدقيقة؟	A	TRUE	TRUE	1–6 لتر	10–15 لتر	20–30 لتر	0.1 لتر				ALL
+Q519	الأدوات والمعدات	200	🧰 الـ Suction لشنو يستخدم بالإسعاف؟	شفط الإفرازات والدم والقيء من الفم ومجرى الهوا	TRUE	FALSE								ALL
+Q520	الأدوات والمعدات	300	🧰 NPA (الأنبوب الأنفي)… ممنوع متى؟	إذا فيه شك كسر قاعدة الجمجمة (Battle sign، Raccoon eyes، سائل من الأنف)	TRUE	FALSE								ALL
+Q521	الأدوات والمعدات	300	🧰 الـ Cervical collar… شلون تختار المقاس؟	تقيس بالأصابع من الكتف لأسفل الفك وتطابقه على الكولر	TRUE	FALSE								ALL
+Q522	الأدوات والمعدات	400	🧰 KED لشنو يستخدم؟	تثبيت العمود الفقري لمصاب جالس (مثلاً بالسيارة) قبل إخراجه	TRUE	FALSE								ALL
+Q523	الأدوات والمعدات	400	🧰 Pulse oximeter يعطي قراءة غلط بأي حالات؟ اذكر 2	تسمم CO، برودة الأطراف، مناكير، حركة، أنيميا شديدة	TRUE	FALSE								ALL
+Q524	الأدوات والمعدات	500	🧰 Capnography… شكل الموجة الطبيعية؟ والقيمة الطبيعية؟	موجة مربعة — EtCO2 من 35 إلى 45 mmHg	TRUE	FALSE								ALL
+Q525	الأدوات والمعدات	500	🧰 Traction splint… لأي كسر؟ ومتى ممنوع؟	كسر وسط عظمة الفخذ — ممنوع مع كسر الحوض أو الركبة أو الكاحل بنفس الرجل	TRUE	FALSE								ALL
+Q526	What's This?	100	👀 شنو هذا؟ وعلى أي إصبع تحطه غالباً؟	Pulse oximeter — السبابة أو الوسطى (بدون مناكير)	TRUE	FALSE					gen:img_pulseox			ALL
+Q527	What's This?	100	👀 شنو هذا؟ والجزء المسطح الكبير اسمه؟	Stethoscope — والجزء اسمه Diaphragm	TRUE	FALSE					gen:img_stethoscope			ALL
+Q528	What's This?	200	👀 شنو هذا؟ وكم لتر أكسجين توصّله فيه؟	BVM — 15 لتر/دقيقة	TRUE	FALSE					gen:img_bvm			ALL
+Q529	What's This?	200	👀 للحقن بالعضل (IM) عند البالغ… كم طول الإبرة تقريباً؟	حوالي 2.5–3.8 سم حسب الوزن والموقع	TRUE	FALSE					gen:img_syringe			ALL
+Q530	What's This?	300	👀 هذا… أي طريقة قياس حرارة تعتبر الأدق (Core)؟	الشرجية أو المريء (Core) — والفموي والإبطي أقل دقة	TRUE	FALSE					gen:img_thermometer			ALL
+Q531	What's This?	300	👀 لو المحلول هذا Ringer's Lactate… ليش يحبونه بالحروق والإصابات؟	قريب من تركيب البلازما ويسبب حموضة أقل من النورمال سلاين بالكميات الكبيرة	TRUE	FALSE					gen:img_ivbag			ALL
+Q532	What's This?	400	👀 هذا الجهاز لطفل عمره 4 سنين… شنو تستخدم؟	Pediatric pads أو Attenuator — وإذا ما في، Pads الكبار بدون ما يتلامسون (قدام وورا)	TRUE	FALSE					gen:img_aed			ALL
+Q533	What's This?	400	👀 وأنت تفك الهوا… أول صوت تسمعه يمثل شنو؟	الضغط الانقباضي (Systolic) — أصوات Korotkoff	TRUE	FALSE					gen:img_bpcuff			ALL
+Q534	What's This?	500	👀 ليش ما نعصر هذا بقوة وبسرعة؟	يدخل هوا للمعدة (ترجيع وشرقة) ويقلل رجوع الدم للقلب — نفس كل 6 ثواني يكفي لين يرتفع الصدر	TRUE	FALSE					gen:img_bvm			ALL
+Q535	What's This?	500	👀 يقرأ 88% لمريض COPD مزمن ومرتاح… كم الهدف عادة لهؤلاء المرضى؟	88–92% — الأكسجين الزايد ممكن يرفع CO2 عندهم	TRUE	FALSE					gen:img_pulseox			ALL
+Q536	Audio Challenge	100	🎧 اسمع الجهاز… النبض شلون؟	C	TRUE	TRUE	بطيء	طبيعي	سريع	ما في نبض		gen:aud_beep_150		ALL
+Q537	Audio Challenge	100	🎧 شنو هالصوت؟	أصوات القلب الطبيعية S1 و S2 (Lub-Dub)	TRUE	FALSE						gen:aud_lubdub		ALL
+Q538	Audio Challenge	200	🎧 هالنبض كم تقريباً؟ وشنو اسمه للبالغ؟	حوالي 40 — Bradycardia (أقل من 60)	TRUE	FALSE						gen:aud_beep_40		ALL
+Q539	Audio Challenge	200	🎧 هالصوت طالع من جهاز بالعناية… شنو أول شي تسويه؟	تشوف المريض أول مو الجهاز! وعيه وتنفسه ونبضه، بعدين سبب الإنذار	TRUE	FALSE						gen:aud_alarm		ALL
+Q540	Audio Challenge	300	🎧 هذا صوت تنفس… طبيعي ولا فيه صوت زيادة؟	تنفس طبيعي (Vesicular) — بدون صفير ولا طقطقة	TRUE	FALSE						gen:aud_breath		ALL
+Q541	Audio Challenge	300	🎧 القلب هذا… شنو اسم الإيقاع؟ واذكر سببين	Tachycardia — حرارة، جفاف، ألم، خوف، نزيف، نقص أكسجين	TRUE	FALSE						gen:aud_lubdub_fast		ALL
+Q542	Audio Challenge	400	🎧 هالصوت يشحن ثم يطلق… شنو الجهاز؟ وشنو لازم تقول قبل الصدمة؟	جهاز الصدمات — 'ابعدوا كلكم! Clear!' وتتأكد ما أحد لامس المريض	TRUE	FALSE						gen:aud_defib		ALL
+Q543	Audio Challenge	400	🎧 هالصوت كان عالي وفجأة اختفى والمريض صار تعبان ونعسان… خير ولا شر؟	شر! Silent chest — الهوا ما يدخل تقريباً، نوبة ربو مهددة للحياة	TRUE	FALSE						gen:aud_wheeze		ALL
+Q544	Audio Challenge	500	🎧 هالـ Murmur بين S1 و S2 بأعلى يمين الصدر عند كبير بالسن… أشهر سبب؟	Aortic stenosis	TRUE	FALSE						gen:aud_murmur		ALL
+Q545	Audio Challenge	500	🎧 هالنبض غير منتظم… ليش المريض معرض لجلطة دماغية؟	AFib — الدم يركد بالأذين ويكوّن جلطات تروح للدماغ، عشان كذا مميعات	TRUE	FALSE						gen:aud_beep_irregular		ALL
+Q546	الكوارث والإصابات الجماعية	100	🚧 START Triage: المصاب يقدر يمشي… شنو لونه؟	C	TRUE	TRUE	أحمر	أصفر	أخضر	أسود				ALL
+Q547	الكوارث والإصابات الجماعية	100	🚧 أول 3 أشياء تسويها لما توصل حادث كبير؟	أمان الموقع، تقييم عدد المصابين والمخاطر، وطلب الدعم	TRUE	FALSE								ALL
+Q548	الكوارث والإصابات الجماعية	200	🚧 START: مصاب تنفسه 36 بالدقيقة… شنو لونه؟	أحمر — التنفس فوق 30	TRUE	FALSE								ALL
+Q549	الكوارث والإصابات الجماعية	200	🚧 اللون الأصفر في الفرز يعني؟	Delayed — إصابة خطيرة بس يقدر ينتظر شوي	TRUE	FALSE								ALL
+Q550	الكوارث والإصابات الجماعية	300	🚧 START: ما يمشي، تنفسه 20، نبض الرسغ موجود، وينفذ الأوامر… شنو لونه؟	أصفر (Delayed)	TRUE	FALSE								ALL
+Q551	الكوارث والإصابات الجماعية	300	🚧 حادث تسرب كيميائي… وين توقف سيارة الإسعاف بالنسبة للريح؟	عكس اتجاه الريح وأعلى من المكان (Upwind & Uphill)	TRUE	FALSE								ALL
+Q552	الكوارث والإصابات الجماعية	400	🚧 Incident Command System… شنو هو؟	نظام قيادة موحد: قائد واحد ومسؤوليات واضحة (عمليات، تخطيط، لوجستيات، مالية)	TRUE	FALSE								ALL
+Q553	الكوارث والإصابات الجماعية	400	🚧 مناطق الحادث الكيميائي Hot و Warm و Cold… شنو يصير بالـ Warm zone؟	إزالة التلوث (Decontamination)	TRUE	FALSE								ALL
+Q554	الكوارث والإصابات الجماعية	500	🚧 ليش نعيد الفرز (Re-triage)؟	حالة المصاب تتغير — الأصفر ممكن يصير أحمر، فنعيد التقييم باستمرار	TRUE	FALSE								ALL
+Q555	الكوارث والإصابات الجماعية	500	🚧 START: يتنفس 20، ونبض الرسغ ما يحس… شنو لونه؟ وشنو تسوي فوراً؟	أحمر — توقف أي نزيف واضح وتكمل الفرز	TRUE	FALSE								ALL
+Q556	الأدوية والجرعات	100	💉 أشهر أدوية تنعطى تحت الجلد (SC)؟	Insulin و Heparin / Enoxaparin	TRUE	FALSE								ALL
+Q557	الأدوية والجرعات	100	💉 زاوية حقن العضل (IM)؟	C	TRUE	TRUE	15°	45°	90°	10°				ALL
+Q558	الأدوية والجرعات	200	💉 زاوية الحقن تحت الجلد (SC)؟	45° أو 90° حسب طول الإبرة وكمية الدهون	TRUE	FALSE								ALL
+Q559	الأدوية والجرعات	200	💉 الحقن داخل الجلد (Intradermal)… لأي فحص مشهور؟ وكم الزاوية؟	فحص السل (Mantoux / PPD) — زاوية 10–15°	TRUE	FALSE								ALL
+Q560	الأدوية والجرعات	300	💉 أدوية High-alert… اذكر 3	Insulin، Heparin، Potassium chloride المركز، Opioids، أدوية الكيماوي	TRUE	FALSE								ALL
+Q561	الأدوية والجرعات	300	💉 Morphine… أخطر عرض جانبي لازم تراقبه؟	تثبيط التنفس (Respiratory depression)	TRUE	FALSE								ALL
+Q562	الأدوية والجرعات	400	💉 Heparin بالوريد… أي تحليل نراقبه؟	B	TRUE	TRUE	PT/INR	aPTT	CBC بس	Troponin				ALL
+Q563	الأدوية والجرعات	400	💉 Warfarin… أي تحليل؟ وكم الهدف المعتاد؟	INR — غالباً 2–3	TRUE	FALSE								ALL
+Q564	الأدوية والجرعات	500	💉 Z-track technique… ليش نستخدمها؟	تمنع الدواء يتسرب للجلد (مثل الحديد IM) وتقلل التصبغ والألم	TRUE	FALSE								ALL
+Q565	الأدوية والجرعات	500	💉 Furosemide (Lasix)… أهم شي تراقبه؟	البوتاسيوم (ينزل)، الضغط، كمية البول، والجفاف	TRUE	FALSE								ALL
+Q566	حسابات المحاليل	100	🧮 500 mL على 4 ساعات… كم mL/hr؟	125 mL/hr	TRUE	FALSE								ALL
+Q567	حسابات المحاليل	100	🧮 المطلوب 1 g والمتوفر أقراص 500 mg… كم قرص؟	C	TRUE	TRUE	نص	1	2	4				ALL
+Q568	حسابات المحاليل	200	🧮 1 كيلو كم باوند تقريباً؟	2.2 lb	TRUE	FALSE								ALL
+Q569	حسابات المحاليل	200	🧮 المطلوب 75 mg والمتوفر 50 mg/mL… كم mL؟	1.5 mL	TRUE	FALSE								ALL
+Q570	حسابات المحاليل	300	🧮 2 لتر على 24 ساعة… كم mL/hr تقريباً؟	B	TRUE	TRUE	42	83	120	200				ALL
+Q571	حسابات المحاليل	300	🧮 500 mL على 4 ساعات و Drop factor = 15… كم قطرة/دقيقة؟	حوالي 31 قطرة/دقيقة — (500 × 15) ÷ 240	TRUE	FALSE								ALL
+Q572	حسابات المحاليل	400	🧮 Heparin 25,000 unit في 500 mL، المطلوب 1000 unit/hr… كم mL/hr؟	20 mL/hr (التركيز 50 unit/mL)	TRUE	FALSE								ALL
+Q573	حسابات المحاليل	400	🧮 Microdrip (60 قطرة/mL)… 50 mL/hr كم قطرة بالدقيقة؟	50 قطرة/دقيقة — بالـ Microdrip القطرات بالدقيقة = mL/hr	TRUE	FALSE								ALL
+Q574	حسابات المحاليل	500	🧮 سوائل يومية لطفل 25 كجم (قاعدة 4-2-1)… كم mL/hr؟	65 mL/hr — (40 + 20 + 5)	TRUE	FALSE								ALL
+Q575	حسابات المحاليل	500	🧮 Norepinephrine 4 mg في 250 mL، المطلوب 8 mcg/min… كم mL/hr؟	30 mL/hr — التركيز 16 mcg/mL، و 8 × 60 = 480 mcg/hr	TRUE	FALSE								ALL
+Q576	IV والكانيولا	100	💧 أشهر مكان لتركيب الكانيولا للبالغ؟	A	TRUE	TRUE	ظهر اليد والساعد	الرقبة	القدم دائماً	الفخذ				ALL
+Q577	IV والكانيولا	100	💧 التورنيكيه وين تربطه قبل التركيب؟	فوق مكان الوريد بحوالي 7–10 سم، ولا تخليه مربوط فترة طويلة	TRUE	FALSE								ALL
+Q578	IV والكانيولا	200	💧 الكانيولا الوردية رقمها؟	C	TRUE	TRUE	14G	18G	20G	24G				ALL
+Q579	IV والكانيولا	200	💧 Infiltration و Extravasation… الفرق؟	Infiltration: تسرب محلول غير مؤذي | Extravasation: تسرب دواء مهيج يضر الأنسجة (مثل الكيماوي والنورأدرينالين)	TRUE	FALSE								ALL
+Q580	IV والكانيولا	300	💧 كل كم تتغير الكانيولا الطرفية؟	حسب سياسة المستشفى — كثير من الإرشادات: عند الحاجة سريرياً بدل تغيير روتيني كل 72–96 ساعة	TRUE	FALSE								ALL
+Q581	IV والكانيولا	300	💧 أكبر كانيولا طرفية للإنعاش… لونها؟	A	TRUE	TRUE	برتقالي 14G	أصفر 24G	أزرق 22G	وردي 20G				ALL
+Q582	IV والكانيولا	400	💧 نقل دم للبالغ… أقل حجم كانيولا مفضل؟	20G أو أكبر (18G أفضل)	TRUE	FALSE								ALL
+Q583	IV والكانيولا	400	💧 علامات التسرب (Infiltration)؟ اذكر 3	تورم، برودة، شحوب، ألم، والمحلول يبطأ	TRUE	FALSE								ALL
+Q584	IV والكانيولا	500	💧 Central line بالرقبة أو تحت الترقوة… أخطر مضاعفة وقت التركيب؟	Pneumothorax (وأيضاً Air embolism والنزيف)	TRUE	FALSE								ALL
+Q585	IV والكانيولا	500	💧 CLABSI شنو يعني؟ واذكر طريقتين لمنعه	التهاب الدم المرتبط بالخط المركزي — تعقيم كامل وقت التركيب، Chlorhexidine، تنظيف الـ Hub، وشيل الخط أول ما يستغنى عنه	TRUE	FALSE								ALL
+Q586	مكافحة العدوى	100	🧼 أهم وأبسط طريقة لمنع انتقال العدوى؟	نظافة اليدين	TRUE	FALSE								ALL
+Q587	مكافحة العدوى	100	🧼 أكياس النفايات الطبية الملوثة لونها غالباً؟	B	TRUE	TRUE	أسود	أصفر أو أحمر	أزرق	أخضر				ALL
+Q588	مكافحة العدوى	200	🧼 وين ترمي الإبر المستخدمة؟	Sharps container — وبدون ما ترجع الغطاء عليها	TRUE	FALSE								ALL
+Q589	مكافحة العدوى	200	🧼 المعقم الكحولي… كم ثانية تفرك؟	20–30 ثانية لين تنشف	TRUE	FALSE								ALL
+Q590	مكافحة العدوى	300	🧼 الأنفلونزا تحتاج أي نوع احتياطات؟	B	TRUE	TRUE	Contact	Droplet	Airborne	ما تحتاج				ALL
+Q591	مكافحة العدوى	300	🧼 انغزيت بإبرة مريض بالغلط… أول شي؟	اغسل المكان بالماي والصابون فوراً، بلّغ، وراجع للتقييم والوقاية (PEP)	TRUE	FALSE								ALL
+Q592	مكافحة العدوى	400	🧼 الحصبة والجدري المائي… أي نوع عزل؟	Airborne	TRUE	FALSE								ALL
+Q593	مكافحة العدوى	400	🧼 MRSA… أي نوع احتياطات؟	Contact precautions — قفازات وروب	TRUE	FALSE								ALL
+Q594	مكافحة العدوى	500	🧼 خلع معدات الحماية (Doffing)… ليش القفازات أول؟	لأنها أكثر شي ملوث — بعدها النظارة ثم الروب ثم الكمام، ونظافة يدين بالنهاية	TRUE	FALSE								ALL
+Q595	مكافحة العدوى	500	🧼 سلسلة العدوى (Chain of infection)… اذكر الحلقات	المسبب، المستودع، المخرج، طريقة الانتقال، المدخل، الشخص المعرّض	TRUE	FALSE								ALL
+Q596	العناية بالمريض	100	🛏️ مريض نص واعي ويترجّع… أي وضعية؟	B	TRUE	TRUE	على ظهره	على جنبه (Recovery)	على بطنه	جالس مايل لورا				ALL
+Q597	العناية بالمريض	100	🛏️ مريض معرض للسقوط… اذكر 3 احتياطات	سرير منخفض، الجرس قريب، حواجز السرير، إضاءة، أرضية ناشفة، مساعدة بالمشي	TRUE	FALSE								ALL
+Q598	العناية بالمريض	200	🛏️ وضعية Trendelenburg شنو؟	الراس أوطى من الرجلين	TRUE	FALSE								ALL
+Q599	العناية بالمريض	200	🛏️ مريض عنده قسطرة بول… الكيس وين لازم يكون؟	أوطى من مستوى المثانة، ولا يلمس الأرض	TRUE	FALSE								ALL
+Q600	العناية بالمريض	300	🛏️ قرحة فراش مرحلة 2 شلون شكلها؟	فقدان جزئي للجلد — جرح سطحي أو فقاعة	TRUE	FALSE								ALL
+Q601	العناية بالمريض	300	🛏️ مريض NPO قبل العملية… شنو يعني؟	ما ياكل ولا يشرب بالفم (وأحياناً يسمح ببعض الأدوية برشفة ماي حسب التعليمات)	TRUE	FALSE								ALL
+Q602	العناية بالمريض	400	🛏️ Incentive spirometer… ليش نعطيه للمريض بعد العملية؟	يشجع النفس العميق ويمنع انكماش الرئة (Atelectasis) والالتهاب	TRUE	FALSE								ALL
+Q603	العناية بالمريض	400	🛏️ قبل التغذية بالأنبوب الأنفي المعدي (NG tube)… شنو لازم تتأكد؟	مكان الأنبوب (pH أو أشعة حسب السياسة) ورفع الراس 30–45°	TRUE	FALSE								ALL
+Q604	العناية بالمريض	500	🛏️ قرحة فراش مرحلة 4 شلون؟	فقدان كامل للجلد مع ظهور عضل أو وتر أو عظم	TRUE	FALSE								ALL
+Q605	العناية بالمريض	500	🛏️ SBAR… شنو هو؟ ومتى نستخدمه؟	Situation, Background, Assessment, Recommendation — لتسليم المريض والتواصل مع الطبيب	TRUE	FALSE								ALL
+Q606	Hospital Detective	100	🏥 مريض على جهاز تنفس صناعي من أيام، صار عنده حرارة وإفرازات كثيرة… شنو تشك؟	Ventilator-associated pneumonia (VAP)	TRUE	FALSE								ALL
+Q607	Hospital Detective	100	🏥 مريض بعد عملية: البول قليل جداً فجأة… أول شي تشيك عليه؟	القسطرة مسدودة؟ وبعدها السوائل والضغط والنزيف	TRUE	FALSE								ALL
+Q608	Hospital Detective	200	🏥 مريض على Heparin صفايحه نزلت للنص وعنده جلطة جديدة… شنو تشك؟	HIT — Heparin-induced thrombocytopenia	TRUE	FALSE								ALL
+Q609	Hospital Detective	200	🏥 بعد دقايق من مضاد حيوي IV: حكة، تورم بالشفايف، وصفير… شنو؟	Anaphylaxis — وقّف الدواء وأعطِ Epinephrine IM فوراً	TRUE	FALSE								ALL
+Q610	Hospital Detective	300	🏥 كبير بالسن بعد عملية صار مشوش بالليل ويتكلم غريب، وكان طبيعي قبل… شنو؟	Delirium — دوّر السبب (التهاب، أدوية، ألم، احتباس بول، نقص أكسجين)	TRUE	FALSE								ALL
+Q611	Hospital Detective	300	🏥 مريض غسيل كلى فوّت جلستين: ضعف، نبض بطيء، وموجات T مدببة… شنو؟	Hyperkalemia	TRUE	FALSE								ALL
+Q612	Hospital Detective	400	🏥 بعد نقل دم بساعة: ضيق نفس وضغط عالي عند مريض قلب… شنو تشك؟	TACO — حمل زايد بالسوائل من نقل الدم	TRUE	FALSE								ALL
+Q613	Hospital Detective	400	🏥 بعد عملية الغدة الدرقية: تنميل حول الفم وتشنج بالأصابع… شنو؟	Hypocalcemia — من ضرر الغدد جارات الدرقية	TRUE	FALSE								ALL
+Q614	Hospital Detective	500	🏥 مريض على Haloperidol: حرارة 40، تيبس شديد بالعضلات، تعرق، و CK عالي… شنو؟	Neuroleptic Malignant Syndrome (NMS)	TRUE	FALSE								ALL
+Q615	Hospital Detective	500	🏥 خامس يوم بعد عملية أمعاء: ألم بطن شديد، حرارة، ونبض سريع… شنو تشك؟	تسريب بمكان الوصلة (Anastomotic leak) والتهاب الصفاق — طوارئ	TRUE	FALSE								ALL
+Q616	الأسماء التجارية	100	🏷️ الاسم العلمي للأسبرين؟	Acetylsalicylic acid	TRUE	FALSE								ALL
+Q617	الأسماء التجارية	100	🏷️ Voltaren اسمه العلمي؟	A	TRUE	TRUE	Diclofenac	Ibuprofen	Naproxen	Celecoxib				ALL
+Q618	الأسماء التجارية	200	🏷️ Nexium اسمه العلمي؟	Esomeprazole	TRUE	FALSE								ALL
+Q619	الأسماء التجارية	200	🏷️ Ventolin اسمه العلمي؟ ولأي شي؟	Salbutamol — موسع شعب للربو	TRUE	FALSE								ALL
+Q620	الأسماء التجارية	300	🏷️ Concor اسمه العلمي؟	A	TRUE	TRUE	Bisoprolol	Amlodipine	Losartan	Atenolol				ALL
+Q621	الأسماء التجارية	300	🏷️ Zithromax اسمه العلمي؟	Azithromycin	TRUE	FALSE								ALL
+Q622	الأسماء التجارية	400	🏷️ Plavix اسمه العلمي؟ ولأي شي؟	Clopidogrel — مضاد صفائح لمنع الجلطات	TRUE	FALSE								ALL
+Q623	الأسماء التجارية	400	🏷️ Lasix اسمه العلمي؟	Furosemide — مدر بول	TRUE	FALSE								ALL
+Q624	الأسماء التجارية	500	🏷️ Eliquis و Xarelto… الاسمين العلميين؟	Apixaban و Rivaroxaban — مميعات (DOACs)	TRUE	FALSE								ALL
+Q625	الأسماء التجارية	500	🏷️ Januvia اسمه العلمي؟ ومن أي عائلة؟	Sitagliptin — DPP-4 inhibitor للسكري	TRUE	FALSE								ALL
+Q626	عائلات الأدوية	100	🧬 (cillin) مثل Amoxicillin… عائلتها؟	A	TRUE	TRUE	Penicillins	Cephalosporins	Macrolides	Quinolones				ALL
+Q627	عائلات الأدوية	100	🧬 (thromycin) مثل Azithromycin و Erythromycin… عائلتها؟	Macrolides	TRUE	FALSE								ALL
+Q628	عائلات الأدوية	200	🧬 (floxacin) مثل Ciprofloxacin… عائلتها؟	Fluoroquinolones	TRUE	FALSE								ALL
+Q629	عائلات الأدوية	200	🧬 (dipine) مثل Amlodipine… عائلتها؟ وأشهر عرض جانبي؟	Calcium channel blockers — تورم الكاحل	TRUE	FALSE								ALL
+Q630	عائلات الأدوية	300	🧬 (tidine) مثل Famotidine… شنو تسوي؟	H2 blockers — تقلل حمض المعدة	TRUE	FALSE								ALL
+Q631	عائلات الأدوية	300	🧬 (cef) مثل Ceftriaxone… عائلتها؟	Cephalosporins	TRUE	FALSE								ALL
+Q632	عائلات الأدوية	400	🧬 (gliptin) و (gliflozin)… كل وحدة شنو؟	Gliptins = DPP-4 inhibitors | Gliflozins = SGLT2 inhibitors (الاثنين للسكري)	TRUE	FALSE								ALL
+Q633	عائلات الأدوية	400	🧬 (parin) مثل Enoxaparin… عائلتها؟	Low molecular weight heparins — مميعات	TRUE	FALSE								ALL
+Q634	عائلات الأدوية	500	🧬 (mab) مثل Rituximab… شنو يعني المقطع؟	Monoclonal antibody — أجسام مضادة وحيدة النسيلة	TRUE	FALSE								ALL
+Q635	عائلات الأدوية	500	🧬 (tinib) مثل Imatinib… عائلتها؟	Tyrosine kinase inhibitors — أدوية سرطان موجهة	TRUE	FALSE								ALL
+Q636	التداخلات الدوائية	100	⚠️ Paracetamol + دواء برد فيه Paracetamol… شنو الخطر؟	جرعة زايدة من Paracetamol ← ضرر الكبد	TRUE	FALSE								ALL
+Q637	التداخلات الدوائية	100	⚠️ مضادات الحموضة مع بعض المضادات الحيوية… شنو تسوي؟	تقلل امتصاصها — نفصل بينهم بساعات	TRUE	FALSE								ALL
+Q638	التداخلات الدوائية	200	⚠️ NSAIDs + ACE inhibitor + مدر بول (Triple whammy)… شنو الخطر؟	فشل كلوي حاد	TRUE	FALSE								ALL
+Q639	التداخلات الدوائية	200	⚠️ Sildenafil + Nitrates… شنو الخطر؟	B	TRUE	TRUE	نزيف	هبوط ضغط شديد	ارتفاع سكر	صرع				ALL
+Q640	التداخلات الدوائية	300	⚠️ Clarithromycin + Simvastatin… شنو المشكلة؟	Clarithromycin يثبط CYP3A4 فيرتفع الستاتين ← خطر Rhabdomyolysis	TRUE	FALSE								ALL
+Q641	التداخلات الدوائية	300	⚠️ ACE inhibitor + Spironolactone… أي إلكتروليت يرتفع؟	البوتاسيوم (Hyperkalemia)	TRUE	FALSE								ALL
+Q642	التداخلات الدوائية	400	⚠️ Rifampin مع حبوب منع الحمل… شنو يصير؟	يحفز إنزيمات الكبد فيقلل فعالية الحبوب ← خطر حمل	TRUE	FALSE								ALL
+Q643	التداخلات الدوائية	400	⚠️ Warfarin + Metronidazole أو Ciprofloxacin… شنو يصير للـ INR؟	يرتفع ← خطر نزيف	TRUE	FALSE								ALL
+Q644	التداخلات الدوائية	500	⚠️ Methotrexate + Trimethoprim… شنو الخطر؟	تثبيط شديد لنخاع العظم — الاثنين ضد الفولات ويقل إخراج الميثوتركسيت	TRUE	FALSE								ALL
+Q645	التداخلات الدوائية	500	⚠️ MAOI + أكل فيه Tyramine (أجبان معتقة)… شنو يصير؟	Hypertensive crisis — ارتفاع ضغط خطير	TRUE	FALSE								ALL
+Q646	السموم والترياق	100	☠️ ترياق البنزوديازيبين؟	B	TRUE	TRUE	Naloxone	Flumazenil	Atropine	NAC				ALL
+Q647	السموم والترياق	100	☠️ طفل بلع دواء أو منظف… أول اتصال؟ وشنو تاخذ معاك؟	الإسعاف 112 أو مركز السموم — وخذ العلبة معاك	TRUE	FALSE								ALL
+Q648	السموم والترياق	200	☠️ ترياق Warfarin لما فيه نزيف؟	Vitamin K + PCC أو بلازما (FFP)	TRUE	FALSE								ALL
+Q649	السموم والترياق	200	☠️ ترياق Heparin؟	Protamine sulfate	TRUE	FALSE								ALL
+Q650	السموم والترياق	300	☠️ ترياق Digoxin؟	Digoxin immune Fab (DigiFab)	TRUE	FALSE								ALL
+Q651	السموم والترياق	300	☠️ حدقات صغيرة، تنفس بطيء، ونعاس… أي نوع تسمم؟	A	TRUE	TRUE	Opioid	Anticholinergic	Sympathomimetic	Serotonin				ALL
+Q652	السموم والترياق	400	☠️ تسمم Methanol (كحول مغشوش): عمى وحموضة… شنو الترياق؟	Fomepizole (أو Ethanol) + غسيل كلى	TRUE	FALSE								ALL
+Q653	السموم والترياق	400	☠️ تسمم Tricyclic antidepressants و QRS عريض… شنو العلاج؟	Sodium bicarbonate	TRUE	FALSE								ALL
+Q654	السموم والترياق	500	☠️ تسمم Calcium channel blocker… اذكر علاجين	Calcium IV، High-dose insulin مع Dextrose، Glucagon، Vasopressors	TRUE	FALSE								ALL
+Q655	السموم والترياق	500	☠️ تسمم Aspirin: طنين، تنفس سريع، وحموضة… أهم علاج؟	Sodium bicarbonate لقلونة الدم والبول (وغسيل كلى للحالات الشديدة)	TRUE	FALSE								ALL
+Q656	الأدوية والحمل	100	🤰 ✅ أو ❌؟ كل الأدوية ممنوعة في الحمل	❌ خرافة — فيه أدوية آمنة كثيرة، والمهم استشارة الطبيب أو الصيدلي	TRUE	FALSE								ALL
+Q657	الأدوية والحمل	100	🤰 أخطر فترة على الجنين من الأدوية (تكوّن الأعضاء)؟	A	TRUE	TRUE	أول 3 شهور	آخر شهر	بعد الولادة	الشهر السابع				ALL
+Q658	الأدوية والحمل	200	🤰 مضاد حيوي آمن نسبياً بالحمل لالتهاب البول؟	A	TRUE	TRUE	Amoxicillin أو Cephalexin	Tetracycline	Ciprofloxacin	Doxycycline				ALL
+Q659	الأدوية والحمل	200	🤰 ليش Tetracycline ممنوع بالحمل والأطفال؟	يصبغ الأسنان ويأثر على نمو العظام	TRUE	FALSE								ALL
+Q660	الأدوية والحمل	300	🤰 ACE inhibitors (مثل Enalapril) بالحمل… مسموحة؟	لا — تضر كلى الجنين. البدائل: Methyldopa، Labetalol، Nifedipine	TRUE	FALSE								ALL
+Q661	الأدوية والحمل	300	🤰 دواء شائع لغثيان الحمل؟	Pyridoxine (B6) مع Doxylamine، أو Ondansetron حسب الحالة	TRUE	FALSE								ALL
+Q662	الأدوية والحمل	400	🤰 Valproate (دواء صرع) بالحمل… شنو الخطر الأكبر؟	تشوهات الأنبوب العصبي (Spina bifida) ومشاكل نمو — يحتاج تخطيط وفوليك عالي	TRUE	FALSE								ALL
+Q663	الأدوية والحمل	400	🤰 Magnesium sulfate بالحمل… لأي شي؟ وأهم علامة تسمم؟	يمنع تشنجات Pre-eclampsia — اختفاء ردود الفعل وتنفس بطيء (الترياق Calcium gluconate)	TRUE	FALSE								ALL
+Q664	الأدوية والحمل	500	🤰 لفرط الغدة الدرقية: Methimazole و PTU… أيهم يفضل بالثلث الأول؟	PTU بالثلث الأول (Methimazole ممكن يسبب تشوهات)، وبعدها Methimazole	TRUE	FALSE								ALL
+Q665	الأدوية والحمل	500	🤰 بالرضاعة: دواء برد مشهور يقلل الحليب؟	Pseudoephedrine	TRUE	FALSE								ALL
+Q666	الميكروبات	100	🧫 الفيروس اللي يسبب الإيدز؟	HIV	TRUE	FALSE								ALL
+Q667	الميكروبات	100	🧫 البكتيريا الكروية اللي تتجمع مثل عنقود العنب؟	A	TRUE	TRUE	Staphylococcus	Streptococcus	E. coli	Bacillus				ALL
+Q668	الميكروبات	200	🧫 البكتيريا المسؤولة عن أغلب التهابات البول؟	E. coli	TRUE	FALSE								ALL
+Q669	الميكروبات	200	🧫 Streptococcus شكلها تحت المجهر؟	كرات على شكل سلاسل	TRUE	FALSE								ALL
+Q670	الميكروبات	300	🧫 الفطر اللي يسبب البياض بفم الرضع (Thrush)؟	Candida albicans	TRUE	FALSE								ALL
+Q671	الميكروبات	300	🧫 الملاريا سببها؟	C	TRUE	TRUE	بكتيريا	فيروس	طفيلي (Plasmodium)	فطر				ALL
+Q672	الميكروبات	400	🧫 بكتيريا تسبب إسهال بعد المضادات الحيوية وتعمل أبواغ؟	Clostridioides difficile (C. diff)	TRUE	FALSE								ALL
+Q673	الميكروبات	400	🧫 الوسط (Agar) اللي يبين تكسير البكتيريا للدم؟	Blood agar	TRUE	FALSE								ALL
+Q674	الميكروبات	500	🧫 Group A Strep… أشهر مرض؟ وأشهر مضاعفة؟	التهاب الحلق البكتيري — والحمى الروماتيزمية والتهاب الكلى	TRUE	FALSE								ALL
+Q675	الميكروبات	500	🧫 MacConkey agar… شنو يفرّق؟	البكتيريا اللي تخمّر اللاكتوز (وردي) عن اللي ما تخمّر — للـ Gram negative	TRUE	FALSE								ALL
+Q676	فصائل الدم والتبرع	100	🅰️ أندر فصيلة من هذول؟	C	TRUE	TRUE	O+	A+	AB-	B+				ALL
+Q677	فصائل الدم والتبرع	100	🅰️ وحدة الدم المتبرع فيها كم mL تقريباً؟	حوالي 450–500 mL	TRUE	FALSE								ALL
+Q678	فصائل الدم والتبرع	200	🅰️ فصيلة AB موجب تقدر تاخذ كريات حمراء من منو؟	من كل الفصائل (المستقبل العام)	TRUE	FALSE								ALL
+Q679	فصائل الدم والتبرع	200	🅰️ كل كم تقدر تتبرع بالدم الكامل؟	كل 8–12 أسبوع تقريباً (حسب الدولة والجنس)	TRUE	FALSE								ALL
+Q680	فصائل الدم والتبرع	300	🅰️ المعطي العام للبلازما أي فصيلة؟	D	TRUE	TRUE	O	A	B	AB				ALL
+Q681	فصائل الدم والتبرع	300	🅰️ Crossmatch شنو هو؟	خلط دم المتبرع مع مصل المريض للتأكد ما فيه تفاعل قبل النقل	TRUE	FALSE								ALL
+Q682	فصائل الدم والتبرع	400	🅰️ كريات الدم الحمراء المحفوظة… كم يوم تقريباً؟ وبأي حرارة؟	حوالي 35–42 يوم — 1–6°	TRUE	FALSE								ALL
+Q683	فصائل الدم والتبرع	400	🅰️ Direct Coombs test… شنو يكشف؟	أجسام مضادة لاصقة على كريات الدم الحمراء (مثل الأنيميا الانحلالية أو تفاعل نقل الدم)	TRUE	FALSE								ALL
+Q684	فصائل الدم والتبرع	500	🅰️ Cryoprecipitate فيه شنو أكثر شي؟	Fibrinogen و Factor VIII و von Willebrand factor و Factor XIII	TRUE	FALSE								ALL
+Q685	فصائل الدم والتبرع	500	🅰️ أم Rh سالب ولدت طفل موجب… خلال كم ساعة تاخذ Anti-D؟	خلال 72 ساعة	TRUE	FALSE								ALL
+Q686	قيم التحاليل	100	📊 السكر الصايم الطبيعي؟	B	TRUE	TRUE	40–60	70–100 mg/dL	150–200	250–300				ALL
+Q687	قيم التحاليل	100	📊 البوتاسيوم الطبيعي؟	3.5–5.0 mEq/L	TRUE	FALSE								ALL
+Q688	قيم التحاليل	200	📊 Creatinine عالي… شنو يدل؟	ضعف بوظائف الكلى	TRUE	FALSE								ALL
+Q689	قيم التحاليل	200	📊 كريات الدم البيضاء (WBC) الطبيعي تقريباً؟	B	TRUE	TRUE	1–2 ألف	4–11 ألف	20–30 ألف	100 ألف				ALL
+Q690	قيم التحاليل	300	📊 ALT و AST عالية… أي عضو؟	الكبد	TRUE	FALSE								ALL
+Q691	قيم التحاليل	300	📊 pH الدم الطبيعي؟	7.35–7.45	TRUE	FALSE								ALL
+Q692	قيم التحاليل	400	📊 TSH عالي و T4 منخفض… شنو؟	قصور الغدة الدرقية الأولي (Primary hypothyroidism)	TRUE	FALSE								ALL
+Q693	قيم التحاليل	400	📊 Lactate عالي… شنو يدل غالباً؟	نقص تروية الأنسجة — صدمة أو Sepsis	TRUE	FALSE								ALL
+Q694	قيم التحاليل	500	📊 غازات الدم: pH 7.50، PaCO2 40، HCO3 32… شنو التفسير؟	Metabolic alkalosis — مثلاً من ترجيع كثير أو مدرات	TRUE	FALSE								ALL
+Q695	قيم التحاليل	500	📊 BNP عالي جداً… شنو يدل؟	فشل القلب (Heart failure)	TRUE	FALSE								ALL
+Q696	أمراض الدم	100	🔬 نقص كريات الدم الحمراء أو الهيموجلوبين اسمه؟	الأنيميا (فقر الدم)	TRUE	FALSE								ALL
+Q697	أمراض الدم	100	🔬 نقص أي فيتامين يسبب أنيميا مع تنميل بالأطراف؟	A	TRUE	TRUE	B12	C	D	K				ALL
+Q698	أمراض الدم	200	🔬 الثلاسيميا… خلل وراثي بشنو؟	تصنيع سلاسل الهيموجلوبين (Alpha أو Beta)	TRUE	FALSE								ALL
+Q699	أمراض الدم	200	🔬 الأنيميا المنجلية… أشهر أزمة تصير للمريض؟	أزمة ألم (Vaso-occlusive crisis)	TRUE	FALSE								ALL
+Q700	أمراض الدم	300	🔬 كريات حمراء كبيرة (Macrocytic)… أشهر سببين؟	نقص B12 ونقص حمض الفوليك (وأيضاً الكحول)	TRUE	FALSE								ALL
+Q701	أمراض الدم	300	🔬 ITP شنو هو؟	نقص صفائح مناعي — الجسم يهاجم الصفائح (كدمات ونزيف)	TRUE	FALSE								ALL
+Q702	أمراض الدم	400	🔬 DIC… شنو يصير؟	تخثر منتشر يستهلك عوامل التخثر والصفائح ← جلطات ونزيف بنفس الوقت	TRUE	FALSE								ALL
+Q703	أمراض الدم	400	🔬 Polycythemia vera… شنو يرتفع؟	كريات الدم الحمراء (وأحياناً البيضاء والصفائح) — الدم يصير ثقيل	TRUE	FALSE								ALL
+Q704	أمراض الدم	500	🔬 Philadelphia chromosome مرتبط بأي سرطان دم؟	CML — t(9;22) BCR-ABL	TRUE	FALSE								ALL
+Q705	أمراض الدم	500	🔬 von Willebrand disease… شنو هو؟	أشهر اضطراب نزيف وراثي — نقص أو خلل بعامل von Willebrand	TRUE	FALSE								ALL
+Q706	X-Ray Detective	100	🩻 في الأشعة العادية… شنو يطلع أبيض جداً؟	B	TRUE	TRUE	الهوا	العظم والمعدن	الدهون	الماي				ALL
+Q707	X-Ray Detective	100	🩻 بأشعة الصدر PA… القلب متضخم إذا عرضه أكثر من كم من عرض الصدر؟	أكثر من 50% (Cardiothoracic ratio)	TRUE	FALSE								ALL
+Q708	X-Ray Detective	200	🩻 عظمة طفل منثنية ومكسورة من جهة وحدة بس… اسم الكسر؟	Greenstick fracture	TRUE	FALSE								ALL
+Q709	X-Ray Detective	200	🩻 أشعة بطن: مستويات هوا وسوائل كثيرة… شنو تشك؟	انسداد الأمعاء (Bowel obstruction)	TRUE	FALSE								ALL
+Q710	X-Ray Detective	300	🩻 أشعة صدر: بياض والزاوية تحت الرئة (Costophrenic angle) مختفية… شنو؟	Pleural effusion (سوائل بالجنبة)	TRUE	FALSE								ALL
+Q711	X-Ray Detective	300	🩻 أشعة صدر: بياض بفص كامل مع Air bronchogram… شنو؟	Pneumonia (Consolidation)	TRUE	FALSE								ALL
+Q712	X-Ray Detective	400	🩻 أشعة صدر: خطوط Kerley B وبياض مثل أجنحة الفراشة حول القلب… شنو؟	وذمة رئوية (Pulmonary edema) من فشل القلب	TRUE	FALSE								ALL
+Q713	X-Ray Detective	400	🩻 أشعة رقبة جانبية لطفل: Thumbprint sign… شنو تدل؟	Epiglottitis	TRUE	FALSE								ALL
+Q714	X-Ray Detective	500	🩻 أشعة صدر بعد حادث سرعة عالية: Mediastinum عريض… شنو تخاف منه؟	إصابة أو تمزق الأبهر (Aortic injury)	TRUE	FALSE								ALL
+Q715	X-Ray Detective	500	🩻 أشعة صدر لرضيع: ظل الغدة الزعترية مثل الشراع… اسم العلامة؟	Sail sign (طبيعي عند الرضع)	TRUE	FALSE								ALL
+Q716	CT و MRI	100	🧲 CT اختصار لشنو؟	Computed Tomography	TRUE	FALSE								ALL
+Q717	CT و MRI	100	🧲 أي جهاز أسرع غالباً بالطوارئ؟	A	TRUE	TRUE	CT	MRI	ما في فرق	Ultrasound دائماً				ALL
+Q718	CT و MRI	200	🧲 شنو لازم يشيل المريض قبل MRI؟	كل المعادن: ساعة، مجوهرات، مفاتيح، بطاقات، سماعات…	TRUE	FALSE								ALL
+Q719	CT و MRI	200	🧲 في CT: النزيف الحديث بالدماغ يطلع أبيض ولا أسود؟	أبيض (Hyperdense)	TRUE	FALSE								ALL
+Q720	CT و MRI	300	🧲 MRI أفضل لأي أنسجة؟	B	TRUE	TRUE	العظام	الأنسجة الرخوة والأعصاب والدماغ	الرئة	الأسنان				ALL
+Q721	CT و MRI	300	🧲 مريض يخاف من الأماكن الضيقة قبل MRI… شنو الحلول؟	شرح وطمأنة، Open MRI، موسيقى، وأحياناً مهدئ خفيف	TRUE	FALSE								ALL
+Q722	CT و MRI	400	🧲 Hounsfield units… الماي كم؟ والهوا كم؟	الماي 0 — الهوا −1000	TRUE	FALSE								ALL
+Q723	CT و MRI	400	🧲 صبغة MRI اسمها؟ وأخطر مضاعفة عند مرضى الكلى؟	Gadolinium — Nephrogenic systemic fibrosis (NSF)	TRUE	FALSE								ALL
+Q724	CT و MRI	500	🧲 Epidural و Subdural hematoma بالـ CT… الفرق بالشكل؟	Epidural: عدسي محدب | Subdural: هلالي	TRUE	FALSE								ALL
+Q725	CT و MRI	500	🧲 DWI بالـ MRI… أهم استخدام؟	كشف الجلطة الدماغية المبكرة خلال دقايق	TRUE	FALSE								ALL
+Q726	وضعيات التصوير	100	📐 AP يعني؟	Anterior-Posterior — الأشعة تدخل من قدام وتطلع من ورا	TRUE	FALSE								ALL
+Q727	وضعيات التصوير	100	📐 أشعة الصدر الروتينية… كم View عادة؟	B	TRUE	TRUE	View واحد	PA و Lateral	4 Views	6 Views				ALL
+Q728	وضعيات التصوير	200	📐 ليش نطلب من المريض ياخذ نفس عميق ويكتمه بأشعة الصدر؟	تتمدد الرئة وينزل الحجاب ونشوف الرئة كاملة بدون حركة	TRUE	FALSE								ALL
+Q729	وضعيات التصوير	200	📐 Lateral chest view… أي جهة تكون على الجهاز عادة؟	الجهة اليسار — القلب أقرب فيقل التكبير	TRUE	FALSE								ALL
+Q730	وضعيات التصوير	300	📐 أشعة الكاحل… شنو الـ Mortise view؟	تدوير الرجل للداخل 15–20° عشان يبان مفصل الكاحل بوضوح	TRUE	FALSE								ALL
+Q731	وضعيات التصوير	300	📐 كم View على الأقل لأي عظمة نشك فيها كسر؟	2 Views متعامدين (90°)	TRUE	FALSE								ALL
+Q732	وضعيات التصوير	400	📐 Lordotic view… لأي شي يستخدم؟	نشوف قمة الرئة بدون الترقوة — مثلاً للسل	TRUE	FALSE								ALL
+Q733	وضعيات التصوير	400	📐 Swimmer's view… لأي منطقة؟	الفقرات العنقية السفلية C7–T1 لما الكتف يغطيها	TRUE	FALSE								ALL
+Q734	وضعيات التصوير	500	📐 Odontoid (Open-mouth) view… شنو نشوف فيه؟	C1 و C2 وسن الفقرة الثانية (Dens)	TRUE	FALSE								ALL
+Q735	وضعيات التصوير	500	📐 Skyline (Sunrise) view… لأي عظمة؟	الرضفة (Patella)	TRUE	FALSE								ALL
+Q736	السلامة الإشعاعية	100	☢️ مريضة ممكن تكون حامل… شنو نسوي قبل الأشعة؟	A	TRUE	TRUE	نسأل عن الحمل ونقيّم الحاجة	نصور عادي	نزيد الجرعة	نصور مرتين				ALL
+Q737	السلامة الإشعاعية	100	☢️ المريلة الرصاصية (Lead apron) شنو فايدتها؟	تحمي الجسم من الإشعاع المتشتت	TRUE	FALSE								ALL
+Q738	السلامة الإشعاعية	200	☢️ أي فحص ما فيه إشعاع مؤين؟	C	TRUE	TRUE	CT	X-Ray	MRI	Fluoroscopy				ALL
+Q739	السلامة الإشعاعية	200	☢️ Dosimeter شنو هو؟	بادج يلبسه العامل يقيس كمية الإشعاع اللي تعرض لها	TRUE	FALSE								ALL
+Q740	السلامة الإشعاعية	300	☢️ الألتراساوند فيه إشعاع؟	لا — موجات صوتية، وآمن بالحمل	TRUE	FALSE								ALL
+Q741	السلامة الإشعاعية	300	☢️ ليش نضيّق مجال الأشعة (Collimation)؟	نقلل الجرعة والإشعاع المتشتت ونحسن جودة الصورة	TRUE	FALSE								ALL
+Q742	السلامة الإشعاعية	400	☢️ حد الجرعة الفعالة للعاملين بالأشعة (ICRP)؟	B	TRUE	TRUE	1 mSv بالسنة	20 mSv بالسنة (متوسط 5 سنين)	500 mSv بالسنة	1000 mSv بالسنة				ALL
+Q743	السلامة الإشعاعية	400	☢️ أيهم جرعته أعلى: أشعة صدر ولا CT بطن؟	CT بطن — أعلى بمئات المرات تقريباً (حوالي 8–10 mSv)	TRUE	FALSE								ALL
+Q744	السلامة الإشعاعية	500	☢️ Deterministic و Stochastic effects… الفرق؟	Deterministic: لها حد وتزيد شدتها مع الجرعة (حروق، ساد) | Stochastic: بدون حد، الاحتمال يزيد مع الجرعة (سرطان)	TRUE	FALSE								ALL
+Q745	السلامة الإشعاعية	500	☢️ بالـ Fluoroscopy… ليش يلبسون نظارات رصاصية؟	عدسة العين حساسة للإشعاع وممكن يصير لها ساد (Cataract)	TRUE	FALSE								ALL
+Q746	Final Boss	100	👑 السؤال الأخير! بالبر لدغته عقرب وصار عنده لعاب كثير، رجفة، وتنفس صعب… اذكر 3 خطوات مهمة	تهدئة وتثبيت الطرف، ABC وأكسجين، نقل سريع للمستشفى (ممكن Antivenom) — لا جرح ولا مص ولا ثلج	TRUE	FALSE								ALL
+Q747	Final Boss	200	👑 السؤال الأخير! طفل عمره سنة: إسهال وترجيع يومين، عيونه غايرة، ما يبلل الحفاظ، ونعسان… شنو؟ والعلاج؟	جفاف شديد — سوائل IV أو IO بسرعة (20 mL/kg Normal saline) وإعادة تقييم	TRUE	FALSE								ALL
+Q748	Final Boss	300	👑 السؤال الأخير! رجل 50 سنة: ألم صدر مستمر و ECG طبيعي… تطمنه وترجعه البيت؟	لا! ECG طبيعي ما يستبعد الجلطة — Troponin و ECG متكرر ومراقبة	TRUE	FALSE								ALL
+Q749	Final Boss	400	👑 السؤال الأخير! صدمة نزفية من حادث… شنو يعني Permissive hypotension؟	نخلي الانقباضي حوالي 80–90 (بدون إصابة راس) لين يوقف النزيف — السوائل الكثيرة تخفف عوامل التخثر وتزيد النزيف	TRUE	FALSE								ALL
+Q750	Final Boss	500	👑 السؤال الأخير! بنت 16 سنة طاحت بالمدرسة، نبضها 40، نحيفة جداً، وتقول تتمرن وايد وما تاكل… شنو تشك؟	Anorexia nervosa مع Bradycardia واضطراب أملاح — خطر على القلب وتحتاج تقييم فوري (وخطر Refeeding syndrome)	TRUE	FALSE								ALL

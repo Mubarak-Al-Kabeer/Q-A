@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#050a17">
   <title>🩺 سين جيم الطبي</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,24 +12,35 @@
 </head>
 <body>
 
+<!-- خلفية متحركة -->
+<div class="bg-fx" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <svg class="bg-ecg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+    <path d="M0 110 H220 L240 100 L255 110 H300 L315 40 L330 170 L345 110 H420 L440 95 L470 110 H700 L720 100 L735 110 H780 L795 40 L810 170 L825 110 H900 L920 95 L950 110 H1200"/>
+  </svg>
+</div>
+
 <div id="app">
 
-  <!-- تسجيل الدخول -->
+  <!-- ═══════════ تسجيل الدخول ═══════════ -->
   <section id="loginScreen" class="screen active">
     <div class="auth-wrap">
       <div class="brand">
-        <div class="brand-icon">🩺</div>
-        <h1 class="brand-name">سين جيم الطبي</h1>
-        <p class="brand-sub">لعبة الأسئلة الطبية التنافسية</p>
+        <div class="logo-orb"><span>🩺</span></div>
+        <h1 class="brand-name">سين جيم <em>الطبي</em></h1>
+        <p class="brand-sub">تحدّي الأسئلة الطبية بين فريقين</p>
+        <svg class="brand-ecg" viewBox="0 0 300 40" aria-hidden="true"><path d="M0 22 H90 L100 16 L108 22 H128 L136 4 L146 36 L154 22 H180 L190 16 L204 22 H300"/></svg>
       </div>
-      <div class="auth-card">
+      <div class="auth-card glass">
         <h2>تسجيل الدخول</h2>
-        <label>رقم الحساب</label>
+        <label for="loginAccount">رقم الحساب</label>
         <input id="loginAccount" type="text" inputmode="numeric" autocomplete="username" placeholder="مثال: 1001">
-        <label>الرمز السري</label>
+        <label for="loginCode">الرمز السري</label>
         <div class="input-pw-wrap">
           <input id="loginCode" type="password" autocomplete="current-password" placeholder="••••••">
-          <button type="button" class="pw-toggle" onclick="togglePw('loginCode',this)">👁</button>
+          <button type="button" class="pw-toggle" onclick="togglePw('loginCode',this)" aria-label="إظهار الرمز">👁</button>
         </div>
         <button class="btn-primary" onclick="login()">دخول</button>
         <div class="auth-links">
@@ -41,38 +53,38 @@
     </div>
   </section>
 
-  <!-- إنشاء حساب -->
+  <!-- ═══════════ إنشاء حساب ═══════════ -->
   <section id="registerScreen" class="screen">
     <div class="auth-wrap">
       <div class="brand">
-        <div class="brand-icon">🩺</div>
-        <h1 class="brand-name">سين جيم الطبي</h1>
+        <div class="logo-orb sm"><span>🩺</span></div>
+        <h1 class="brand-name">سين جيم <em>الطبي</em></h1>
       </div>
-      <div class="auth-card">
+      <div class="auth-card glass">
         <h2>إنشاء حساب</h2>
         <p class="auth-note">بعد التسجيل، انتظر موافقة المسؤول للبدء باللعب</p>
-        <label>الاسم المستعار</label>
+        <label for="registerNickname">الاسم المستعار</label>
         <input id="registerNickname" type="text" autocomplete="nickname" placeholder="الاسم الذي يظهر في اللعبة">
-        <label>رقم الجوال</label>
+        <label for="registerPhone">رقم الجوال</label>
         <input id="registerPhone" type="tel" autocomplete="tel" placeholder="05xxxxxxxx">
-        <label>البريد الإلكتروني</label>
+        <label for="registerEmail">البريد الإلكتروني</label>
         <input id="registerEmail" type="email" autocomplete="email" placeholder="example@email.com">
-        <label>الرمز السري</label>
+        <label for="registerCode">الرمز السري</label>
         <div class="input-pw-wrap">
           <input id="registerCode" type="password" autocomplete="new-password" placeholder="3 أحرف أو أرقام على الأقل">
-          <button type="button" class="pw-toggle" onclick="togglePw('registerCode',this)">👁</button>
+          <button type="button" class="pw-toggle" onclick="togglePw('registerCode',this)" aria-label="إظهار الرمز">👁</button>
         </div>
         <button class="btn-primary" onclick="register()">إنشاء الحساب</button>
-        <button class="btn-secondary" onclick="showScreen('loginScreen')">← رجوع</button>
+        <button class="btn-secondary" onclick="showScreen('loginScreen')">→ رجوع</button>
         <div id="registerMessage" class="msg"></div>
       </div>
     </div>
   </section>
 
-  <!-- انتظار موافقة -->
+  <!-- ═══════════ انتظار الموافقة ═══════════ -->
   <section id="waitingScreen" class="screen">
     <div class="auth-wrap">
-      <div class="auth-card waiting-card">
+      <div class="auth-card glass waiting-card">
         <div class="waiting-icon">⏳</div>
         <h2>في انتظار الموافقة</h2>
         <p>تم إنشاء حسابك — المسؤول سيوافق عليه قريباً</p>
@@ -86,19 +98,39 @@
     </div>
   </section>
 
-  <!-- الرئيسية -->
+  <!-- ═══════════ نسيت الرمز ═══════════ -->
+  <section id="forgotScreen" class="screen">
+    <div class="auth-wrap">
+      <div class="brand">
+        <div class="logo-orb sm"><span>🔐</span></div>
+        <h1 class="brand-name">استرجاع الرمز</h1>
+      </div>
+      <div class="auth-card glass">
+        <p class="auth-note">أدخل بياناتك للتحقق واسترجاع الرمز</p>
+        <label for="forgotAccount">رقم الحساب</label>
+        <input id="forgotAccount" type="text" inputmode="numeric" placeholder="رقم حسابك">
+        <label for="forgotPhone">رقم الجوال</label>
+        <input id="forgotPhone" type="tel" placeholder="رقم الجوال المسجل">
+        <label for="forgotEmail">البريد الإلكتروني</label>
+        <input id="forgotEmail" type="email" placeholder="البريد المسجل">
+        <button class="btn-primary" onclick="forgotCode()">استرجاع الرمز</button>
+        <button class="btn-secondary" onclick="showScreen('loginScreen')">→ رجوع</button>
+        <div id="forgotMessage" class="msg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ الرئيسية ═══════════ -->
   <section id="gameScreen" class="screen">
     <header class="topbar">
       <div class="topbar-brand">
-        <span class="topbar-icon">🩺</span>
-        <span class="topbar-title">سين جيم الطبي</span>
+        <span class="logo-orb xs"><span>🩺</span></span>
+        <span class="topbar-title">سين جيم <em>الطبي</em></span>
       </div>
       <div class="topbar-user">
         <span id="playerNickname" class="user-name"></span>
-        <div id="gamesRemainingBadge" class="games-badge">
-          الألعاب: <strong id="gamesRemaining">0</strong>
-        </div>
-        <button class="btn-logout" onclick="logout()">خروج</button>
+        <div id="gamesRemainingBadge" class="games-badge">🎟️ <strong id="gamesRemaining">0</strong></div>
+        <button class="btn-ghost" onclick="logout()">خروج</button>
       </div>
     </header>
 
@@ -106,17 +138,16 @@
 
       <div id="adminMenu" class="admin-hub" style="display:none">
         <div class="hub-title">
-          <div class="hub-icon">⚙️</div>
           <h2>لوحة المسؤول</h2>
           <p>اختر القسم المطلوب</p>
         </div>
         <div class="hub-grid">
-          <button class="hub-card hub-accounts" onclick="showAdminPanel()">
+          <button class="hub-card glass hub-accounts" onclick="showAdminPanel()">
             <span class="hub-card-icon">👥</span>
             <span class="hub-card-label">إدارة الحسابات</span>
             <span class="hub-card-sub">قبول · رفض · ألعاب</span>
           </button>
-          <button class="hub-card hub-play" onclick="showGameSetup()">
+          <button class="hub-card glass hub-play" onclick="showGameSetup()">
             <span class="hub-card-icon">🎮</span>
             <span class="hub-card-label">ابدأ لعبة</span>
             <span class="hub-card-sub">مباراة جديدة بين فريقين</span>
@@ -126,24 +157,45 @@
 
       <div id="gameSetupArea" class="setup-area" style="display:none">
         <div id="adminBackBtn" class="admin-back" style="display:none">
-          <button class="btn-link" onclick="showAdminMenu()">← لوحة المسؤول</button>
+          <button class="btn-link" onclick="showAdminMenu()">→ لوحة المسؤول</button>
         </div>
-        <div class="setup-card">
-          <div class="setup-icon">🎮</div>
-          <h2>تجهيز المباراة</h2>
-          <p class="auth-note">أدخل اسمَي الفريقين ثم ابدأ</p>
+
+        <div id="resumeCard" class="resume-card glass" style="display:none">
+          <div class="resume-icon">🕹️</div>
+          <div class="resume-info">
+            <strong>عندك مباراة لم تكتمل</strong>
+            <span id="resumeText"></span>
+          </div>
+          <div class="resume-actions">
+            <button class="btn-primary btn-sm" onclick="resumeSavedGame()">▶ كمّل</button>
+            <button class="btn-ghost btn-sm" onclick="discardSavedGame()">تجاهل</button>
+          </div>
+        </div>
+
+        <div class="setup-card glass">
+          <div class="setup-head">
+            <span class="step-pill">الخطوة 1 من 3</span>
+            <h2>تجهيز المباراة</h2>
+            <p class="auth-note">سمّوا فريقيكم وخلّ الحماس يبدأ</p>
+          </div>
           <div class="teams-row">
-            <div class="team-input-group">
-              <label>🔵 الفريق الأول</label>
-              <input id="team1" type="text" placeholder="اسم الفريق الأول">
+            <div class="team-input-group t1">
+              <label for="team1">الفريق الأزرق</label>
+              <input id="team1" type="text" maxlength="24" placeholder="اسم الفريق الأول">
             </div>
             <div class="vs-badge">VS</div>
-            <div class="team-input-group">
-              <label>🔴 الفريق الثاني</label>
-              <input id="team2" type="text" placeholder="اسم الفريق الثاني">
+            <div class="team-input-group t2">
+              <label for="team2">الفريق الأحمر</label>
+              <input id="team2" type="text" maxlength="24" placeholder="اسم الفريق الثاني">
             </div>
           </div>
-          <button class="btn-primary btn-start" onclick="goToCategories()">التالي: اختيار الفئات ←</button>
+          <div class="rules-strip">
+            <div><b>⏱️ 60 ث</b><span>لكل سؤال</span></div>
+            <div><b>⚡ سرقة</b><span>20 ث للخصم</span></div>
+            <div><b>🛟 4 وسائل</b><span>لكل فريق</span></div>
+            <div><b>🎁 مفاجآت</b><span>مخفية باللوحة</span></div>
+          </div>
+          <button class="btn-primary btn-start" onclick="goToSpecialty()">التالي: اختيار التخصص ←</button>
           <div id="gameMessage" class="msg"></div>
         </div>
       </div>
@@ -154,12 +206,12 @@
             <h2>👥 الحسابات</h2>
             <p>إدارة اللاعبين والصلاحيات</p>
           </div>
-          <button class="btn-secondary btn-sm" onclick="showAdminMenu()">← رجوع</button>
+          <button class="btn-ghost btn-sm" onclick="showAdminMenu()">→ رجوع</button>
         </div>
         <div class="stats-row">
-          <div class="stat-chip"><span>الكل</span><strong id="totalAccounts">0</strong></div>
-          <div class="stat-chip pending-chip"><span>انتظار</span><strong id="pendingAccounts">0</strong></div>
-          <div class="stat-chip approved-chip"><span>مقبول</span><strong id="approvedAccounts">0</strong></div>
+          <div class="stat-chip glass"><span>الكل</span><strong id="totalAccounts">0</strong></div>
+          <div class="stat-chip glass pending-chip"><span>انتظار</span><strong id="pendingAccounts">0</strong></div>
+          <div class="stat-chip glass approved-chip"><span>مقبول</span><strong id="approvedAccounts">0</strong></div>
         </div>
         <div id="accountsList" class="accounts-list">
           <div class="loading-text">جاري التحميل…</div>
@@ -169,152 +221,238 @@
     </div>
   </section>
 
-  <!-- اختيار الفئات -->
+  <!-- ═══════════ اختيار التخصص ═══════════ -->
+  <section id="specialtyScreen" class="screen">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="logo-orb xs"><span>🩺</span></span>
+        <span class="topbar-title">اختيار التخصص</span>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="backToTeams()">→ الفريقين</button>
+    </header>
+    <div class="game-body">
+      <div class="cats-head">
+        <span class="step-pill">الخطوة 2 من 3</span>
+        <h2>وش تخصصكم؟</h2>
+        <p class="auth-note">كل تخصص له فئاته الخاصة + الفئات المشتركة الحماسية</p>
+      </div>
+      <div id="specialtyGrid" class="spec-grid"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ اختيار الفئات ═══════════ -->
   <section id="categoriesScreen" class="screen">
     <header class="topbar">
       <div class="topbar-brand">
-        <span class="topbar-icon">🗂️</span>
+        <span class="logo-orb xs"><span>🗂️</span></span>
         <span class="topbar-title">اختيار الفئات</span>
       </div>
-      <button class="btn-secondary btn-sm" onclick="backToTeams()">← الفريقين</button>
+      <button class="btn-ghost btn-sm" onclick="backToSpecialty()">→ التخصص</button>
     </header>
     <div class="game-body cats-body">
       <div class="cats-head">
+        <span class="step-pill">الخطوة 3 من 3</span>
         <h2>اختر فئات المباراة</h2>
         <div id="catsTeams" class="cats-teams"></div>
-        <p class="auth-note">اختر من <span id="catsMin">3</span> إلى <span id="catsMax">10</span> فئات</p>
+        <button id="catsSpecialty" class="spec-pill" onclick="backToSpecialty()" title="تغيير التخصص"></button>
+        <p class="auth-note">اختر عدداً <b>زوجياً</b> من <span id="catsMin">4</span> إلى <span id="catsMax">10</span> فئات — حتى يتساوى عدد الأسئلة للفريقين</p>
         <div class="cats-tools">
-          <button class="btn-secondary btn-sm" onclick="pickRandomCats(RANDOM_CATS)">🎲 عشوائي</button>
-          <button class="btn-secondary btn-sm" onclick="clearCats()">مسح</button>
-          <span class="cats-counter">المختار: <strong id="catsCount">0</strong> / <span id="catsTotal">10</span></span>
+          <button class="btn-ghost btn-sm" onclick="pickRandomCats(RANDOM_CATS)">🎲 عشوائي</button>
+          <button class="btn-ghost btn-sm" onclick="clearCats()">مسح</button>
+          <span class="cats-counter">المختار <strong id="catsCount">0</strong> / <span id="catsTotal">10</span></span>
         </div>
       </div>
       <div id="catsGroups"></div>
-      <div class="cats-bar">
+      <label class="boss-toggle glass">
+        <input type="checkbox" id="bossToggle" checked>
+        <span class="bt-switch"></span>
+        <span class="bt-text"><b>👑 Final Boss — سؤال ختامي بالرهان</b><small>بعد ما تخلص اللوحة، كل فريق يراهن بالسر على سؤال واحد يقلب النتيجة</small></span>
+      </label>
+      <div class="cats-bar glass">
         <div id="categoriesMessage" class="msg"></div>
         <button id="btnStartPlay" class="btn-primary btn-start" onclick="startGame()">🚀 ابدأ اللعب</button>
       </div>
     </div>
   </section>
 
-  <!-- لوحة اللعبة -->
+  <!-- ═══════════ لوحة اللعبة ═══════════ -->
   <section id="boardScreen" class="screen">
 
     <header class="board-header">
-      <div class="board-brand">🩺 سين جيم</div>
-
-      <!-- التايمر -->
-      <div class="timer-wrap">
-        <div class="timer-team-label" id="timerTeamLabel">—</div>
-        <div class="timer-ring-wrap">
-          <svg class="timer-svg" viewBox="0 0 60 60" aria-hidden="true">
-            <circle class="timer-track" cx="30" cy="30" r="26"/>
-            <circle class="timer-fill" id="timerCircle" cx="30" cy="30" r="26"
-                    stroke-dasharray="163.36" stroke-dashoffset="0"/>
-          </svg>
-          <div class="timer-num" id="timerNum">60</div>
+      <div class="team-panel t1" id="team1Card">
+        <div class="team-top">
+          <div class="team-name" id="bTeam1">الفريق الأول</div>
+          <div class="team-fire" id="fire1">🔥 On Fire</div>
         </div>
-        <div class="timer-controls">
-          <button class="btn-timer-ctrl" onclick="startTimer()" title="ابدأ">▶</button>
-          <button class="btn-timer-ctrl" onclick="pauseTimer()" title="إيقاف">⏸</button>
-          <button class="btn-timer-ctrl" onclick="resetTimer()" title="إعادة">↺</button>
-        </div>
+        <div class="team-score" id="score1">0</div>
+        <div class="helpers" id="helpers1"></div>
+        <div class="delta-layer" id="delta1"></div>
       </div>
 
-      <div class="scoreboard">
-        <div id="team1Card" class="score-card active-team">
-          <div id="bTeam1" class="score-name">الفريق الأول</div>
-          <div id="score1" class="score-num">0</div>
-        </div>
-        <div class="turn-display">
-          <div class="turn-label">الدور</div>
-          <div id="currentTurn" class="turn-name">—</div>
+      <div class="board-center">
+        <div class="board-brand"><span class="logo-orb xs"><span>🩺</span></span> سين جيم</div>
+        <div class="turn-pill">
+          <span class="turn-label">الدور</span>
+          <strong id="currentTurn">—</strong>
           <button class="btn-swap" onclick="swapTurn()" title="تبديل الدور">⇄</button>
         </div>
-        <div id="team2Card" class="score-card">
-          <div id="bTeam2" class="score-name">الفريق الثاني</div>
-          <div id="score2" class="score-num">0</div>
+        <div class="tiles-left"><span id="boardSpecialty" class="board-spec"></span> <span id="tilesLeft">0</span> سؤال متبقي</div>
+        <div class="board-tools">
+          <button class="tool-btn" id="btnMute" onclick="toggleMute()" title="الصوت (M)">🔊</button>
+          <button class="tool-btn" onclick="toggleFullscreen()" title="ملء الشاشة (F)">⛶</button>
+          <button class="tool-btn" onclick="toggleKeys(true)" title="اختصارات المقدّم (H)">⌨️</button>
+          <button class="tool-btn" onclick="confirmEndGame()" title="إنهاء المباراة">🏁</button>
+          <button class="tool-btn" onclick="confirmBack()" title="خروج">✕</button>
         </div>
       </div>
 
-      <button class="btn-secondary btn-sm" onclick="confirmBack()">← رجوع</button>
+      <div class="team-panel t2" id="team2Card">
+        <div class="team-top">
+          <div class="team-name" id="bTeam2">الفريق الثاني</div>
+          <div class="team-fire" id="fire2">🔥 On Fire</div>
+        </div>
+        <div class="team-score" id="score2">0</div>
+        <div class="helpers" id="helpers2"></div>
+        <div class="delta-layer" id="delta2"></div>
+      </div>
     </header>
 
+    <div id="armedBar" class="armed-bar" style="display:none"></div>
+    <div id="finalRoundBanner" class="final-banner" style="display:none">🔥 الجولة الحاسمة — كل النقاط مضاعفة ×2</div>
+
     <div class="board-wrap">
-
-      <div id="questionStage" class="q-stage">
-
-        <div id="stageIdle" class="stage-idle">
-          <div class="stage-idle-icon">🎯</div>
-          <p>اختر سؤالاً من اللوحة بالأسفل</p>
-        </div>
-
-        <div id="stageQuestion" class="stage-question" style="display:none">
-          <div class="q-meta">
-            <span id="qCategory" class="q-cat-tag"></span>
-            <span id="qPoints" class="q-pts-tag"></span>
-          </div>
-
-          <!-- الميديا (صورة / صوت / فيديو) — تظهر فقط إذا كان السؤال فيه ميديا -->
-          <div id="qMediaWrap" class="q-media-wrap" style="display:none"></div>
-
-          <div id="qText" class="q-text"></div>
-
-          <!-- الاختيارات A/B/C/D -->
-          <div id="choicesArea" class="choices-grid" style="display:none">
-            <button class="choice-btn" id="choiceA" onclick="selectChoice('A')"></button>
-            <button class="choice-btn" id="choiceB" onclick="selectChoice('B')"></button>
-            <button class="choice-btn" id="choiceC" onclick="selectChoice('C')"></button>
-            <button class="choice-btn" id="choiceD" onclick="selectChoice('D')"></button>
-          </div>
-
-          <div id="revealArea" class="reveal-area">
-            <button class="btn-reveal-big" onclick="showAnswer()">👁 إظهار الإجابة</button>
-          </div>
-
-          <div id="answerArea" class="answer-area" style="display:none">
-            <div class="ans-box">
-              <div class="ans-label">✅ الإجابة الصحيحة</div>
-              <div id="answerText" class="ans-text"></div>
-            </div>
-            <div class="team-answer-row">
-              <button id="teamBtn1" class="btn-team btn-team-1" onclick="awardTeam(1)"></button>
-              <button id="teamBtn2" class="btn-team btn-team-2" onclick="awardTeam(2)"></button>
-            </div>
-            <button class="btn-none" onclick="awardTeam(0)">✕ لا أحد أجاب صح</button>
-          </div>
-        </div>
-
-      </div>
-
       <div id="categoryBoard" class="cat-board"></div>
-
-    </div>
-  </section>
-
-  <!-- نسيت الرمز -->
-  <section id="forgotScreen" class="screen">
-    <div class="auth-wrap">
-      <div class="brand">
-        <div class="brand-icon">🔐</div>
-        <h1 class="brand-name">استرجاع الرمز</h1>
-      </div>
-      <div class="auth-card">
-        <p class="auth-note">أدخل بياناتك للتحقق واسترجاع الرمز</p>
-        <label>رقم الحساب</label>
-        <input id="forgotAccount" type="text" inputmode="numeric" placeholder="رقم حسابك">
-        <label>رقم الجوال</label>
-        <input id="forgotPhone" type="tel" placeholder="رقم الجوال المسجل">
-        <label>البريد الإلكتروني</label>
-        <input id="forgotEmail" type="email" placeholder="البريد المسجل">
-        <button class="btn-primary" onclick="forgotCode()">استرجاع الرمز</button>
-        <button class="btn-secondary" onclick="showScreen('loginScreen')">← رجوع</button>
-        <div id="forgotMessage" class="msg"></div>
-      </div>
     </div>
   </section>
 
 </div>
+
+<!-- ═══════════ نافذة السؤال ═══════════ -->
+<div id="questionOverlay" class="overlay q-overlay" aria-hidden="true">
+  <div class="danger-vignette"></div>
+
+  <!-- شاشة التمهيد (الفئة والنقاط / المفاجأة) -->
+  <div id="qSplash" class="q-splash">
+    <div class="splash-inner">
+      <div id="splashTag" class="splash-tag"></div>
+      <div id="splashCat" class="splash-cat"></div>
+      <div id="splashPts" class="splash-pts"></div>
+      <div id="splashBadges" class="splash-badges"></div>
+    </div>
+  </div>
+
+  <!-- كرت السؤال -->
+  <div id="qCard" class="q-card">
+    <div class="q-top">
+      <div class="q-meta">
+        <span id="qCategory" class="q-cat-tag"></span>
+        <span id="qPoints" class="q-pts-tag"></span>
+        <span id="qBadges" class="q-badges"></span>
+      </div>
+
+      <div class="timer-wrap">
+        <div class="timer-ring-wrap">
+          <svg class="timer-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <circle class="timer-track" cx="30" cy="30" r="26"/>
+            <circle class="timer-fill" id="timerCircle" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="0"/>
+          </svg>
+          <div class="timer-num" id="timerNum">60</div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn-timer-ctrl" id="btnTimerToggle" onclick="toggleTimer()" title="تشغيل / إيقاف (Space)">⏸</button>
+          <button class="btn-timer-ctrl" onclick="restartTimer()" title="إعادة">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="phaseBanner" class="phase-banner"></div>
+
+    <div class="q-body">
+      <div id="qMediaWrap" class="q-media-wrap" style="display:none"></div>
+      <div id="qText" class="q-text"></div>
+
+      <div id="choicesArea" class="choices-grid" style="display:none">
+        <button class="choice-btn" id="choiceA" onclick="selectChoice('A')"></button>
+        <button class="choice-btn" id="choiceB" onclick="selectChoice('B')"></button>
+        <button class="choice-btn" id="choiceC" onclick="selectChoice('C')"></button>
+        <button class="choice-btn" id="choiceD" onclick="selectChoice('D')"></button>
+      </div>
+
+      <div id="answerArea" class="ans-box" style="display:none">
+        <div class="ans-label">✅ الإجابة الصحيحة</div>
+        <div id="answerText" class="ans-text"></div>
+      </div>
+
+      <div id="resultArea" class="result-area" style="display:none"></div>
+    </div>
+
+    <div id="qHelpers" class="q-helpers"></div>
+    <div id="qControls" class="q-controls"></div>
+  </div>
+</div>
+
+<!-- ═══════════ رهان Final Boss ═══════════ -->
+<div id="betOverlay" class="overlay bet-overlay" aria-hidden="true">
+  <div class="bet-card glass">
+    <div class="bet-crown">👑</div>
+    <h2>Final Boss — الرهان</h2>
+    <p class="auth-note">كل فريق يكتب رهانه بالسر (من 0 إلى <b>الحد الأقصى</b>). صح = تكسبه · غلط = تخسره</p>
+    <div class="bet-row">
+      <div class="bet-team t1">
+        <label for="bet1" id="betLabel1">الفريق الأول</label>
+        <input id="bet1" type="password" inputmode="numeric" placeholder="0">
+        <small id="betMax1"></small>
+      </div>
+      <div class="bet-team t2">
+        <label for="bet2" id="betLabel2">الفريق الثاني</label>
+        <input id="bet2" type="password" inputmode="numeric" placeholder="0">
+        <small id="betMax2"></small>
+      </div>
+    </div>
+    <div id="betReveal" class="bet-reveal" style="display:none"></div>
+    <div id="betMessage" class="msg"></div>
+    <button id="btnBetConfirm" class="btn-primary" onclick="confirmBets()">🔒 اعتماد الرهان</button>
+  </div>
+</div>
+
+<!-- ═══════════ الفائز ═══════════ -->
+<div id="winnerOverlay" class="overlay winner-overlay" aria-hidden="true">
+  <canvas id="confettiCanvas"></canvas>
+  <div class="winner-card glass">
+    <div class="trophy">🏆</div>
+    <div class="winner-sub" id="winnerSub">الفائز</div>
+    <h1 id="winnerName" class="winner-name"></h1>
+    <div class="final-scores">
+      <div class="fs t1"><span id="wTeam1"></span><strong id="wScore1">0</strong></div>
+      <div class="fs-vs">—</div>
+      <div class="fs t2"><span id="wTeam2"></span><strong id="wScore2">0</strong></div>
+    </div>
+    <div id="winnerStats" class="winner-stats"></div>
+    <div class="winner-actions">
+      <button class="btn-primary" onclick="playAgain()">🔁 مباراة جديدة</button>
+      <button class="btn-ghost" onclick="closeWinner()">🏠 القائمة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ اختصارات المقدّم ═══════════ -->
+<div id="keysOverlay" class="overlay keys-overlay" aria-hidden="true" onclick="if(event.target===this)toggleKeys(false)">
+  <div class="keys-card glass">
+    <h2>⌨️ اختصارات المقدّم</h2>
+    <ul>
+      <li><kbd>Space</kbd> تشغيل / إيقاف المؤقت</li>
+      <li><kbd>Enter</kbd> كشف الإجابة / التالي</li>
+      <li><kbd>S</kbd> خطأ ← فرصة سرقة للخصم</li>
+      <li><kbd>1</kbd> / <kbd>2</kbd> نقاط للفريق الأول / الثاني</li>
+      <li><kbd>0</kbd> لا أحد أجاب صح</li>
+      <li><kbd>M</kbd> كتم الصوت · <kbd>F</kbd> ملء الشاشة</li>
+      <li><kbd>H</kbd> هذه القائمة · <kbd>Esc</kbd> إغلاق</li>
+    </ul>
+    <button class="btn-primary" onclick="toggleKeys(false)">تمام</button>
+  </div>
+</div>
+
+<div id="toastLayer" class="toast-layer"></div>
 
 <!-- media.js لازم يجي قبل app.js -->
 <script src="media.js"></script>

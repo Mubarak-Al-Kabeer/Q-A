@@ -1,0 +1,51 @@
+category	label	icon	group	specialties	active
+Real or Myth	حقيقة أم خرافة	✅	🎉 فئات مشتركة	ALL	TRUE
+جسمك عجيب	جسمك عجيب	🦠	🎉 فئات مشتركة	ALL	TRUE
+إيموجي طبي	إيموجي طبي	🧩	🎉 فئات مشتركة	ALL	TRUE
+مشهد طبي غلط	مشهد طبي غلط	📺	🎉 فئات مشتركة	ALL	TRUE
+طب الحيوانات	طب الحيوانات	🐾	🎉 فئات مشتركة	ALL	TRUE
+مين القاتل؟	مين القاتل؟	💀	🎉 فئات مشتركة	ALL	TRUE
+5 Second Challenge	تحدي 5 ثواني	⏱️	🎉 فئات مشتركة	ALL	TRUE
+Speed Round	الجولة السريعة	⚡	🎉 فئات مشتركة	ALL	TRUE
+Video Challenge	مثّلها	🎭	🎉 فئات مشتركة	ALL	TRUE
+Battle 1v1	1 ضد 1	⚔️	🎉 فئات مشتركة	ALL	TRUE
+Medical Memory	ذاكرة طبية	🧠	🎉 فئات مشتركة	ALL	TRUE
+التشريح	التشريح	🫀	🧠 المعرفة الطبية	MEDICINE,RADIOLOGY,NURSING,EMS	TRUE
+Bone Artist	فنان العظام	🦴	🧠 المعرفة الطبية	MEDICINE,RADIOLOGY,EMS	TRUE
+وظائف الأعضاء	وظائف الأعضاء	⚙️	🧠 المعرفة الطبية	MEDICINE,NURSING,LAB	TRUE
+أمراض شائعة	أمراض شائعة	🤒	🧠 المعرفة الطبية	MEDICINE,NURSING,PHARMACY	TRUE
+What's Wrong?	شنو فيه؟	🕵️	🧠 المعرفة الطبية	MEDICINE,NURSING,EMS	TRUE
+Medical Abbreviations	الاختصارات الطبية	🔤	🧠 المعرفة الطبية	EMS,NURSING,MEDICINE,PHARMACY	TRUE
+Heart Master	سيد القلب	💓	🧠 المعرفة الطبية	EMS,NURSING,MEDICINE	TRUE
+Blood Lab	مختبر الدم	🩸	🧠 المعرفة الطبية	LAB,MEDICINE,NURSING,EMS	TRUE
+بلاغ 112	بلاغ 112	📞	🚑 الطوارئ	EMS,NURSING	TRUE
+ER Master	سيد الطوارئ	🚨	🚑 الطوارئ	EMS,NURSING,MEDICINE	TRUE
+BLS/CPR	BLS/CPR	❤️‍🩹	🚑 الطوارئ	ALL	TRUE
+ACLS	ACLS	📟	🚑 الطوارئ	EMS,NURSING,MEDICINE	TRUE
+Trauma	الإصابات	🩹	🚑 الطوارئ	EMS,MEDICINE	TRUE
+SAMPLE/OPQRST	SAMPLE/OPQRST	📋	🚑 الطوارئ	EMS	TRUE
+العلامات الحيوية	العلامات الحيوية	📈	🚑 الطوارئ	EMS,NURSING,MEDICINE	TRUE
+الأدوات والمعدات	الأدوات والمعدات	🧰	🚑 الطوارئ	EMS,NURSING	TRUE
+What's This?	شنو هذا؟	👀	🚑 الطوارئ	EMS,NURSING	TRUE
+Audio Challenge	تحدي الصوت	🎧	🚑 الطوارئ	EMS,NURSING,MEDICINE	TRUE
+الكوارث والإصابات الجماعية	الكوارث (MCI)	🚧	🚑 الطوارئ	EMS	TRUE
+الأدوية والجرعات	الأدوية والجرعات	💉	🩺 التمريض	NURSING,PHARMACY	TRUE
+حسابات المحاليل	حسابات المحاليل	🧮	🩺 التمريض	NURSING,PHARMACY	TRUE
+IV والكانيولا	IV والكانيولا	💧	🩺 التمريض	NURSING,EMS	TRUE
+مكافحة العدوى	مكافحة العدوى	🧼	🩺 التمريض	NURSING,LAB,MEDICINE	TRUE
+العناية بالمريض	العناية بالمريض	🛏️	🩺 التمريض	NURSING	TRUE
+Hospital Detective	محقق المستشفى	🏥	🩺 التمريض	NURSING,MEDICINE	TRUE
+الأسماء التجارية	الأسماء التجارية	🏷️	💊 الصيدلة	PHARMACY,NURSING	TRUE
+عائلات الأدوية	عائلات الأدوية	🧬	💊 الصيدلة	PHARMACY,MEDICINE	TRUE
+التداخلات الدوائية	التداخلات الدوائية	⚠️	💊 الصيدلة	PHARMACY	TRUE
+السموم والترياق	السموم والترياق	☠️	💊 الصيدلة	PHARMACY,EMS,MEDICINE	TRUE
+الأدوية والحمل	الأدوية والحمل	🤰	💊 الصيدلة	PHARMACY	TRUE
+الميكروبات	الميكروبات	🧫	🧪 المختبرات	LAB,MEDICINE	TRUE
+فصائل الدم والتبرع	فصائل الدم والتبرع	🅰️	🧪 المختبرات	LAB,NURSING	TRUE
+قيم التحاليل	قيم التحاليل	📊	🧪 المختبرات	LAB,NURSING,MEDICINE	TRUE
+أمراض الدم	أمراض الدم	🔬	🧪 المختبرات	LAB,MEDICINE	TRUE
+X-Ray Detective	محقق الأشعة	🩻	🩻 الأشعة	RADIOLOGY,MEDICINE,EMS	TRUE
+CT و MRI	CT و MRI	🧲	🩻 الأشعة	RADIOLOGY	TRUE
+وضعيات التصوير	وضعيات التصوير	📐	🩻 الأشعة	RADIOLOGY	TRUE
+السلامة الإشعاعية	السلامة الإشعاعية	☢️	🩻 الأشعة	RADIOLOGY	TRUE
+Final Boss	السؤال الختامي	👑	⭐ خاص	ALL	TRUE
