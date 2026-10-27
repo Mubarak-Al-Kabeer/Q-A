@@ -568,6 +568,106 @@ function updateAccountGames_(accountNumber, games) {
   return false;
 }
 
+
+/* ═══ تجهيز كامل بضغطة وحدة ══════════════════════════════
+   شغّل setupAll مرة وحدة:
+   1) إذا تبويب Questions فاضي وفيه تبويب ثاني فيه الأسئلة (مثل questions-all) ← يحوّله لـ Questions
+   2) إذا Categories فاضي ← يعبيه بالفئات الافتراضية (DEFAULT_CATEGORY_ROWS)
+   3) يضبط التنسيقات وينشئ حساب المسؤول (إذا ADMIN_CODE موجود) ويطبع تقرير */
+const DEFAULT_CATEGORY_ROWS = [
+  ["Real or Myth", "حقيقة أم خرافة", "✅", "🎉 فئات مشتركة", "ALL"],
+  ["جسمك عجيب", "جسمك عجيب", "🦠", "🎉 فئات مشتركة", "ALL"],
+  ["إيموجي طبي", "إيموجي طبي", "🧩", "🎉 فئات مشتركة", "ALL"],
+  ["مشهد طبي غلط", "مشهد طبي غلط", "📺", "🎉 فئات مشتركة", "ALL"],
+  ["طب الحيوانات", "طب الحيوانات", "🐾", "🎉 فئات مشتركة", "ALL"],
+  ["مين القاتل؟", "مين القاتل؟", "💀", "🎉 فئات مشتركة", "ALL"],
+  ["5 Second Challenge", "تحدي 5 ثواني", "⏱️", "🎉 فئات مشتركة", "ALL"],
+  ["Speed Round", "الجولة السريعة", "⚡", "🎉 فئات مشتركة", "ALL"],
+  ["Video Challenge", "مثّلها", "🎭", "🎉 فئات مشتركة", "ALL"],
+  ["Battle 1v1", "1 ضد 1", "⚔️", "🎉 فئات مشتركة", "ALL"],
+  ["Medical Memory", "ذاكرة طبية", "🧠", "🎉 فئات مشتركة", "ALL"],
+  ["التشريح", "التشريح", "🫀", "🧠 المعرفة الطبية", "MEDICINE,RADIOLOGY,NURSING,EMS"],
+  ["Bone Artist", "فنان العظام", "🦴", "🧠 المعرفة الطبية", "MEDICINE,RADIOLOGY,EMS"],
+  ["وظائف الأعضاء", "وظائف الأعضاء", "⚙️", "🧠 المعرفة الطبية", "MEDICINE,NURSING,LAB"],
+  ["أمراض شائعة", "أمراض شائعة", "🤒", "🧠 المعرفة الطبية", "MEDICINE,NURSING,PHARMACY"],
+  ["What's Wrong?", "شنو فيه؟", "🕵️", "🧠 المعرفة الطبية", "MEDICINE,NURSING,EMS"],
+  ["Medical Abbreviations", "الاختصارات الطبية", "🔤", "🧠 المعرفة الطبية", "EMS,NURSING,MEDICINE,PHARMACY"],
+  ["Heart Master", "سيد القلب", "💓", "🧠 المعرفة الطبية", "EMS,NURSING,MEDICINE"],
+  ["Blood Lab", "مختبر الدم", "🩸", "🧠 المعرفة الطبية", "LAB,MEDICINE,NURSING,EMS"],
+  ["بلاغ 112", "بلاغ 112", "📞", "🚑 الطوارئ", "EMS,NURSING"],
+  ["ER Master", "سيد الطوارئ", "🚨", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["BLS/CPR", "BLS/CPR", "❤️‍🩹", "🚑 الطوارئ", "ALL"],
+  ["ACLS", "ACLS", "📟", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["Trauma", "الإصابات", "🩹", "🚑 الطوارئ", "EMS,MEDICINE"],
+  ["SAMPLE/OPQRST", "SAMPLE/OPQRST", "📋", "🚑 الطوارئ", "EMS"],
+  ["العلامات الحيوية", "العلامات الحيوية", "📈", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["الأدوات والمعدات", "الأدوات والمعدات", "🧰", "🚑 الطوارئ", "EMS,NURSING"],
+  ["What's This?", "شنو هذا؟", "👀", "🚑 الطوارئ", "EMS,NURSING"],
+  ["Audio Challenge", "تحدي الصوت", "🎧", "🚑 الطوارئ", "EMS,NURSING,MEDICINE"],
+  ["الكوارث والإصابات الجماعية", "الكوارث (MCI)", "🚧", "🚑 الطوارئ", "EMS"],
+  ["الأدوية والجرعات", "الأدوية والجرعات", "💉", "🩺 التمريض", "NURSING,PHARMACY"],
+  ["حسابات المحاليل", "حسابات المحاليل", "🧮", "🩺 التمريض", "NURSING,PHARMACY"],
+  ["IV والكانيولا", "IV والكانيولا", "💧", "🩺 التمريض", "NURSING,EMS"],
+  ["مكافحة العدوى", "مكافحة العدوى", "🧼", "🩺 التمريض", "NURSING,LAB,MEDICINE"],
+  ["العناية بالمريض", "العناية بالمريض", "🛏️", "🩺 التمريض", "NURSING"],
+  ["Hospital Detective", "محقق المستشفى", "🏥", "🩺 التمريض", "NURSING,MEDICINE"],
+  ["الأسماء التجارية", "الأسماء التجارية", "🏷️", "💊 الصيدلة", "PHARMACY,NURSING"],
+  ["عائلات الأدوية", "عائلات الأدوية", "🧬", "💊 الصيدلة", "PHARMACY,MEDICINE"],
+  ["التداخلات الدوائية", "التداخلات الدوائية", "⚠️", "💊 الصيدلة", "PHARMACY"],
+  ["السموم والترياق", "السموم والترياق", "☠️", "💊 الصيدلة", "PHARMACY,EMS,MEDICINE"],
+  ["الأدوية والحمل", "الأدوية والحمل", "🤰", "💊 الصيدلة", "PHARMACY"],
+  ["الميكروبات", "الميكروبات", "🧫", "🧪 المختبرات", "LAB,MEDICINE"],
+  ["فصائل الدم والتبرع", "فصائل الدم والتبرع", "🅰️", "🧪 المختبرات", "LAB,NURSING"],
+  ["قيم التحاليل", "قيم التحاليل", "📊", "🧪 المختبرات", "LAB,NURSING,MEDICINE"],
+  ["أمراض الدم", "أمراض الدم", "🔬", "🧪 المختبرات", "LAB,MEDICINE"],
+  ["X-Ray Detective", "محقق الأشعة", "🩻", "🩻 الأشعة", "RADIOLOGY,MEDICINE,EMS"],
+  ["CT و MRI", "CT و MRI", "🧲", "🩻 الأشعة", "RADIOLOGY"],
+  ["وضعيات التصوير", "وضعيات التصوير", "📐", "🩻 الأشعة", "RADIOLOGY"],
+  ["السلامة الإشعاعية", "السلامة الإشعاعية", "☢️", "🩻 الأشعة", "RADIOLOGY"],
+  ["Final Boss", "السؤال الختامي", "👑", "⭐ خاص", "ALL"]
+];
+
+function setupAll() {
+  const ss = getSpreadsheet_();
+  ensureSheetsExist();
+
+  // 1) الأسئلة
+  let q = getSheet_(SHEET_QUESTIONS);
+  if (q.getLastRow() <= 1) {
+    const src = ss.getSheets().find(sh =>
+      sh.getSheetId() !== q.getSheetId() && sh.getLastRow() > 1 &&
+      String(sh.getRange(1, 1).getValue()).trim().toLowerCase() === "id" &&
+      String(sh.getRange(1, 2).getValue()).trim().toLowerCase() === "category");
+    if (src) {
+      const oldName = src.getName();
+      ss.deleteSheet(q);
+      src.setName(SHEET_QUESTIONS);
+      delete _sheets[SHEET_QUESTIONS];
+      q = getSheet_(SHEET_QUESTIONS);
+      Logger.log("✅ نقلت الأسئلة من التبويب '" + oldName + "' إلى '" + SHEET_QUESTIONS + "' (" + (q.getLastRow() - 1) + " صف)");
+    } else {
+      Logger.log("⚠️ تبويب Questions فاضي وما لقيت تبويب ثاني فيه أسئلة — سوّ Import لملف questions-all.csv");
+    }
+  }
+  prepareQuestionsSheet();
+
+  // 2) الفئات
+  const c = getSheet_(SHEET_CATEGORIES);
+  prepareCategoriesSheet();
+  if (c.getLastRow() <= 1) {
+    c.getRange(2, 1, DEFAULT_CATEGORY_ROWS.length, 6)
+      .setValues(DEFAULT_CATEGORY_ROWS.map(r => r.concat(["TRUE"])));
+    Logger.log("✅ عبّيت شيت Categories بـ " + DEFAULT_CATEGORY_ROWS.length + " فئة");
+  }
+
+  // 3) الحسابات والمسؤول
+  fixAccountFormats();
+  if (!ensureAdminAccount()) Logger.log("❌ حساب المسؤول ما انشأ — حط ADMIN_CODE في Script properties وشغّل setupAll مرة ثانية");
+
+  testAll();
+  checkQuestions();
+}
+
 /* ═══ TESTS (شغّلها من المحرر) ═══════════════════════════ */
 
 /* شغّلها إذا testAll طلع أصفار: تبين الملف اللي يقرأ منه السكربت وكل التبويبات اللي فيه */

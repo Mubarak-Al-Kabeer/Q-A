@@ -7,6 +7,15 @@
 - `data/questions-all.tsv` — نفس الأسئلة بصيغة TSV (للنسخ واللصق)
 - `data/questions-new.tsv` — دفعة Q126 → Q255 بس (قديم)
 
+## ⚡ الطريقة السريعة
+1. الصق `server/Code.gs` واحفظ.
+2. أضف `ADMIN_CODE` في Script properties.
+3. سوّ Import لـ `questions-all.csv` (حتى لو انحط بتبويب جديد).
+4. شغّل **`setupAll`** — ينقل الأسئلة لتبويب Questions، يعبي الفئات تلقائياً، ينشئ حساب المسؤول، ويطبع تقرير.
+5. انشر نسخة جديدة (New version).
+
+---
+
 ## 1) حدّث الكود
 1. افتح مشروع Apps Script ← امسح محتوى `Code.gs` والصق محتوى `server/Code.gs`.
 2. **رمز المسؤول:** ⚙️ Project Settings ← Script properties ← Add property
