@@ -66,43 +66,46 @@ const EXPIRED = { success: false, expired: true, message: "انتهت الجلس
 let _ss = null;
 const _sheets = {};
 
-function getSpreadsheet() {
+function getSpreadsheet_() {
   if (_ss) return _ss;
   _ss = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   if (!_ss) throw new Error("لم يتم العثور على Google Sheet — ضع SPREADSHEET_ID في أعلى الملف.");
   return _ss;
 }
-function getSheet(name) {
+function getSheet_(name) {
   if (_sheets[name]) return _sheets[name];
-  const ss = getSpreadsheet();
-  return (_sheets[name] = ss.getSheetByName(name) || ss.insertSheet(name));
+  const ss = getSpreadsheet_();
+  const want = name.trim().toLowerCase();
+  const found = ss.getSheetByName(name) || ss.getSheets().find(sh => sh.getName().trim().toLowerCase() === want);
+  if (!found) Logger.log("⚠️ التبويب '" + name + "' مو موجود — تم إنشاؤه فاضي");
+  return (_sheets[name] = found || ss.insertSheet(name));
 }
 
 /* ═══ SETUP ══════════════════════════════════════════════ */
 
 function ensureSheetsExist() {
-  const acc = getSheet(SHEET_ACCOUNTS);
+  const acc = getSheet_(SHEET_ACCOUNTS);
   if (acc.getLastRow() === 0) {
     acc.getRange("A:E").setNumberFormat("@");
     acc.appendRow(ACCOUNT_HEADERS);
   }
   [[SHEET_QUESTIONS, QUESTION_HEADERS], [SHEET_CATEGORIES, CATEGORY_HEADERS],
    [SHEET_GAMES, GAME_HEADERS], [SHEET_ANSWERS, ANSWER_HEADERS]].forEach(([name, headers]) => {
-    const sh = getSheet(name);
+    const sh = getSheet_(name);
     if (sh.getLastRow() === 0) sh.appendRow(headers);
   });
   return true;
 }
 
 function fixAccountFormats() {
-  getSheet(SHEET_ACCOUNTS).getRange("A:E").setNumberFormat("@");
+  getSheet_(SHEET_ACCOUNTS).getRange("A:E").setNumberFormat("@");
   Logger.log("تم ضبط الأعمدة A:E كنص");
 }
 
 /* شغّلها مرة وحدة قبل لصق الأسئلة: تجهّز الهيدر (15 عمود) وتخلي كل الأعمدة نص
    حتى لا يحوّل الشيت "15:2" لوقت أو "B" لشي ثاني */
 function prepareQuestionsSheet() {
-  const q = getSheet(SHEET_QUESTIONS);
+  const q = getSheet_(SHEET_QUESTIONS);
   q.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]).setFontWeight("bold");
   q.getRange("A:O").setNumberFormat("@");
   q.setFrozenRows(1);
@@ -118,14 +121,14 @@ function prepareQuestionsSheet() {
 
 /* شغّلها مرة وحدة قبل لصق الفئات */
 function prepareCategoriesSheet() {
-  const c = getSheet(SHEET_CATEGORIES);
+  const c = getSheet_(SHEET_CATEGORIES);
   c.getRange(1, 1, 1, CATEGORY_HEADERS.length).setValues([CATEGORY_HEADERS]).setFontWeight("bold");
   c.getRange("A:F").setNumberFormat("@");
   c.setFrozenRows(1);
   Logger.log("تم تجهيز شيت Categories");
 }
 
-function appendTextRow(sheet, values) {
+function appendTextRow_(sheet, values) {
   const row = sheet.getLastRow() + 1;
   sheet.getRange(row, 1, 1, 5).setNumberFormat("@");
   sheet.getRange(row, 1, 1, values.length).setValues([values]);
@@ -133,7 +136,7 @@ function appendTextRow(sheet, values) {
 }
 
 function ensureAdminAccount() {
-  const sheet = getSheet(SHEET_ACCOUNTS);
+  const sheet = getSheet_(SHEET_ACCOUNTS);
   const vals  = sheet.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0] || "").trim() === ADMIN_ACCOUNT) {
@@ -145,19 +148,19 @@ function ensureAdminAccount() {
     }
   }
   if (!ADMIN_CODE) { Logger.log("حساب المسؤول غير موجود — حط ADMIN_CODE في Script properties"); return false; }
-  appendTextRow(sheet, [ADMIN_ACCOUNT, "المسؤول", "", "", ADMIN_CODE, "APPROVED", "ADMIN", 999999, new Date()]);
+  appendTextRow_(sheet, [ADMIN_ACCOUNT, "المسؤول", "", "", ADMIN_CODE, "APPROVED", "ADMIN", 999999, new Date()]);
   return true;
 }
 
 /* ═══ SESSIONS ═══════════════════════════════════════════ */
 
-function makeToken(accountNumber) {
+function makeToken_(accountNumber) {
   const t = Utilities.getUuid();
   CacheService.getScriptCache().put("tok_" + t, String(accountNumber), SESSION_SECONDS);
   return t;
 }
 
-function sessionAccount(token) {
+function sessionAccount_(token) {
   const t = String(token || "").trim();
   if (!t) return "";
   const cache = CacheService.getScriptCache();
@@ -167,32 +170,32 @@ function sessionAccount(token) {
   return n;
 }
 
-function getSessionAccount(token) {
-  const n = sessionAccount(token);
-  return n ? findAccount(n) : null;
+function getSessionAccount_(token) {
+  const n = sessionAccount_(token);
+  return n ? findAccount_(n) : null;
 }
 
-function isAdminAccount(acc) {
+function isAdminAccount_(acc) {
   return acc && (acc.accountNumber === ADMIN_ACCOUNT || acc.role === "ADMIN");
 }
 
-function adminGuard(token) {
-  const acc = getSessionAccount(token);
+function adminGuard_(token) {
+  const acc = getSessionAccount_(token);
   if (!acc) return EXPIRED;
-  if (!isAdminAccount(acc)) return { success: false, message: "غير مصرح لك" };
+  if (!isAdminAccount_(acc)) return { success: false, message: "غير مصرح لك" };
   return null;
 }
 
 /* ═══ حماية من التخمين ═══════════════════════════════════ */
 
-function attemptsLocked(kind, key) {
+function attemptsLocked_(kind, key) {
   return Number(CacheService.getScriptCache().get(kind + "_" + key) || 0) >= MAX_FAILS;
 }
-function noteFailedAttempt(kind, key) {
+function noteFailedAttempt_(kind, key) {
   const c = CacheService.getScriptCache(), k = kind + "_" + key;
   c.put(k, String(Number(c.get(k) || 0) + 1), LOCK_SECONDS);
 }
-function clearAttempts(kind, key) {
+function clearAttempts_(kind, key) {
   CacheService.getScriptCache().remove(kind + "_" + key);
 }
 const LOCKED_MSG = { success: false, message: "محاولات كثيرة غلط — حاول مرة ثانية بعد 10 دقائق" };
@@ -200,41 +203,41 @@ const LOCKED_MSG = { success: false, message: "محاولات كثيرة غلط 
 /* ═══ HTTP ═══════════════════════════════════════════════ */
 
 function doGet() {
-  return jsonRes({ success: true, message: "🩺 سين جيم الطبي API يعمل بنجاح" });
+  return jsonRes_({ success: true, message: "🩺 سين جيم الطبي API يعمل بنجاح" });
 }
 
 function doPost(e) {
   try {
-    if (!e || !e.postData || !e.postData.contents) return jsonRes({ success: false, message: "لم تُرسَل بيانات" });
+    if (!e || !e.postData || !e.postData.contents) return jsonRes_({ success: false, message: "لم تُرسَل بيانات" });
     const data   = JSON.parse(e.postData.contents);
     const action = String(data.action || "").trim();
     ensureSheetsExist();
     const h = {
-      login:               () => loginUser(data),
-      register:            () => registerUser(data),
-      forgotCode:          () => forgotCode(data),
-      getCategories:       () => getCategories(data),
-      createGame:          () => createGame(data),
-      getAllQuestions:     () => getAllQuestions(data),
-      submitAnswer:        () => submitAnswer(data),
-      finishGame:          () => finishGame(data),
-      getAccounts:         () => getAccounts(data),
-      updateAccountStatus: () => updateAccountStatus(data),
-      updateGames:         () => updateGames(data)
+      login:               () => loginUser_(data),
+      register:            () => registerUser_(data),
+      forgotCode:          () => forgotCode_(data),
+      getCategories:       () => getCategories_(data),
+      createGame:          () => createGame_(data),
+      getAllQuestions:     () => getAllQuestions_(data),
+      submitAnswer:        () => submitAnswer_(data),
+      finishGame:          () => finishGame_(data),
+      getAccounts:         () => getAccounts_(data),
+      updateAccountStatus: () => updateAccountStatus_(data),
+      updateGames:         () => updateGames_(data)
     };
-    if (h[action]) return jsonRes(h[action]());
-    return jsonRes({ success: false, message: "أمر غير معروف: " + action });
+    if (h[action]) return jsonRes_(h[action]());
+    return jsonRes_({ success: false, message: "أمر غير معروف: " + action });
   } catch (err) {
     Logger.log(err);
-    return jsonRes({ success: false, message: "خطأ في الخادم: " + err.message });
+    return jsonRes_({ success: false, message: "خطأ في الخادم: " + err.message });
   }
 }
 
-function jsonRes(data) {
+function jsonRes_(data) {
   return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function withLock(fn) {
+function withLock_(fn) {
   const lock = LockService.getScriptLock();
   lock.waitLock(15000);
   try { return fn(); } finally { lock.releaseLock(); }
@@ -242,9 +245,9 @@ function withLock(fn) {
 
 /* ═══ ACCOUNT HELPERS ════════════════════════════════════ */
 
-function findAccount(accountNumber) {
+function findAccount_(accountNumber) {
   const wanted = String(accountNumber || "").trim();
-  const vals   = getSheet(SHEET_ACCOUNTS).getDataRange().getValues();
+  const vals   = getSheet_(SHEET_ACCOUNTS).getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0] || "").trim() === wanted) {
       return {
@@ -265,17 +268,17 @@ function findAccount(accountNumber) {
 
 /* ═══ LOGIN ══════════════════════════════════════════════ */
 
-function loginUser(data) {
+function loginUser_(data) {
   const accountNumber = String(data.accountNumber || "").trim();
   const code          = String(data.code || "").trim();
   if (!accountNumber || !code) return { success: false, message: "أدخل رقم الحساب والرمز" };
-  if (attemptsLocked("login", accountNumber)) return LOCKED_MSG;
+  if (attemptsLocked_("login", accountNumber)) return LOCKED_MSG;
   ensureAdminAccount();
-  const vals = getSheet(SHEET_ACCOUNTS).getDataRange().getValues();
+  const vals = getSheet_(SHEET_ACCOUNTS).getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     const row = vals[i];
     if (String(row[0] || "").trim() === accountNumber && String(row[4] || "").trim() === code) {
-      clearAttempts("login", accountNumber);
+      clearAttempts_("login", accountNumber);
       const user = {
         accountNumber: String(row[0] || "").trim(),
         nickname: String(row[1] || ""),
@@ -286,17 +289,17 @@ function loginUser(data) {
         gamesRemaining: Number(row[7]) || 0
       };
       if (accountNumber === ADMIN_ACCOUNT) { user.status = "APPROVED"; user.role = "ADMIN"; }
-      user.token = makeToken(user.accountNumber);
+      user.token = makeToken_(user.accountNumber);
       return { success: true, message: "تم تسجيل الدخول بنجاح", user };
     }
   }
-  noteFailedAttempt("login", accountNumber);
+  noteFailedAttempt_("login", accountNumber);
   return { success: false, message: "رقم الحساب أو الرمز غير صحيح" };
 }
 
 /* ═══ REGISTER ═══════════════════════════════════════════ */
 
-function registerUser(data) {
+function registerUser_(data) {
   const nickname = String(data.nickname || "").trim();
   const phone    = String(data.phone || "").trim();
   const email    = String(data.email || "").trim();
@@ -304,20 +307,20 @@ function registerUser(data) {
   if (!nickname || !phone || !email || !code) return { success: false, message: "أكمل جميع الحقول" };
   if (code.length < 3) return { success: false, message: "الرمز يجب أن يكون 3 أحرف على الأقل" };
   // القفل يمنع حسابين ياخذون نفس الرقم لو سجلوا بنفس اللحظة
-  return withLock(() => {
-    const sheet = getSheet(SHEET_ACCOUNTS);
+  return withLock_(() => {
+    const sheet = getSheet_(SHEET_ACCOUNTS);
     const vals  = sheet.getDataRange().getValues();
     for (let i = 1; i < vals.length; i++) {
       const e = String(vals[i][3] || "").trim().toLowerCase();
       if (e && e === email.toLowerCase()) return { success: false, message: "البريد الإلكتروني مستخدم مسبقاً" };
     }
-    const accountNumber = generateAccountNumber(vals);
-    appendTextRow(sheet, [accountNumber, nickname, phone, email, code, "PENDING", "USER", DEFAULT_GAMES, new Date()]);
+    const accountNumber = generateAccountNumber_(vals);
+    appendTextRow_(sheet, [accountNumber, nickname, phone, email, code, "PENDING", "USER", DEFAULT_GAMES, new Date()]);
     return { success: true, message: "تم إنشاء الحساب", accountNumber };
   });
 }
 
-function generateAccountNumber(vals) {
+function generateAccountNumber_(vals) {
   let n = 1000;
   while (vals.some(r => String(r[0] || "").trim() === String(n))) n++;
   return String(n);
@@ -325,64 +328,64 @@ function generateAccountNumber(vals) {
 
 /* ═══ FORGOT CODE ════════════════════════════════════════ */
 
-function forgotCode(data) {
+function forgotCode_(data) {
   const accountNumber = String(data.accountNumber || "").trim();
   const phone         = String(data.phone || "").trim();
   const email         = String(data.email || "").trim().toLowerCase();
   if (!accountNumber || !phone || !email) return { success: false, message: "أدخل جميع البيانات" };
-  if (attemptsLocked("forgot", accountNumber)) return LOCKED_MSG;
-  const vals = getSheet(SHEET_ACCOUNTS).getDataRange().getValues();
+  if (attemptsLocked_("forgot", accountNumber)) return LOCKED_MSG;
+  const vals = getSheet_(SHEET_ACCOUNTS).getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     const row = vals[i];
     if (String(row[0] || "").trim() === accountNumber &&
         String(row[2] || "").trim() === phone &&
         String(row[3] || "").trim().toLowerCase() === email) {
-      clearAttempts("forgot", accountNumber);
+      clearAttempts_("forgot", accountNumber);
       return { success: true, message: "رمزك هو: " + String(row[4] || "") };
     }
   }
-  noteFailedAttempt("forgot", accountNumber);
+  noteFailedAttempt_("forgot", accountNumber);
   return { success: false, message: "البيانات غير صحيحة" };
 }
 
 /* ═══ التخصصات والفئات ═══════════════════════════════════ */
 
-function parseSpecialties(v) {
+function parseSpecialties_(v) {
   const list = String(v == null ? "" : v).toUpperCase().split(/[\s,،]+/).filter(Boolean);
   return list.length ? list : ["ALL"];
 }
-function matchesSpecialty(list, code) {
+function matchesSpecialty_(list, code) {
   return !code || list.indexOf("ALL") >= 0 || list.indexOf(String(code).toUpperCase()) >= 0;
 }
 
-function readCategories() {
-  const vals = getSheet(SHEET_CATEGORIES).getDataRange().getValues();
+function readCategories_() {
+  const vals = getSheet_(SHEET_CATEGORIES).getDataRange().getValues();
   const out = [];
   for (let i = 1; i < vals.length; i++) {
     const r = vals[i];
-    const category = cellText(r[0]);
-    if (!category || !isActiveFlag(r[5])) continue;
+    const category = cellText_(r[0]);
+    if (!category || !isActiveFlag_(r[5])) continue;
     out.push({
       category,
-      label:       cellText(r[1]) || category,
-      icon:        cellText(r[2]),
-      group:       cellText(r[3]) || "فئات أخرى",
-      specialties: parseSpecialties(r[4])
+      label:       cellText_(r[1]) || category,
+      icon:        cellText_(r[2]),
+      group:       cellText_(r[3]) || "فئات أخرى",
+      specialties: parseSpecialties_(r[4])
     });
   }
   return out;
 }
 
-function getCategories(data) {
-  const account = getSessionAccount(data.token);
+function getCategories_(data) {
+  const account = getSessionAccount_(data.token);
   if (!account) return EXPIRED;
-  return { success: true, specialties: SPECIALTIES, categories: readCategories() };
+  return { success: true, specialties: SPECIALTIES, categories: readCategories_() };
 }
 
 /* ═══ CREATE GAME ════════════════════════════════════════ */
 
-function createGame(data) {
-  if (!sessionAccount(data.token)) return EXPIRED;
+function createGame_(data) {
+  if (!sessionAccount_(data.token)) return EXPIRED;
   const team1 = String(data.team1 || "").trim();
   const team2 = String(data.team2 || "").trim();
   const specialty = String(data.specialty || "").trim().toUpperCase();
@@ -390,34 +393,34 @@ function createGame(data) {
   if (team1 === team2) return { success: false, message: "يجب أن يكون اسم الفريقين مختلفاً" };
 
   // القفل يمنع خصم لعبة وحدة بس لو ضغط "ابدأ" مرتين بسرعة
-  return withLock(() => {
-    const account = getSessionAccount(data.token);
+  return withLock_(() => {
+    const account = getSessionAccount_(data.token);
     if (!account) return EXPIRED;
-    const isAdm = isAdminAccount(account);
+    const isAdm = isAdminAccount_(account);
     if (account.status !== "APPROVED" && !isAdm) return { success: false, message: "الحساب غير معتمد" };
     let gamesRemaining = account.gamesRemaining;
     if (!isAdm) {
       if (gamesRemaining <= 0) return { success: false, message: "لا توجد ألعاب متبقية. تواصل مع المسؤول." };
       gamesRemaining--;
-      updateAccountGames(account.accountNumber, gamesRemaining);
+      updateAccountGames_(account.accountNumber, gamesRemaining);
     }
     const gameId = "GAME-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
-    getSheet(SHEET_GAMES).appendRow([gameId, account.accountNumber, team1, team2, new Date(), "ACTIVE", specialty]);
+    getSheet_(SHEET_GAMES).appendRow([gameId, account.accountNumber, team1, team2, new Date(), "ACTIVE", specialty]);
     return { success: true, message: "تم إنشاء اللعبة", gameId, team1, team2, gamesRemaining };
   });
 }
 
 /* ═══ FINISH GAME ════════════════════════════════════════ */
 
-function finishGame(data) {
-  const account = getSessionAccount(data.token);
+function finishGame_(data) {
+  const account = getSessionAccount_(data.token);
   if (!account) return EXPIRED;
   const gameId = String(data.gameId || "").trim();
   if (!gameId) return { success: false, message: "رقم اللعبة مفقود" };
-  const sheet = getSheet(SHEET_GAMES), vals = sheet.getDataRange().getValues();
+  const sheet = getSheet_(SHEET_GAMES), vals = sheet.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0]) !== gameId) continue;
-    if (String(vals[i][1]) !== account.accountNumber && !isAdminAccount(account)) return { success: false, message: "غير مصرح لك" };
+    if (String(vals[i][1]) !== account.accountNumber && !isAdminAccount_(account)) return { success: false, message: "غير مصرح لك" };
     sheet.getRange(i + 1, 6).setValue("FINISHED");
     sheet.getRange(i + 1, 8, 1, 4).setValues([[
       Number(data.team1Score) || 0, Number(data.team2Score) || 0, String(data.winner || ""), new Date()
@@ -429,44 +432,44 @@ function finishGame(data) {
 
 /* ═══ QUESTIONS ══════════════════════════════════════════ */
 
-function isActiveFlag(v) {
+function isActiveFlag_(v) {
   const a = String(v == null ? "" : v).trim().toUpperCase();
   return a === "" || a === "TRUE" || a === "1" || a === "YES";
 }
-function isTrueFlag(v) {
+function isTrueFlag_(v) {
   return v === true || String(v == null ? "" : v).trim().toUpperCase() === "TRUE";
 }
 // نص آمن: الأرقام (مثل خيار 5 أو 206) تتحول لنص، والفراغ يبقى فراغ
-function cellText(v) {
+function cellText_(v) {
   return v === null || v === undefined ? "" : String(v).trim();
 }
 
-function readQuestions(specialty) {
-  const vals = getSheet(SHEET_QUESTIONS).getDataRange().getValues();
+function readQuestions_(specialty) {
+  const vals = getSheet_(SHEET_QUESTIONS).getDataRange().getValues();
   const questions = [];
   for (let i = 1; i < vals.length; i++) {
     const row = vals[i];
-    if (!cellText(row[0]) && !cellText(row[3])) continue;   // صف فاضي
-    if (!isActiveFlag(row[5])) continue;                     // العمود F = active
-    const sp = parseSpecialties(row[14]);                    // العمود O = specialty
-    if (!matchesSpecialty(sp, specialty)) continue;
+    if (!cellText_(row[0]) && !cellText_(row[3])) continue;   // صف فاضي
+    if (!isActiveFlag_(row[5])) continue;                     // العمود F = active
+    const sp = parseSpecialties_(row[14]);                    // العمود O = specialty
+    if (!matchesSpecialty_(sp, specialty)) continue;
 
-    const hasChoices = isTrueFlag(row[6]);
+    const hasChoices = isTrueFlag_(row[6]);
     questions.push({
-      id:         cellText(row[0]),
-      category:   cellText(row[1]),
+      id:         cellText_(row[0]),
+      category:   cellText_(row[1]),
       points:     Number(row[2]),
-      question:   cellText(row[3]),
+      question:   cellText_(row[3]),
       // في أسئلة الاختيارات نخلي الحرف كبير (A/B/C/D)
-      answer:     hasChoices ? cellText(row[4]).toUpperCase() : cellText(row[4]),
+      answer:     hasChoices ? cellText_(row[4]).toUpperCase() : cellText_(row[4]),
       hasChoices: hasChoices,
-      choiceA:    cellText(row[7]),
-      choiceB:    cellText(row[8]),
-      choiceC:    cellText(row[9]),
-      choiceD:    cellText(row[10]),
-      imageUrl:   cellText(row[11]),
-      audioUrl:   cellText(row[12]),
-      videoUrl:   cellText(row[13]),
+      choiceA:    cellText_(row[7]),
+      choiceB:    cellText_(row[8]),
+      choiceC:    cellText_(row[9]),
+      choiceD:    cellText_(row[10]),
+      imageUrl:   cellText_(row[11]),
+      audioUrl:   cellText_(row[12]),
+      videoUrl:   cellText_(row[13]),
       specialty:  sp.join(",")
     });
   }
@@ -474,20 +477,20 @@ function readQuestions(specialty) {
 }
 
 /* كل الأسئلة الفعّالة دفعة واحدة (مفلترة على التخصص إذا انرسل) */
-function getAllQuestions(data) {
-  const account = getSessionAccount(data.token);
+function getAllQuestions_(data) {
+  const account = getSessionAccount_(data.token);
   if (!account) return EXPIRED;
-  if (account.status !== "APPROVED" && !isAdminAccount(account)) return { success: false, message: "الحساب غير معتمد" };
-  return { success: true, questions: readQuestions(String(data.specialty || "").trim()) };
+  if (account.status !== "APPROVED" && !isAdminAccount_(account)) return { success: false, message: "الحساب غير معتمد" };
+  return { success: true, questions: readQuestions_(String(data.specialty || "").trim()) };
 }
 
 /* ═══ SUBMIT ANSWER ══════════════════════════════════════ */
 
-function submitAnswer(data) {
-  const account = getSessionAccount(data.token);
+function submitAnswer_(data) {
+  const account = getSessionAccount_(data.token);
   if (!account) return EXPIRED;
   const correct = data.correct === true || String(data.correct).toLowerCase() === "true";
-  getSheet(SHEET_ANSWERS).appendRow([
+  getSheet_(SHEET_ANSWERS).appendRow([
     String(data.gameId    || ""), account.accountNumber,
     String(data.team1     || ""), String(data.team2 || ""),
     String(data.category  || ""), String(data.questionId || ""),
@@ -499,10 +502,10 @@ function submitAnswer(data) {
 
 /* ═══ ACCOUNTS (ADMIN) ═══════════════════════════════════ */
 
-function getAccounts(data) {
-  const denied = adminGuard(data.token);
+function getAccounts_(data) {
+  const denied = adminGuard_(data.token);
   if (denied) return denied;
-  const vals = getSheet(SHEET_ACCOUNTS).getDataRange().getValues();
+  const vals = getSheet_(SHEET_ACCOUNTS).getDataRange().getValues();
   const accounts = [];
   for (let i = 1; i < vals.length; i++) {
     if (!vals[i][0]) continue;
@@ -520,19 +523,19 @@ function getAccounts(data) {
   return { success: true, accounts };
 }
 
-function updateAccountStatus(data) {
-  const denied = adminGuard(data.token);
+function updateAccountStatus_(data) {
+  const denied = adminGuard_(data.token);
   if (denied) return denied;
   const targetAcc = String(data.accountNumber || "").trim();
   const status    = String(data.status || "").toUpperCase();
   if (!["APPROVED", "REJECTED", "PENDING"].includes(status)) return { success: false, message: "حالة غير صحيحة" };
   if (!targetAcc) return { success: false, message: "رقم الحساب مفقود" };
   if (targetAcc === ADMIN_ACCOUNT) return { success: false, message: "لا يمكن تعديل حساب المسؤول" };
-  return setAccountStatus(targetAcc, status);
+  return setAccountStatus_(targetAcc, status);
 }
 
-function setAccountStatus(accountNumber, status) {
-  const sheet = getSheet(SHEET_ACCOUNTS);
+function setAccountStatus_(accountNumber, status) {
+  const sheet = getSheet_(SHEET_ACCOUNTS);
   const vals  = sheet.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0] || "").trim() === String(accountNumber || "").trim()) {
@@ -543,18 +546,18 @@ function setAccountStatus(accountNumber, status) {
   return { success: false, message: "الحساب غير موجود" };
 }
 
-function updateGames(data) {
-  const denied = adminGuard(data.token);
+function updateGames_(data) {
+  const denied = adminGuard_(data.token);
   if (denied) return denied;
   const target = String(data.targetAccountNumber || "").trim();
   const games  = Number(data.games);
   if (!target || isNaN(games) || games < 0) return { success: false, message: "بيانات غير صحيحة" };
-  if (!updateAccountGames(target, games)) return { success: false, message: "الحساب غير موجود" };
+  if (!updateAccountGames_(target, games)) return { success: false, message: "الحساب غير موجود" };
   return { success: true, message: "تم تحديث عدد الألعاب", gamesRemaining: games };
 }
 
-function updateAccountGames(accountNumber, games) {
-  const sheet = getSheet(SHEET_ACCOUNTS);
+function updateAccountGames_(accountNumber, games) {
+  const sheet = getSheet_(SHEET_ACCOUNTS);
   const vals  = sheet.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0] || "").trim() === String(accountNumber || "").trim()) {
@@ -567,19 +570,35 @@ function updateAccountGames(accountNumber, games) {
 
 /* ═══ TESTS (شغّلها من المحرر) ═══════════════════════════ */
 
+/* شغّلها إذا testAll طلع أصفار: تبين الملف اللي يقرأ منه السكربت وكل التبويبات اللي فيه */
+function diagnose() {
+  const ss = getSpreadsheet_();
+  Logger.log("📁 الملف: " + ss.getName() + "\n" + ss.getUrl());
+  ss.getSheets().forEach(sh => {
+    const cols = Math.min(sh.getLastColumn(), 6);
+    const head = cols ? sh.getRange(1, 1, 1, cols).getValues()[0].join(" | ") : "(فاضي)";
+    Logger.log("📄 '" + sh.getName() + "' — " + Math.max(sh.getLastRow() - 1, 0) + " صف — الهيدر: " + head);
+  });
+  [SHEET_ACCOUNTS, SHEET_QUESTIONS, SHEET_CATEGORIES].forEach(n => {
+    const ok = ss.getSheets().some(sh => sh.getName().trim().toLowerCase() === n.toLowerCase());
+    Logger.log((ok ? "✅ " : "❌ ناقص: ") + n);
+  });
+  Logger.log("🔑 ADMIN_CODE في Script properties: " + (ADMIN_CODE ? "✅ موجود" : "❌ مو موجود"));
+}
+
 function testAll() {
   ensureSheetsExist();
   Logger.log("حساب المسؤول: " + (ensureAdminAccount() ? "✅" : "❌ حط ADMIN_CODE في Script properties"));
-  Logger.log("عدد الفئات الفعّالة: " + readCategories().length);
-  Logger.log("عدد الأسئلة الفعّالة: " + readQuestions("").length);
-  SPECIALTIES.forEach(s => Logger.log(s.icon + " " + s.name + ": " + readQuestions(s.code).length + " سؤال"));
+  Logger.log("عدد الفئات الفعّالة: " + readCategories_().length);
+  Logger.log("عدد الأسئلة الفعّالة: " + readQuestions_("").length);
+  SPECIALTIES.forEach(s => Logger.log(s.icon + " " + s.name + ": " + readQuestions_(s.code).length + " سؤال"));
 }
 
 /* تقرير فحص كامل: لكل تخصص ← كل فئة ← كل مستوى نقاط
    يطلع الخانات الناقصة + أخطاء الاختيارات + الفئات اللي في الأسئلة وما لها صف في Categories */
 function checkQuestions() {
-  const cats = readCategories();
-  const all  = readQuestions("");
+  const cats = readCategories_();
+  const all  = readQuestions_("");
   const problems = [], missing = [], ids = {};
   const catNames = {};
   cats.forEach(c => { catNames[c.category] = true; });
@@ -596,8 +615,8 @@ function checkQuestions() {
   });
 
   SPECIALTIES.forEach(sp => {
-    const qs = all.filter(q => matchesSpecialty(parseSpecialties(q.specialty), sp.code));
-    cats.filter(c => matchesSpecialty(c.specialties, sp.code)).forEach(c => {
+    const qs = all.filter(q => matchesSpecialty_(parseSpecialties_(q.specialty), sp.code));
+    cats.filter(c => matchesSpecialty_(c.specialties, sp.code)).forEach(c => {
       if (c.category === FINAL_BOSS_CAT) {
         if (!qs.some(q => q.category === FINAL_BOSS_CAT)) missing.push("[" + sp.code + "] " + FINAL_BOSS_CAT + " — ما فيه ولا سؤال");
         return;
@@ -624,7 +643,7 @@ const MEDIA_FOLDER_ID = "PUT_FOLDER_ID_HERE";
 
 function fillMediaFromFolder() {
   if (MEDIA_FOLDER_ID === "PUT_FOLDER_ID_HERE") { Logger.log("ضع رقم المجلد في MEDIA_FOLDER_ID أولاً"); return; }
-  const sheet = getSheet(SHEET_QUESTIONS);
+  const sheet = getSheet_(SHEET_QUESTIONS);
   const vals  = sheet.getDataRange().getValues();
   const rowById = {};
   for (let i = 1; i < vals.length; i++) rowById[String(vals[i][0]).trim().toUpperCase()] = i + 1;
