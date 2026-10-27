@@ -147,23 +147,39 @@ function appendTextRow_(sheet, values) {
 }
 
 function ensureAdminAccount() {
+  return ensureAdminAccount_(ADMIN_CODE);
+}
+
+function ensureAdminAccount_(adminCode) {
   const sheet = getSheet_(SHEET_ACCOUNTS);
   const vals  = sheet.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
     if (String(vals[i][0] || "").trim() === ADMIN_ACCOUNT) {
       if (String(vals[i][5] || "").toUpperCase() !== "APPROVED" || String(vals[i][6] || "").toUpperCase() !== "ADMIN")
         sheet.getRange(i + 1, 6, 1, 2).setValues([["APPROVED", "ADMIN"]]);
-      if (ADMIN_CODE && String(vals[i][4] || "").trim() !== ADMIN_CODE)
-        sheet.getRange(i + 1, 5).setNumberFormat("@").setValue(ADMIN_CODE);
+      if (adminCode && String(vals[i][4] || "").trim() !== adminCode)
+        sheet.getRange(i + 1, 5).setNumberFormat("@").setValue(adminCode);
       return true;
     }
   }
-  if (!ADMIN_CODE) {
-    Logger.log("حساب المسؤول غير موجود — ADMIN_CODE ما انقرأ. الخصائص اللي يشوفها السكربت: " + propertyNames_());
+  if (!adminCode) {
+    Logger.log("حساب المسؤول غير موجود — ADMIN_CODE ما انقرأ (جرّب setAdminCode). الخصائص اللي يشوفها السكربت: " + propertyNames_());
     return false;
   }
-  appendTextRow_(sheet, [ADMIN_ACCOUNT, "المسؤول", "", "", ADMIN_CODE, "APPROVED", "ADMIN", 999999, new Date()]);
+  appendTextRow_(sheet, [ADMIN_ACCOUNT, "المسؤول", "", "", adminCode, "APPROVED", "ADMIN", 999999, new Date()]);
   return true;
+}
+
+/* بديل إعدادات المشروع: اكتب رمز المسؤول بين علامتي التنصيص ثم شغّل setAdminCode مرة وحدة.
+   تحفظ الرمز في Script properties وتنشئ حساب المسؤول (3854). بعدها رجّع السطر مثل ما كان. */
+function setAdminCode() {
+  const code = "اكتب_الرمز_هنا";
+  if (!code || code === "اكتب_الرمز_هنا") { Logger.log("✏️ اكتب رمز المسؤول داخل الدالة setAdminCode (بدل اكتب_الرمز_هنا) ثم شغّلها"); return; }
+  PropertiesService.getScriptProperties().setProperty("ADMIN_CODE", String(code).trim());
+  ensureSheetsExist();
+  Logger.log(ensureAdminAccount_(String(code).trim())
+    ? "✅ انحفظ ADMIN_CODE وانشأ حساب المسؤول — ادخل برقم " + ADMIN_ACCOUNT + " والرمز اللي كتبته"
+    : "❌ ما قدرت أنشئ حساب المسؤول");
 }
 
 /* ═══ SESSIONS ═══════════════════════════════════════════ */
