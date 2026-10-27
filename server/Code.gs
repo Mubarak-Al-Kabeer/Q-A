@@ -22,7 +22,18 @@
 const ADMIN_ACCOUNT  = "3854";
 // ⚠️ رمز المسؤول ما ينكتب هنا. حطه في: إعدادات المشروع ⚙️ ← Script properties ← ADMIN_CODE
 // إذا ما حطيته، يبقى الرمز الموجود حالياً في شيت Accounts كما هو.
-const ADMIN_CODE     = PropertiesService.getScriptProperties().getProperty("ADMIN_CODE") || "";
+const ADMIN_CODE     = readAdminCode_();
+
+// يقبل ADMIN_CODE حتى لو انكتب الاسم بحروف صغيرة أو فيه مسافة أو بدون _
+function readAdminCode_() {
+  const props = PropertiesService.getScriptProperties().getProperties();
+  const key = Object.keys(props).find(k => k.replace(/[\s_\-]/g, "").toUpperCase() === "ADMINCODE");
+  return key ? String(props[key]).trim() : "";
+}
+function propertyNames_() {
+  const names = Object.keys(PropertiesService.getScriptProperties().getProperties());
+  return names.length ? names.map(n => "'" + n + "'").join("، ") : "(ولا وحدة)";
+}
 const SPREADSHEET_ID = "1lPPBag5VfAEwjQPi8X1ttfJ1nU9NEqxEUAhHm5xTpMg";
 const SESSION_SECONDS = 21600;
 
@@ -147,7 +158,10 @@ function ensureAdminAccount() {
       return true;
     }
   }
-  if (!ADMIN_CODE) { Logger.log("حساب المسؤول غير موجود — حط ADMIN_CODE في Script properties"); return false; }
+  if (!ADMIN_CODE) {
+    Logger.log("حساب المسؤول غير موجود — ADMIN_CODE ما انقرأ. الخصائص اللي يشوفها السكربت: " + propertyNames_());
+    return false;
+  }
   appendTextRow_(sheet, [ADMIN_ACCOUNT, "المسؤول", "", "", ADMIN_CODE, "APPROVED", "ADMIN", 999999, new Date()]);
   return true;
 }
@@ -683,7 +697,7 @@ function diagnose() {
     const ok = ss.getSheets().some(sh => sh.getName().trim().toLowerCase() === n.toLowerCase());
     Logger.log((ok ? "✅ " : "❌ ناقص: ") + n);
   });
-  Logger.log("🔑 ADMIN_CODE في Script properties: " + (ADMIN_CODE ? "✅ موجود" : "❌ مو موجود"));
+  Logger.log("🔑 ADMIN_CODE: " + (ADMIN_CODE ? "✅ موجود" : "❌ مو موجود") + " — الخصائص الموجودة: " + propertyNames_());
 }
 
 function testAll() {
