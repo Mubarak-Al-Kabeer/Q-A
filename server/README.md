@@ -3,8 +3,9 @@
 الملفات:
 - `server/Code.gs` — كود السيرفر كامل
 - `data/categories.tsv` — الفئات (50 فئة، شاملة السؤال الختامي)
-- `data/questions-all.tsv` — **كل الأسئلة (255)** جاهزة تلصقها من A1
-- `data/questions-new.tsv` — الـ 130 سؤال الجديدة بس (Q126 → Q255)
+- `data/questions-all.csv` — **كل الأسئلة (750 سؤال، 3 لكل خانة)** — هذا اللي تسوي له Import
+- `data/questions-all.tsv` — نفس الأسئلة بصيغة TSV (للنسخ واللصق)
+- `data/questions-new.tsv` — دفعة Q126 → Q255 بس (قديم)
 
 ## 1) حدّث الكود
 1. افتح مشروع Apps Script ← امسح محتوى `Code.gs` والصق محتوى `server/Code.gs`.
@@ -17,13 +18,19 @@
 2. `prepareQuestionsSheet` — يضيف عمود `specialty` (العمود O)، ويحط `ALL` للأسئلة القديمة، ويخلي كل الأعمدة نص
 3. `prepareCategoriesSheet` — يجهّز هيدر شيت الفئات
 
-## 3) الصق البيانات
-- **الفئات:** افتح `data/categories.tsv` ← انسخ كل شي **بدون أول سطر** ← في شيت `Categories` اضغط على الخلية `A2` والصق.
-- **الأسئلة (الأسهل):** امسح شيت `Questions` كامل ← شغّل `prepareQuestionsSheet` (يخلي الأعمدة نص قبل اللصق عشان `15:2` ما يتحول لوقت) ← افتح `data/questions-all.tsv` (كل الـ 255 سؤال مع الهيدر و 15 عمود) ← انسخ كل شي ← اضغط على `A1` والصق.
-  - أو إذا تبي تخلي أسئلتك القديمة: الصق `data/questions-new.tsv` (بدون أول سطر) تحت Q125.
-- ⚠️ **لا تلصق الفئات في شيت Questions** — لها شيت مستقل اسمه `Categories`.
+## 3) استورد البيانات
+### الأسئلة (Import — تنضاف كلها مرة وحدة)
+1. افتح شيت **Questions**.
+2. File ← **Import** ← Upload ← اختر `data/questions-all.csv`.
+3. Import location: **Replace current sheet**.
+4. Separator type: **Detect automatically** (أو Comma).
+5. **شيل الصح** من: *Convert text to numbers, dates, and formulas* — عشان `15:2` و `5–6` يبقون نص.
+6. Import data ✅ — بعدها شغّل `prepareQuestionsSheet` مرة وحدة.
 
-> الصق كـ نص عادي (Ctrl+Shift+V) إذا طلع تنسيق غريب.
+### الفئات
+- نفس الطريقة على شيت **Categories** مع `data/categories.tsv` (Replace current sheet، Separator: Tab)،
+  أو انسخ الملف بدون أول سطر والصقه في `A2`.
+- ⚠️ لا تحط الفئات في شيت Questions.
 
 ## 4) انشر نسخة جديدة
 Deploy ← Manage deployments ← ✏️ ← Version: **New version** ← Deploy
